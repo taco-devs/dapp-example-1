@@ -66,7 +66,7 @@ export function HomePage({
           content="A React.js Boilerplate application homepage"
         />
       </Helmet>
-      <div>
+      {/* <div>
         <CenteredSection>
           <H2>
             <FormattedMessage {...messages.startProjectHeader} />
@@ -96,7 +96,7 @@ export function HomePage({
           </Form>
           <ReposList {...reposListProps} />
         </Section>
-      </div>
+      </div> */}
     </article>
   );
 }

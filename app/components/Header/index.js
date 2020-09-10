@@ -8,22 +8,32 @@ import HeaderLink from './HeaderLink';
 import Banner from './banner.jpg';
 import messages from './messages';
 
-function Header() {
-  return (
-    <div>
-      <A href="https://www.reactboilerplate.com/">
-        <Img src={Banner} alt="react-boilerplate - Logo" />
-      </A>
-      <NavBar>
-        <HeaderLink to="/">
-          <FormattedMessage {...messages.home} />
-        </HeaderLink>
-        <HeaderLink to="/features">
-          <FormattedMessage {...messages.features} />
-        </HeaderLink>
-      </NavBar>
-    </div>
-  );
+import styled from 'styled-components';
+
+const StyledHeader = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 1em 0 0 0;
+`
+
+const StyledLogo = styled.img`
+  display: flex;
+  height: 60px;
+  width: auto;
+`
+
+class Header extends React.Component {
+
+  render () {
+    return (
+      <StyledHeader>
+          <StyledLogo src="https://growthdefi.com/img/logo.png" />
+          <StyledLogo src="https://growthdefi.com/img/logo.png" />
+      </StyledHeader>
+    )
+  }
+
 }
 
 export default Header;
