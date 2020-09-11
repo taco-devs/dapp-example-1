@@ -65,6 +65,8 @@
   },
   "dependencies": {
     "@babel/polyfill": "7.4.3",
+    "@ethersproject/providers": "^5.0.7",
+    "@web3-react/core": "^6.1.1",
     "chalk": "2.4.2",
     "compression": "1.7.4",
     "connected-react-router": "6.4.0",
@@ -90,7 +92,11 @@
     "redux-saga": "1.0.2",
     "reselect": "4.0.0",
     "sanitize.css": "8.0.0",
-    "styled-components": "^4.2.0"
+    "styled-components": "^4.2.0",
+    "web3": "^1.2.11",
+    "web3-provider-engine": "^15.0.12",
+    "web3-redux": "^0.5.2",
+    "web3modal": "^1.9.0"
   },
   "devDependencies": {
     "@babel/cli": "7.4.3",

@@ -7,13 +7,17 @@ import NavBar from './NavBar';
 import HeaderLink from './HeaderLink';
 import Banner from './banner.jpg';
 import messages from './messages';
+import ConnectWallet from '../ConnectWallet';
 
 import styled from 'styled-components';
+
+
 
 const StyledHeader = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
   margin: 1em 0 0 0;
 `
 
@@ -29,7 +33,7 @@ class Header extends React.Component {
     return (
       <StyledHeader>
           <StyledLogo src="https://growthdefi.com/img/logo.png" />
-          <StyledLogo src="https://growthdefi.com/img/logo.png" />
+          <ConnectWallet {...this.props}/>
       </StyledHeader>
     )
   }
