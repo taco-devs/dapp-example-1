@@ -133,7 +133,6 @@ class Modal extends React.Component {
   render() {
     const { offset } = this.state
     const { children, showModal, opacity } = this.props
-    console.log(this.props);
     return (
       <SLightbox
         show={showModal}
