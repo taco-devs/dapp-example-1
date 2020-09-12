@@ -39,6 +39,9 @@ const WalletDashboardStats = styled.div`
   margin: 0.5em 0 0 0;
   width: 100%;
   color: white;
+  -webkit-box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
+  -moz-box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
+  box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
 `
 
 const WalletDashboardDivider = styled.div`

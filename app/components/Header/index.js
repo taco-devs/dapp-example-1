@@ -25,6 +25,11 @@ const StyledLogo = styled.img`
   display: flex;
   height: 60px;
   width: auto;
+
+  &:hover {
+    opacity: 0.5;
+    cursor: pointer;
+  }
 `
 
 class Header extends React.Component {

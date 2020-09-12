@@ -75,8 +75,8 @@ class App extends React.Component {
   // Detect if there is a cached provider
   componentDidMount() {
     if (this.web3Modal.cachedProvider) {
-      this.resetApp()
-      // this.onConnect();
+      //this.resetApp()
+      this.onConnect();
     }
 
     // Load Growth Token Contract
@@ -221,6 +221,7 @@ class App extends React.Component {
         <Header
           {...this.state}
           toggleModal={this.toggleModal}
+          resetApp={this.resetApp}
         />
         <StatsContainer {...this.state} />
         <Switch>
