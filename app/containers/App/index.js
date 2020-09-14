@@ -15,6 +15,7 @@ import HomePage from 'containers/HomePage/Loadable';
 import FeaturePage from 'containers/FeaturePage/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
 import Header from 'components/Header';
+import Navbar from 'components/Navbar';
 import StatsContainer from 'components/StatsContainer';
 import Web3ProviderModal from 'components/Web3ProviderModal';
 import Footer from 'components/Footer';
@@ -224,6 +225,7 @@ class App extends React.Component {
           resetApp={this.resetApp}
         />
         <StatsContainer {...this.state} />
+        <Navbar />
         <Switch>
           <Route exact path="/" component={HomePage} />
           <Route path="/features" component={FeaturePage} />
