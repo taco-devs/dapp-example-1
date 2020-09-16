@@ -32,6 +32,7 @@ const defaultData = [
     },
 ]
 
+
 const AssetContainer = styled.div`
     display: flex;
     flex-direction: column;
@@ -39,22 +40,54 @@ const AssetContainer = styled.div`
     padding: 1em 0 0 0;
 `
 
+const AssetHeader = styled.div`
+    display: flex;
+    flex-direction: row;
+    color: white;
+    margin: 0 2em 0em 2em;
+    font-size: 0.80em;
+`
+
+const AssetHeaderColumn = styled.div`
+    display: flex;
+    justify-content: center;
+    flex: ${props => props.flex || '1'};
+    margin: ${props => props.margin || '0'};
+`
+
+
 export default class AssetList extends Component {
     render() {
         const data = defaultData;
         return (
             <AssetContainer>
-                {data && data.length > 0 &&
-                    data.map(asset => {
-                        return (
-                            <AssetCard 
-                                data={data}
-                                asset={asset}
-                            />
-                        )
-                    })
-                }
-            </AssetContainer>
+                <AssetContainer>
+                    <AssetHeader>
+                        <AssetHeaderColumn margin="0 0 0 1em">
+                            <p>ASSET</p>
+                        </AssetHeaderColumn>
+                        <AssetHeaderColumn>
+                            <p>MARKET SIZE</p>
+                        </AssetHeaderColumn>
+                        <AssetHeaderColumn>
+                            <p>APY</p>
+                        </AssetHeaderColumn>
+                        <AssetHeaderColumn>
+                            <p>ACTIONS</p>
+                        </AssetHeaderColumn>
+                    </AssetHeader>
+                    {data && data.length > 0 &&
+                        data.map(asset => {
+                            return (
+                                <AssetCard 
+                                    data={data}
+                                    asset={asset}
+                                />
+                            )
+                        })
+                    }
+                </AssetContainer>
+            </AssetContainer>       
         )
     }
 }

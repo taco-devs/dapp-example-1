@@ -18,7 +18,13 @@ import reducer from './reducer';
 import saga from './saga';
 import messages from './messages';
 import styled from 'styled-components';
-import {AssetList} from './components';
+import {AssetList, InvestHeader} from './components';
+
+const Invest = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin: 0 1em 0 1em;
+`
 
 const InvestContainer = styled.div`
   display: flex;
@@ -27,16 +33,20 @@ const InvestContainer = styled.div`
   width: 100%;
   background-color: rgba(0, 0, 0, .15);
   border-radius: 5px;
-  margin: 1.5em 0 0 0;
+  margin: 0.5em 0 0 0;
 `
 
 class InvestPage extends React.Component {
 
   render () {
     return (
-    <InvestContainer>
-      <AssetList />
-    </InvestContainer>
+      <Invest>
+        <InvestHeader />
+        <InvestContainer>
+          <AssetList />
+        </InvestContainer>
+      </Invest>
+    
   );
   }
   

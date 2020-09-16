@@ -7,7 +7,7 @@ const Card = styled.div`
     flex-direction: row;
     background-color: white;
     border-radius: 5px;
-    height: 80px;
+    height: 65px;
     margin: 0.5em 2em 0.5em 2em;
     -webkit-box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
     -moz-box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
@@ -56,7 +56,7 @@ export default class AssetCard extends Component {
                     direction="row"
                     align="center"
                     justify="flex-start"
-                    margin="0 1em 0 1em"
+                    margin="0 0 0 1em"
                 >
                     <AssetLogo src={asset.img_url} />
                     <PrimaryLabel>{asset.g_asset} / {asset.base_asset}</PrimaryLabel>

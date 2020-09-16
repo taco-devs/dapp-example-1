@@ -163,6 +163,13 @@ const SelectorRow = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: space-around;
+  border-radius: 5px;
+  padding: 5px 0 5px 0;
+
+  &:hover {
+    background-color: #E8E8E8;
+    cursor: pointer;
+  }
 `
 
 const IconLogo = styled.img`
