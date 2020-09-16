@@ -41,10 +41,10 @@ const NavbarTab = styled.div`
     -moz-box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
     box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
   `}
-  -moz-transition: background-color 0.25 linear;
-  -webkit-transition: background-color 0.25s linear;
-  -o-transition: background-color 0.25 linear;
-  transition: background-color 0.25 linear;
+  -moz-transition: background-color 0.15s linear;
+  -webkit-transition: background-color 0.15s linear;
+  -o-transition: background-color 0.15s linear;
+  transition: background-color 0.15s linear;
 
   &:hover {
     cursor: pointer;
