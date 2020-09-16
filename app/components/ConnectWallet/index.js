@@ -140,10 +140,25 @@ const DropdownLabel = styled.p`
 
 class ConnectWallet extends React.Component {
 
+  constructor (props) {
+    super(props);
+
+    this.containerRef = React.createRef();
+  }
+
   state = {
     balance: null,
     isOpen: false,
   }
+
+  componentDidMount() {
+      document.addEventListener('mousedown', this.handleClickOutside);
+  }
+
+  componentWillUnmount() {
+      document.removeEventListener('mousedown', this.handleClickOutside);
+  }
+
 
   handleToggleModal = () => {
     const {toggleModal} = this.props;
@@ -173,6 +188,12 @@ class ConnectWallet extends React.Component {
     this.setState({ isOpen: false });
   }
 
+  handleClickOutside = (event) => {
+    if (this.containerRef && !this.containerRef.current.contains(event.target)) {
+        this.setState({isOpen: false});
+    }
+  }
+
   render () {
     const {address, GrowTokenInstance} = this.props;
     const {balance, isOpen} = this.state;
@@ -182,7 +203,7 @@ class ConnectWallet extends React.Component {
     }
 
     return (
-      <>
+      <div ref={this.containerRef}>
         {address && address.length > 0 ? (
           <DropDownContainer>
             <WalletContainer>
@@ -216,7 +237,7 @@ class ConnectWallet extends React.Component {
             <FormattedMessage {...messages.header} />
           </ConnectButton>
         )}
-      </>
+      </div>
     )
   }
 }

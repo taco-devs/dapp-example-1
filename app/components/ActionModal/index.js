@@ -206,6 +206,11 @@ const ActionConfirmButton = styled.div`
   padding: 1em 1em 1em 1em;
   width: 300px;
   color: white;
+  
+  &:hover {
+    opacity: 0.85;
+    cursor: pointer;
+  }
 `
 
 const customStyles = {
@@ -249,7 +254,7 @@ class ActionModal extends React.Component {
   }
 
   changeType = (modal_type) => {
-    this.setState({modal_type, value: 0});
+    this.setState({modal_type});
   }
 
   handleInputChange = (value) => {
@@ -266,11 +271,24 @@ class ActionModal extends React.Component {
     return total_minting;
   }
 
+  calculateBurningFee = () => {
+    const {asset} = this.props;
+    const total_minting = ((1 - asset.burning_fee) * asset.base_total_supply) / asset.total_supply;
+    return total_minting;
+  }
+
   calculateMintingTotal = () => {
     const {value} = this.state;
   
     const minting_ratio = this.calculateMintingFee();
     return value / minting_ratio;
+  }
+
+  calculateBurningTotal = () => {
+    const {value} = this.state;
+  
+    const burning_ratio = this.calculateBurningFee();
+    return value / burning_ratio;
   }
   
   render () {
@@ -377,7 +395,8 @@ class ActionModal extends React.Component {
                 </SummaryRow>
               </SummaryColumn>
               <SummaryColumn align="flex-end">
-                <PrimaryLabel> {Math.round(this.calculateMintingFee() * 100) / 100} {asset.native}  ({(asset.burning_fee * 100).toFixed(2)}%)</PrimaryLabel>
+                {modal_type === 'mint' && <PrimaryLabel> {Math.round(this.calculateMintingFee() * 100) / 100} {asset.native}  ({(asset.minting_fee * 100).toFixed(2)}%)</PrimaryLabel>}
+                {modal_type === 'redeem' && <PrimaryLabel> {Math.round(this.calculateBurningFee() * 100) / 100} {asset.native}  ({(asset.burning_fee * 100).toFixed(2)}%)</PrimaryLabel>}   
               </SummaryColumn>
             </SummaryRow>
             <SummaryRow>
@@ -388,7 +407,8 @@ class ActionModal extends React.Component {
                 </SummaryRow>
               </SummaryColumn>
               <SummaryColumn align="flex-end">
-                <PrimaryLabel>{Math.round(this.calculateMintingTotal() * 100) / 100} {asset.g_asset} </PrimaryLabel>
+                {modal_type === 'mint' && <PrimaryLabel>{Math.round(this.calculateMintingTotal() * 100) / 100} {asset.g_asset}</PrimaryLabel>}
+                {modal_type === 'redeem' && <PrimaryLabel>{Math.round(this.calculateBurningTotal() * 100) / 100} {asset.base_asset}</PrimaryLabel>}
               </SummaryColumn>
             </SummaryRow>
             <SummaryRow justify="center" flex="2">
