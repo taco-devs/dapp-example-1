@@ -23,8 +23,7 @@ const GlobalStyle = createGlobalStyle`
   #app {
     background: rgb(22,29,107);
     background: radial-gradient(circle, rgba(22,29,107,1) 0%, rgba(11,15,60,1) 100%);
-    min-height: 100%;
-    min-width: 100%;
+    padding: 0 0 8em 0;
   }
 
   p,

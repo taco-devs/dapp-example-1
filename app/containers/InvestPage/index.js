@@ -29,11 +29,11 @@ const Invest = styled.div`
 const InvestContainer = styled.div`
   display: flex;
   flex-direction: row;
-  height: 30vh;
+  height: 100%;
   width: 100%;
   background-color: rgba(0, 0, 0, .15);
   border-radius: 5px;
-  margin: 0.5em 0 0 0;
+  margin: 0.5em 0 0;
 `
 
 class InvestPage extends React.Component {

@@ -5,7 +5,7 @@ import {BsSearch, BsArrowLeftShort, BsArrowRightShort} from 'react-icons/bs';
 const InvestHeaderRow = styled.div`
     display: flex;
     flex-direction: row;
-    margin: 1.5em 0 0.5em 0;
+    margin: 1em 0 0.5em 0;
     justify-content: space-between;
 `
 
@@ -32,6 +32,7 @@ const StyledSearchBox = styled.input`
     border: 0;
     color: white;
     outline: none;
+    font-size: 0.85em;
 `
 
 const PaginationButtons = styled.div`

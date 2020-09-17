@@ -22,6 +22,7 @@ const ActionButton = styled.div`
   display: flex; 
   flex-direction: row;
   justify-content: center;
+  font-size: 0.85em;
 
   ${props => {
     if (props.type === 'mint') {
