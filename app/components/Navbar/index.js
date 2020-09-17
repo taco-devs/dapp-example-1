@@ -7,7 +7,7 @@
 import React from 'react';
 // import PropTypes from 'prop-types';
 // import styled from 'styled-components';
-
+import {Link} from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import styled from 'styled-components';
@@ -58,56 +58,76 @@ const StyledMessage = styled.div`
   margin: 0 1em 0 1em;
 `
 
+const StyledLink = styled(Link)`
+  text-decoration: none;
+  color: white;
+`
+
 class Navbar extends React.Component {
 
   state = {
-    active: '1',
+    active: '/',
+  }
+
+  // Detect the active key depending on the route
+  componentDidMount = () => {
+    const {pathname} = window.location;
+    this.setState({active: pathname});
   }
 
   selectActive = (active) => {
-    this.setState({active})
-;  }
+    this.setState({active});
+  }
 
   render () {
     const {active} = this.state;
      return ( 
       <NavbarContainer>
-        <NavbarTab 
-          active={active === '1'}
-          onClick={() => this.selectActive('1')}
-        >
-          <BiLineChart />
-          <StyledMessage>
-            <FormattedMessage {...messages.invest} />
-          </StyledMessage>
-        </NavbarTab>
-        <NavbarTab
-          active={active === '2'}
-          onClick={() => this.selectActive('2')}
-        >
-          <FaVoteYea />
-          <StyledMessage>
-            <FormattedMessage {...messages.vote} />
-          </StyledMessage>
-        </NavbarTab>
-        <NavbarTab
-          active={active === '3'}
-          onClick={() => this.selectActive('3')}
-        >
-          <BiTransfer />
-          <StyledMessage>
-            <FormattedMessage {...messages.transactions} />
-          </StyledMessage>
-        </NavbarTab>
-        <NavbarTab
-          active={active === '4'}
-          onClick={() => this.selectActive('4')}
-        >
-          <MdAccountBalanceWallet />
-          <StyledMessage>
-            <FormattedMessage {...messages.balance} />
-          </StyledMessage>
-        </NavbarTab>
+        <StyledLink to="/">
+          <NavbarTab 
+            active={active === '/'}
+            onClick={() => this.selectActive('/')}
+          >
+            <BiLineChart />
+            <StyledMessage>
+              <FormattedMessage {...messages.invest} />
+            </StyledMessage>
+          </NavbarTab>
+        </StyledLink>
+        <StyledLink to="/vote">
+          <NavbarTab
+            active={active === '/vote'}
+            onClick={() => this.selectActive('/vote')}
+          >
+            <FaVoteYea />
+            <StyledMessage>
+              <FormattedMessage {...messages.vote} />
+            </StyledMessage>
+          </NavbarTab>
+        </StyledLink>
+        <StyledLink to="/transactions">
+          <NavbarTab
+            active={active === '/transactions'}
+            onClick={() => this.selectActive('/transactions')}
+          >
+            <BiTransfer />
+            <StyledMessage>
+              <FormattedMessage {...messages.transactions} />
+            </StyledMessage>
+          </NavbarTab>
+        </StyledLink>
+        <StyledLink to="/balance">
+          <NavbarTab
+            active={active === '/balance'}
+            onClick={() => this.selectActive('/balance')}
+          >
+            <MdAccountBalanceWallet />
+            <StyledMessage>
+              <FormattedMessage {...messages.balance} />
+            </StyledMessage>
+          </NavbarTab>
+        </StyledLink>
+
       </NavbarContainer>
     );
   }

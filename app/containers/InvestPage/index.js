@@ -43,7 +43,7 @@ class InvestPage extends React.Component {
       <Invest>
         <InvestHeader />
         <InvestContainer>
-          <AssetList />
+          <AssetList {...this.props}/>
         </InvestContainer>
       </Invest>
     

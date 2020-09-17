@@ -40,6 +40,13 @@ const AppWrapper = styled.div`
   flex-direction: column;
 `;
 
+const NetworkChainIds = {
+  1:'eth',
+  3:'ropsten',
+  4:'rinkeby',
+  42: 'kovan',
+}
+
 // Initial State
 const INITIAL_STATE = {
   fetching: false,
@@ -128,6 +135,8 @@ class App extends React.Component {
 
     const chainId = await web3.eth.chainId();
 
+    const network_id = NetworkChainIds[networkId];
+
     await this.loadContracts(web3);
 
     await this.setState({
@@ -136,7 +145,8 @@ class App extends React.Component {
       connected: true,
       address,
       chainId,
-      networkId
+      networkId,
+      network_id
     });
     // await this.getAccountAssets();
   };
@@ -215,10 +225,10 @@ class App extends React.Component {
     return (
       <AppWrapper>
         <Helmet
-          titleTemplate="%s - React.js Boilerplate"
-          defaultTitle="React.js Boilerplate"
+          titleTemplate="%s - GROWTH DeFi"
+          defaultTitle="GROWTH DeFi - Dashboard"
         >
-          <meta name="description" content="A React.js Boilerplate application" />
+          <meta name="description" content="Liquidity DeFi Protocol" />
         </Helmet>
         <Header
           {...this.state}
@@ -228,7 +238,16 @@ class App extends React.Component {
         <StatsContainer {...this.state} />
         <Navbar />
         <Switch>
-          <Route exact path="/" component={InvestPage} />
+          <Route 
+            exact 
+            path="/" 
+            render={(props) => (
+              <InvestPage 
+                {...props}
+                {...this.state}
+              />
+            )}
+          />
           <Route path="/features" component={FeaturePage} />
           <Route path="" component={NotFoundPage} />
         </Switch>

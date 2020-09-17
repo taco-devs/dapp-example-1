@@ -38,6 +38,27 @@ const data = [
   {
     name: 'Page G', uv: 30, pv: 4300, amt: 2100,
   },
+  {
+    name: 'Page A', uv: 18, pv: 4500, amt: 2400,
+  },
+  {
+    name: 'Page B', uv: 20, pv: 4700, amt: 2210,
+  },
+  {
+    name: 'Page C', uv: 25, pv: 5000, amt: 2290,
+  },
+  {
+    name: 'Page D', uv: 32, pv: 4600, amt: 2000,
+  },
+  {
+    name: 'Page E', uv: 45, pv: 4800, amt: 2181,
+  },
+  {
+    name: 'Page F', uv: 40, pv: 4000, amt: 2500,
+  },
+  {
+    name: 'Page G', uv: 30, pv: 6000, amt: 2100,
+  },
 ];
 
 const GrowthContainer = styled.div`
@@ -93,7 +114,7 @@ class GrowthDashboard extends React.Component {
                 {/* <XAxis dataKey="name" />
                 <YAxis /> */}
                 <Tooltip />
-                <Area type="monotone" dataKey="uv" stroke="#8884d8" fill="#00d395" />
+                <Area type="monotone" dataKey="uv" stroke="#161d6b" fill="#00d395" />
               </AreaChart>
             </ResponsiveContainer>
           </div>

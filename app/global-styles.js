@@ -21,6 +21,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   #app {
+    min-height: 100vh;
     background: rgb(22,29,107);
     background: radial-gradient(circle, rgba(22,29,107,1) 0%, rgba(11,15,60,1) 100%);
     padding: 0 0 8em 0;
