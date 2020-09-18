@@ -183,7 +183,7 @@ const Summary = styled.div`
   flex-direction: column;
   background-color: #E8E8E8;
   flex: 1;
-  height: calc(50vh - 210px);
+  height: calc(55vh - 260px);
   padding: 2em 1.5em 1em 1.5em;
 `
 
@@ -212,6 +212,7 @@ const ActionConfirmButton = styled.div`
     if (props.modal_type === 'redeem') return '#161d6b';
   }};
   padding: 1em 1em 1em 1em;
+  margin: 1em 0 0 0;
   width: 300px;
   color: white;
   
@@ -219,6 +220,91 @@ const ActionConfirmButton = styled.div`
     opacity: 0.85;
     cursor: pointer;
   }
+`
+
+const AssetTypeToggle = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  height: 50px;
+`
+
+const SwitchBox = styled.label`
+  position: relative;
+  display: inline-block;
+  width: 150px;
+  height: 34px;
+
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  input:checked + .slider {
+    background-color: ${props => {
+      if (props.modal_type === 'mint') return '#00d395';
+      if (props.modal_type === 'redeem') return '#161d6b';
+    }};
+  }
+
+  input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+  }
+
+  input:checked + .slider:before {
+    -webkit-transform: translateX(73px);
+    -ms-transform: translateX(73px);
+    transform: translateX(73px);
+  }
+  
+`
+
+const SwitchSlider = styled.span`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: ${props => {
+    if (props.modal_type === 'mint') return '#00d395';
+    if (props.modal_type === 'redeem') return '#161d6b';
+  }};
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 5px;
+
+  &:before {
+    border-radius: 5px;
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 70px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+`
+
+const SwitchLabel = styled.div`
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  z-index: 99;
+  color: ${props => {
+    if (props.is_native) return 'white';
+    if (props.modal_type === 'mint') return '#00d395';
+    if (props.modal_type === 'redeem') return '#161d6b';
+  }};
+  -webkit-transition: .4s;
+  transition: .4s;
+  font-size: 0.85em;
 `
 
 const customStyles = {
@@ -233,7 +319,7 @@ const customStyles = {
     padding: 0,
     borderRadius: '5px',
     width: '450px',
-    height: '50vh',
+    height: '55vh',
   },
   overlay: {
     backgroundColor: 'rgb(0,0,0, 0.50)'
@@ -246,6 +332,7 @@ class ActionModal extends React.Component {
     show: false,
     modal_type: 'mint',
     value: null,
+    is_native: false,
   }
 
   componentDidMount = () => {
@@ -298,10 +385,14 @@ class ActionModal extends React.Component {
     const burning_ratio = this.calculateBurningFee();
     return value / burning_ratio;
   }
+
+  toggleNativeSelector = () => {
+    this.setState({is_native: !this.state.is_native})
+  }
   
   render () {
     const {type, asset} = this.props;
-    const {show, modal_type, value} = this.state;
+    const {show, modal_type, value, is_native} = this.state;
     return (
       <React.Fragment>
         <ActionButton
@@ -365,8 +456,21 @@ class ActionModal extends React.Component {
                   <FaChevronDown />
                 </SelectorRow>
               </InputSectionColumn>
-            </InputSection>
+            </InputSection>            
           </InputContainer>
+          <AssetTypeToggle>
+            <SwitchBox modal_type={modal_type}>
+              <input type="checkbox" />
+              <SwitchSlider className="slider" modal_type={modal_type} onClick={() => this.toggleNativeSelector()}>
+                <SwitchLabel is_native={is_native} modal_type={modal_type}>
+                  <p>NATIVE</p>
+                </SwitchLabel>
+                <SwitchLabel is_native={!is_native} modal_type={modal_type}>
+                  <p>ASSET</p>
+                </SwitchLabel>
+              </SwitchSlider>
+            </SwitchBox>
+          </AssetTypeToggle>
           <Summary>
             <SummaryRow>
               <SummaryColumn>
