@@ -58,7 +58,7 @@ const BalanceContainer = styled.div`
 
 const AddressContainer = styled.div`
   display: flex;
-  flex: 1.5;
+  flex: 1;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
@@ -79,6 +79,7 @@ const AddressContainer = styled.div`
 const DropDownContainer = styled.div`
   display: flex;
   flex-direction: column;
+  font-size: 0.9em;
 `;
 
 const DropDownHeader = styled.div`
@@ -136,6 +137,7 @@ const ListItem = styled.li`
 
 const DropdownLabel = styled.p`
   margin: 0 0 0 1em;
+  font-size: 0.85em;
 `
 
 class ConnectWallet extends React.Component {

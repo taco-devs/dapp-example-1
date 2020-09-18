@@ -29,16 +29,17 @@ const AssetHeaderColumn = styled.div`
 
 export default class AssetList extends Component {
 
-    /* Parse the assets */
-    assetKeys = (Network) => {
-        if (!Network || !Network.available_assets) return [];
-        return Object.keys(Network.available_assets);
+    showAvailableAssets = () => {
+        const {assets, pagination, Network} = this.props;
+        if (!assets || !Network) return;
+        const assets_per_page = 10;
+        const slice_start = pagination * assets_per_page;
+        const slice_end = (pagination + 1) * assets_per_page;
+        const page_assets = assets.slice(slice_start, slice_end);
+        return page_assets.map(asset_key => <AssetCard asset={Network.available_assets[asset_key]} />)
     }
 
     render() {
-        const {network_id} = this.props;
-        const Network = NetworkData[network_id];
-        const assets = this.assetKeys(Network);
         return (
             <AssetContainer>
                 <AssetHeader>
@@ -55,16 +56,7 @@ export default class AssetList extends Component {
                         <p>ACTIONS</p>
                     </AssetHeaderColumn>
                 </AssetHeader>
-                {assets && assets.length > 0 &&
-                    assets.map(asset_key => {
-                        return (
-                            <AssetCard 
-                                data={NetworkData.available_assets}
-                                asset={Network.available_assets[asset_key]}
-                            />
-                        )
-                    })
-                }
+                {this.showAvailableAssets()}
             </AssetContainer>     
         )
     }

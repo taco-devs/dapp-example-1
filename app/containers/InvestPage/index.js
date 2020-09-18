@@ -13,12 +13,14 @@ import { compose } from 'redux';
 
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
-import makeSelectInvestPage from './selectors';
+import { makeSelectPagination } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
 import messages from './messages';
 import styled from 'styled-components';
 import {AssetList, InvestHeader} from './components';
+import NetworkData from 'contracts';
+import { changePage } from './actions';
 
 const Invest = styled.div`
   display: flex;
@@ -38,16 +40,32 @@ const InvestContainer = styled.div`
 
 class InvestPage extends React.Component {
 
+  /* Parse the assets */
+  assetKeys = (Network) => {
+    if (!Network || !Network.available_assets) return [];
+    return Object.keys(Network.available_assets);
+  }
+
   render () {
+    const {network_id} = this.props;
+    const Network = NetworkData[network_id];
+    const assets = this.assetKeys(Network);
     return (
       <Invest>
-        <InvestHeader />
+        <InvestHeader 
+          {...this.props} 
+          assets={assets}
+        />
         <InvestContainer>
-          <AssetList {...this.props}/>
+          <AssetList 
+            {...this.props}
+            assets={assets}
+            Network={Network}
+          />
         </InvestContainer>
       </Invest>
     
-  );
+    );
   }
   
 }
@@ -61,12 +79,12 @@ const withReducer = injectReducer({ key: 'investPage', reducer });
 const withSaga = injectSaga({ key: 'investSaga', saga });
 
 const mapStateToProps = createStructuredSelector({
-  investPage: makeSelectInvestPage(),
+  pagination: makeSelectPagination(),
 });
 
 function mapDispatchToProps(dispatch) {
   return {
-    dispatch,
+    changePage: (pagination) => dispatch(changePage(pagination)),
   };
 }
 
@@ -76,7 +94,7 @@ const withConnect = connect(
 );
 
 export default compose(
-    withConnect,
     withReducer,
     withSaga,
+    withConnect,
   )(InvestPage);

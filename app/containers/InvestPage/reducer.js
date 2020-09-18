@@ -3,18 +3,21 @@
  * InvestPage reducer
  *
  */
-import produce from 'immer';
-import { DEFAULT_ACTION } from './constants';
+import { fromJS } from 'immutable';
+import { DEFAULT_ACTION, CHANGE_PAGE } from './constants';
 
-export const initialState = {};
+export const initialState = fromJS({
+  pagination: 0,
+});
 
-/* eslint-disable default-case, no-param-reassign */
-const investPageReducer = (state = initialState, action) =>
-  produce(state, (/* draft */) => {
-    switch (action.type) {
-      case DEFAULT_ACTION:
-        break;
-    }
-  });
 
-export default investPageReducer;
+function investReducer(state = initialState, action) {
+  switch (action.type) {
+    case CHANGE_PAGE:
+      return state.set('pagination', action.pagination);
+    default:
+      return state;
+  }
+}
+
+export default investReducer;
