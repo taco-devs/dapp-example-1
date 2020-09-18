@@ -298,9 +298,8 @@ const SwitchLabel = styled.div`
   justify-content: center;
   z-index: 99;
   color: ${props => {
-    if (props.is_native) return 'white';
-    if (props.modal_type === 'mint') return '#00d395';
-    if (props.modal_type === 'redeem') return '#161d6b';
+    if (props.modal_type === 'mint') return props.is_native ? '#00d395' : 'white';
+    if (props.modal_type === 'redeem') return props.is_native ? '#161d6b' : 'white';
   }};
   -webkit-transition: .4s;
   transition: .4s;
@@ -332,7 +331,7 @@ class ActionModal extends React.Component {
     show: false,
     modal_type: 'mint',
     value: null,
-    is_native: false,
+    is_native: true,
   }
 
   componentDidMount = () => {
@@ -451,8 +450,8 @@ class ActionModal extends React.Component {
               >
                 <BalanceLabel>BALANCE 80.12</BalanceLabel>
                 <SelectorRow>
-                  <IconLogo src={asset.img_url} />
-                  <AssetLabel>{modal_type === 'mint' ? asset.base_asset : asset.g_asset}</AssetLabel>
+                  <IconLogo src={modal_type === 'mint' && is_native ? asset.native_img_url : asset.img_url} />
+                  <AssetLabel>{modal_type === 'mint' ? is_native ? asset.native : asset.base_asset : asset.g_asset}</AssetLabel>
                   <FaChevronDown />
                 </SelectorRow>
               </InputSectionColumn>
