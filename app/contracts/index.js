@@ -176,7 +176,10 @@ const assets = {
                 burning_fee: 0.01,
             },
         }
-    }
+    },
+    ropsten: {},
+    kovan: {},
+    rinkeby: {},
 }
 
 export default assets;

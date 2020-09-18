@@ -510,6 +510,19 @@ class ActionModal extends React.Component {
                 {modal_type === 'redeem' && <PrimaryLabel> {Math.round(this.calculateBurningFee() * 100) / 100} {asset.native}  ({(asset.burning_fee * 100).toFixed(2)}%)</PrimaryLabel>}   
               </SummaryColumn>
             </SummaryRow>
+            {modal_type === 'redeem' && is_native && (
+              <SummaryRow>
+                <SummaryColumn>
+                  <SummaryRow>
+                    <PrimaryLabel margin="0 5px 0 0">EXCHANGE FEE</PrimaryLabel>
+                    <BsInfoCircleFill style={{color: '#BEBEBE' }} />
+                  </SummaryRow>
+                </SummaryColumn>
+                <SummaryColumn align="flex-end">
+                  <PrimaryLabel>0.1 ETH</PrimaryLabel>
+                </SummaryColumn>
+              </SummaryRow>
+            )}
             <SummaryRow>
               <SummaryColumn>
                 <SummaryRow>
@@ -519,7 +532,7 @@ class ActionModal extends React.Component {
               </SummaryColumn>
               <SummaryColumn align="flex-end">
                 {modal_type === 'mint' && <PrimaryLabel>{Math.round(this.calculateMintingTotal() * 100) / 100} {asset.g_asset}</PrimaryLabel>}
-                {modal_type === 'redeem' && <PrimaryLabel>{Math.round(this.calculateBurningTotal() * 100) / 100} {asset.base_asset}</PrimaryLabel>}
+                {modal_type === 'redeem' && <PrimaryLabel>{Math.round(this.calculateBurningTotal() * 100) / 100} {is_native ? asset.native : asset.base_asset}</PrimaryLabel>}
               </SummaryColumn>
             </SummaryRow>
             <SummaryRow justify="center" flex="2">
