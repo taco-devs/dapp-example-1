@@ -8,7 +8,14 @@ const makeSelectPagination = () =>
     }
   );
 
+const makeSelectSearch = () =>
+  createSelector(selectInvestPage, investState => {
+      return investState.get('search')
+    }
+  );
+
 
 export { 
-  makeSelectPagination
+  makeSelectPagination,
+  makeSelectSearch
 };

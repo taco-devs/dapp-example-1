@@ -60,15 +60,36 @@ const StyledIcon = ({Icon}) => {
 export default class InvestHeader extends Component {
 
     showPagination = () => {
-        const {pagination, assets} = this.props;
+        const {pagination, assets, search} = this.props;
         if (!assets) return '-'
-        const page_number = Math.ceil(assets.length / 10);
+
+        // filter assets
+        const filterd_assets = 
+            assets
+                .filter(asset_key => {
+                    if (!search) return true;
+                    if (search.length < 1) return true;
+                    return `g${asset_key}`.toUpperCase().indexOf(search.toUpperCase()) > -1;
+                })
+
+        const page_number = Math.ceil(filterd_assets.length / 10);
+        if (page_number < 1) return '1 / 1';
         return `${pagination + 1} / ${page_number}`;
     }
 
     handlePagination = (direction) => {
-        const {changePage, pagination, assets} = this.props;
-        const page_number = Math.ceil(assets.length / 10);
+        const {changePage, pagination, assets, search} = this.props;
+
+        // filter assets
+        const filterd_assets = 
+            assets
+                .filter(asset_key => {
+                    if (!search) return true;
+                    if (search.length < 1) return true;
+                    return `g${asset_key}`.toUpperCase().indexOf(search.toUpperCase()) > -1;
+                })
+
+        const page_number = Math.ceil(filterd_assets.length / 10);
         if (direction === 'back') {
             if (pagination < 1) return;
             changePage(pagination - 1);
@@ -79,13 +100,24 @@ export default class InvestHeader extends Component {
         }
     }
 
+    handleSearch = (search) => {
+        const {changePage, searchAssets, pagination} = this.props;
+        changePage(0);
+        searchAssets(search);
+    }
+
     render() {
+        const {search} = this.props;
         return (
             <InvestHeaderRow>
                 <InvestHeaderColumn>
                     <SearchContainer>
                         <BsSearch style={{margin: '0 15px 0 15px'}} />
-                        <StyledSearchBox placeholder="FILTER BY TOKEN OR PROTOCOL"/>
+                        <StyledSearchBox 
+                            placeholder="FILTER BY TOKEN, PROTOCOL OR POOL"
+                            value={search}
+                            onChange={(e) => this.handleSearch(e.target.value)}
+                        />
                     </SearchContainer>
                 </InvestHeaderColumn>
                 <InvestHeaderColumn>

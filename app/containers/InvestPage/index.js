@@ -13,14 +13,14 @@ import { compose } from 'redux';
 
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
-import { makeSelectPagination } from './selectors';
+import { makeSelectPagination, makeSelectSearch } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
 import messages from './messages';
 import styled from 'styled-components';
 import {AssetList, InvestHeader} from './components';
 import NetworkData from 'contracts';
-import { changePage } from './actions';
+import { changePage, searchAssets } from './actions';
 
 const Invest = styled.div`
   display: flex;
@@ -80,11 +80,13 @@ const withSaga = injectSaga({ key: 'investSaga', saga });
 
 const mapStateToProps = createStructuredSelector({
   pagination: makeSelectPagination(),
+  search: makeSelectSearch()
 });
 
 function mapDispatchToProps(dispatch) {
   return {
     changePage: (pagination) => dispatch(changePage(pagination)),
+    searchAssets: (search) => dispatch(searchAssets(search))
   };
 }
 

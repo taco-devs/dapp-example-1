@@ -30,12 +30,19 @@ const AssetHeaderColumn = styled.div`
 export default class AssetList extends Component {
 
     showAvailableAssets = () => {
-        const {assets, pagination, Network} = this.props;
+        const {assets, pagination, Network, search} = this.props;
         if (!assets || !Network) return;
         const assets_per_page = 10;
         const slice_start = pagination * assets_per_page;
         const slice_end = (pagination + 1) * assets_per_page;
-        const page_assets = assets.slice(slice_start, slice_end);
+        const page_assets = 
+            assets
+                .filter(asset_key => {
+                    if (!search) return true;
+                    if (search.length < 1) return true;
+                    return `g${asset_key}`.toUpperCase().indexOf(search.toUpperCase()) > -1;
+                })
+                .slice(slice_start, slice_end);
         return page_assets.map(asset_key => <AssetCard asset={Network.available_assets[asset_key]} />)
     }
 

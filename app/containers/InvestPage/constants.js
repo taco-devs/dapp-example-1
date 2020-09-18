@@ -7,4 +7,5 @@
 export const DEFAULT_ACTION = 'app/InvestPage/DEFAULT_ACTION';
 
 export const CHANGE_PAGE = 'app/InvestPage/CHANGE_PAGE';
+export const SEARCH = 'app/InvestPage/SEARCH';
 

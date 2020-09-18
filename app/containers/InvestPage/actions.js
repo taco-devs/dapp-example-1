@@ -4,7 +4,7 @@
  *
  */
 
-import { DEFAULT_ACTION, CHANGE_PAGE } from './constants';
+import { DEFAULT_ACTION, CHANGE_PAGE, SEARCH } from './constants';
 
 export function defaultAction() {
   return {
@@ -16,5 +16,12 @@ export function changePage(pagination) {
   return {
     type: CHANGE_PAGE,
     pagination
+  }
+}
+
+export function searchAssets(search) {
+  return {
+    type: SEARCH,
+    search
   }
 }
