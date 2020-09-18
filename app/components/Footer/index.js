@@ -21,12 +21,25 @@ const LeftSection = styled.section`
   align-items: center;
 `
 
+const IconLink = styled.a`
+  color: white;
+
+  &:hover {
+    cursor: pointer;
+    color: #00d395;
+  }
+`
+
 function Footer() {
   return (
     <Wrapper>
       <LeftSection>
-        <FaTwitter size="1.5em" style={{margin: '0 10px 0 10px'}}/>
-        <FaTelegram size="1.5em" style={{margin: '0 10px 0 10px'}}/>
+        <IconLink href="https://twitter.com/GrowthDefi" target="_blank">
+          <FaTwitter size="1.5em" style={{margin: '0 10px 0 10px'}}/>
+        </IconLink>
+        <IconLink href="https://t.me/growthdefi" target="_blank">
+          <FaTelegram size="1.5em" style={{margin: '0 10px 0 10px'}}/>
+        </IconLink>
         <LocaleToggle />
       </LeftSection>
       <section>

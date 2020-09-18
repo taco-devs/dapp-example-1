@@ -130,7 +130,7 @@ const ListItem = styled.li`
   color: white;
   
   &:hover {
-    cursor: pointer;
+    ${props => props.hoverable && 'cursor: pointer;' }
     color: #00d395;
   }
 `;
@@ -139,6 +139,14 @@ const DropdownLabel = styled.p`
   margin: 0 0 0 1em;
   font-size: 0.85em;
 `
+
+const NetworkLabel = styled.p`
+  margin: 0 0 0 1em;
+  font-size: 0.85em;
+  color: #00d395;
+`
+
+
 
 class ConnectWallet extends React.Component {
 
@@ -196,6 +204,18 @@ class ConnectWallet extends React.Component {
     }
   }
 
+  connectedNetwork = () => {
+    const {network_id} = this.props;
+    if (!network_id) return '-';
+
+    if (network_id === 'eth') return 'Mainnet';
+    if (network_id === 'ropsten') return 'Ropsten';
+    if (network_id === 'kovan') return 'Kovan';
+    if (network_id === 'rinkeby') return 'Rinkeby';
+
+    return network_id;
+  }
+
   render () {
     const {address, GrowTokenInstance} = this.props;
     const {balance, isOpen} = this.state;
@@ -222,10 +242,18 @@ class ConnectWallet extends React.Component {
               <DropDownListContainer>
                 <DropDownList>
                   <ListItem>
+                    <div class="livenow">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                    <NetworkLabel>Connected ( {this.connectedNetwork()} )</NetworkLabel>
+                  </ListItem>
+                  <ListItem hoverable>
                     <HiSwitchHorizontal />
                     <DropdownLabel>Switch Wallet Provider</DropdownLabel>
                   </ListItem>
-                  <ListItem onClick={this.handleExit}>
+                  <ListItem onClick={this.handleExit} hoverable>
                     <BiExit />
                     <DropdownLabel>Exit</DropdownLabel>
                   </ListItem>

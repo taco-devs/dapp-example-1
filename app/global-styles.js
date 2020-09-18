@@ -45,6 +45,61 @@ const GlobalStyle = createGlobalStyle`
       appearance: none;
       margin: 0; 
   }
+
+  .livenow {
+    padding: 2px;
+    height: 20px; 
+    width: 20px;
+  }
+
+  .livenow > div {
+    vertical-align: middle;
+    width: 15px;
+    height: 15px;
+    border-radius: 100%;
+    position: absolute;
+    margin: 0 auto;
+    border:3px solid rgba(0,211,149,1);
+    -webkit-animation: live 1.4s infinite ease-in-out;
+    animation: live 1.4s infinite ease-in-out;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+    &:nth-child(1) {
+      background-color:rgba(0,211,149,0.3);
+      background-color:rgba(0,211,149,1);
+      -webkit-animation-delay: -0.1s;
+      animation-delay: -0.1s;
+    }
+    &:nth-child(2) {
+      -webkit-animation-delay: 0.16s;
+      animation-delay: 0.16s;
+    }
+    &:nth-child(3) {
+      -webkit-animation-delay: 0.42s;
+      animation-delay: 0.42s;
+      border:3px solid rgba(0,211,149,0.5);
+    }
+    &:nth-child(4) {
+      border:3px solid rgba(0,211,149,1);
+      -webkit-animation-delay: -0.42s;
+      animation-delay: -0.42s;
+    }
+  }
+  
+  @-webkit-keyframes live {
+    0%, 80%, 100% { -webkit-transform: scale(0.6) }
+    40% { -webkit-transform: scale(1.0) }
+  }
+  @keyframes live {
+    0%, 80%, 100% { 
+      transform: scale(0.6);
+      -webkit-transform: scale(0.6);
+    } 40% { 
+      transform: scale(1.0);
+      -webkit-transform: scale(1.0);
+    }
+  }
+  
 `;
 
 export default GlobalStyle;
