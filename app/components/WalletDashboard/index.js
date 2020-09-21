@@ -18,6 +18,7 @@ const WalletContainer = styled.div`
   flex: 1;
   margin: 1em;
   border-radius: 5px;
+  min-width: 300px;
 `
 
 const WalletDashboardHeader = styled.div`
@@ -63,9 +64,9 @@ const StatLabel = styled.h3`
 
 class WalletDashboard extends React.Component {
   render () {
-    const {address} = this.props;
+    const {address, isMobileSized} = this.props;
     return (
-      <WalletContainer>
+      <WalletContainer isMobileSized={isMobileSized} >
         <WalletDashboardHeader>
           <FormattedMessage {...messages.balance} />
           <FormattedMessage {...messages.more} />

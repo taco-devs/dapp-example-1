@@ -8,7 +8,8 @@ const Card = styled.div`
     background-color: white;
     border-radius: 5px;
     height: 65px;
-    margin: 0.5em 2em 0.5em 2em;
+    font-size: ${props => props.isMobile ? '0.75em' : '1em'};
+    margin: ${props => props.isMobile ? '0.25em 0 0.25em 0' : '0.5em 2em 0.5em 2em'};
     -webkit-box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
     -moz-box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
     box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
@@ -31,35 +32,37 @@ const CardColumn = styled.div`
 `
 
 const AssetLogo = styled.img`
-    width: 40px;
-    height: 40px;
+    width: ${props => props.isMobile ? '25px' : '40px'};
+    height: ${props => props.isMobile ? '25px' : '40px'};
 `
 
 const PrimaryLabel = styled.p`
     color: #161d6b;
     margin: 0 1em 0 1em;
+    text-align: center;
 `
 
 const SecondaryLabel = styled.p`
     color: #161d6b;
     opacity: 0.75;
     margin: 0 1em 0 1em;
+    text-align: center;
 `
 
 export default class AssetCard extends Component {
 
     render() {
-        const {asset, data} = this.props;
+        const {asset, data, isMobile} = this.props;
         return (
-            <Card>
+            <Card isMobile={isMobile}>
                 <CardColumn
                     direction="row"
                     align="center"
                     justify="flex-start"
                     margin="0 0 0 1em"
                 >
-                    <AssetLogo src={asset.img_url} />
-                    <PrimaryLabel>{asset.g_asset} / {asset.base_asset}</PrimaryLabel>
+                    <AssetLogo src={asset.img_url} isMobile={isMobile} />
+                    <PrimaryLabel>{asset.g_asset} {!isMobile && '/'} {asset.base_asset}</PrimaryLabel>
                 </CardColumn>
                 <CardColumn 
                     direction="column"
@@ -73,22 +76,25 @@ export default class AssetCard extends Component {
                     <PrimaryLabel>{asset.apy_avg} AVG</PrimaryLabel>
                     <SecondaryLabel>{asset.apy_7days} 7D</SecondaryLabel>
                 </CardColumn>
-                <CardColumn 
-                    direction="row"
-                >
-                    <ActionModal 
-                        type="mint"
-                        text="MINT"
-                        data={data}
-                        asset={asset}
-                    />
-                    <ActionModal 
-                        type="redeem"
-                        text="REDEEM"
-                        data={data}
-                        asset={asset}
-                    />
-                </CardColumn>
+                {!isMobile && (
+                    <CardColumn 
+                        direction="row"
+                    >
+                        <ActionModal 
+                            type="mint"
+                            text="MINT"
+                            data={data}
+                            asset={asset}
+                        />
+                        <ActionModal 
+                            type="redeem"
+                            text="REDEEM"
+                            data={data}
+                            asset={asset}
+                        />
+                    </CardColumn>
+                )}
+                
             </Card>
         )
     }

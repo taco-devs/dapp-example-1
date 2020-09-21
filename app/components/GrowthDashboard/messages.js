@@ -11,7 +11,7 @@ export const scope = 'app.components.GrowthDashboard';
 export default defineMessages({
   tvl: {
     id: `${scope}.header`,
-    defaultMessage: 'GROWTH TVL ( $1,237,766.23 )',
+    defaultMessage: '{growth} ( {value} )',
   },
   more: {
     id: `${scope}.header`,

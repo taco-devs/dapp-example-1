@@ -11,6 +11,7 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import styled from 'styled-components';
+import {isMobile} from 'react-device-detect';
 
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
@@ -97,7 +98,13 @@ class GrowthDashboard extends React.Component {
     return (
       <GrowthContainer>
         <GrowthDashboardHeader>
-          <FormattedMessage {...messages.tvl} />
+          <FormattedMessage 
+            {...messages.tvl} 
+            values={{
+              growth: isMobile ? 'TVL' : 'GROWTH TVL', 
+              value: '$1,237,766.23'
+            }}
+          />
           <FormattedMessage {...messages.more} />
         </GrowthDashboardHeader>
         <GrowthDashboardStats>

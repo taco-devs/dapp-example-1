@@ -14,11 +14,13 @@ import styled from 'styled-components';
 
 import WalletDashboard from '../WalletDashboard';
 import GrowthDashboard from '../GrowthDashboard';
+import {isMobile} from 'react-device-detect';
 
 const Container = styled.div`
   display: flex;
   flex-direction: row;
-  height: 25vh;
+  flex-wrap: wrap;
+  height: ${props => props.isMobile ? '100%' : '25vh'};
   width: 100%;
   background-color: rgba(0, 0, 0, .15);
   border-radius: 5px;
@@ -28,9 +30,9 @@ const Container = styled.div`
 class StatsContainer extends React.Component {
   render () {
     return (
-      <Container>
-        <WalletDashboard {...this.props}/>
-        <GrowthDashboard />
+      <Container isMobile={isMobile}>
+        <WalletDashboard {...this.props} />
+        <GrowthDashboard {...this.props} />
       </Container>
     );
   }

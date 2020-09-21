@@ -1,31 +1,65 @@
-import React, { Component } from "react";
+import React from 'react'
 
-export default function withWindowDimensions(WrappedComponent) {
-    return class extends Component {
-        state = { width: 0, height: 0 };
-
-        componentDidMount() {
-            this.updateWindowDimensions();
-            window.addEventListener("resize", this.updateWindowDimensions);
-        }
-
-        componentWillUnmount() {
-            window.removeEventListener("resize", this.updateWindowDimensions);
-        }
-
-        updateWindowDimensions = () => {
-            this.setState({ width: window.innerWidth, height: window.innerHeight });
-        };
-
-        render() {
-            return (
-                <WrappedComponent
-                    {...this.props}
-                    windowWidth={this.state.width}
-                    windowHeight={this.state.height}
-                    isMobileSized={this.state.width < 700}
-                />
-            );
-        }
-    };
+function defaultGetWidth () {
+  return window.innerWidth;
 }
+
+function defaultGetHeight () {
+  return window.innerHeight;
+}
+
+
+export function withWindowDimensions({ getHeight,  getWidth } = {}) {
+  return (ComposedComponent) => {
+    if(!getHeight) getHeight = defaultGetHeight;
+    if(!getWidth) getWidth = defaultGetWidth;
+
+    return class DimensionsHOC extends React.Component {
+
+      constructor(props){
+        super(props)
+        this.state = {}
+        this.onResize = this.onResize.bind(this);
+        this.updateDimensions = this.updateDimensions.bind(this);
+      }
+
+      updateDimensions(){
+        this.setState({
+          windowWidth: getWidth(),
+          windowHeight: getHeight()
+        })
+      }
+
+      onResize (){
+        if (this.rqf) return
+        if( typeof window !== 'undefined' )
+          this.rqf = window.requestAnimationFrame(() => {
+            this.rqf = null
+            this.updateDimensions()
+          })
+      }
+
+      componentDidMount () {
+        this.updateDimensions()
+        if( typeof window !== 'undefined' )
+          window.addEventListener('resize', this.onResize, false)
+      }
+
+      componentWillUnmount () {
+        if( typeof window !== 'undefined' )
+          window.removeEventListener('resize', this.onResize)
+      }
+
+      render () {
+        return (
+          <span>
+            {(this.state.windowWidth || this.state.windowHeight) &&
+              <ComposedComponent {...this.state} {...this.props} updateDimensions={this.updateDimensions}/>}
+          </span>
+        )
+      }
+    }
+  }
+}
+
+export const withWindowDimensionsDOM = withWindowDimensions();

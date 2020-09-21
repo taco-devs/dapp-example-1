@@ -14,6 +14,7 @@ import { compose } from 'redux';
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
 import { makeSelectPagination, makeSelectSearch } from './selectors';
+import {isMobile} from 'react-device-detect';
 import reducer from './reducer';
 import saga from './saga';
 import messages from './messages';
@@ -25,7 +26,7 @@ import { changePage, searchAssets } from './actions';
 const Invest = styled.div`
   display: flex;
   flex-direction: column;
-  margin: 0 1em 0 1em;
+  margin: ${props => props.isMobile ? '0 0.5em 0 0.5em' : '0 1em 0 1em;'}
 `
 
 const InvestContainer = styled.div`
@@ -51,14 +52,16 @@ class InvestPage extends React.Component {
     const Network = NetworkData[network_id];
     const assets = this.assetKeys(Network);
     return (
-      <Invest>
+      <Invest isMobile={isMobile}>
         <InvestHeader 
           {...this.props} 
+          isMobile={isMobile}
           assets={assets}
         />
         <InvestContainer>
           <AssetList 
             {...this.props}
+            isMobile={isMobile}
             assets={assets}
             Network={Network}
           />

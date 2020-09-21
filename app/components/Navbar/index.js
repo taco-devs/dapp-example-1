@@ -14,6 +14,7 @@ import styled from 'styled-components';
 import { BiLineChart, BiTransfer } from 'react-icons/bi';
 import { FaVoteYea } from 'react-icons/fa';
 import { MdAccountBalanceWallet } from 'react-icons/md';
+import {isMobile} from 'react-device-detect';
 
 const NavbarContainer = styled.div`
   display: flex;
@@ -24,6 +25,8 @@ const NavbarContainer = styled.div`
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: white;
+  ${props => props.isMobile && 'visibility: hidden; height: 0; margin: 0;'}
+  
 `
 
 const NavbarTab = styled.div`
@@ -82,7 +85,9 @@ class Navbar extends React.Component {
   render () {
     const {active} = this.state;
      return ( 
-      <NavbarContainer>
+      <NavbarContainer
+        isMobile={isMobile}
+      >
         <StyledLink to="/">
           <NavbarTab 
             active={active === '/'}

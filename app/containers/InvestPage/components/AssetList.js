@@ -8,14 +8,14 @@ const AssetContainer = styled.div`
     display: flex;
     flex-direction: column;
     flex: 1;
-    padding: 1em 0 1em 0;
+    padding: ${props => props.isMobile ? '0' : '1em 0 1em 0'} ;
 `
 
 const AssetHeader = styled.div`
     display: flex;
     flex-direction: row;
     color: white;
-    margin: 0 2em 0em 2em;
+    margin: ${props => props.isMobile ? '0' : '0 2em 0 2em'};
     font-size: 0.80em;
 `
 
@@ -43,13 +43,14 @@ export default class AssetList extends Component {
                     return `g${asset_key}`.toUpperCase().indexOf(search.toUpperCase()) > -1;
                 })
                 .slice(slice_start, slice_end);
-        return page_assets.map(asset_key => <AssetCard asset={Network.available_assets[asset_key]} />)
+        return page_assets.map(asset_key => <AssetCard  {...this.props} asset={Network.available_assets[asset_key]} />)
     }
 
     render() {
+        const {isMobile} = this.props;
         return (
-            <AssetContainer>
-                <AssetHeader>
+            <AssetContainer isMobile={isMobile}>
+                <AssetHeader isMobile={isMobile}>
                     <AssetHeaderColumn margin="0 0 0 1em">
                         <p>ASSET</p>
                     </AssetHeaderColumn>
@@ -59,9 +60,11 @@ export default class AssetList extends Component {
                     <AssetHeaderColumn>
                         <p>APY</p>
                     </AssetHeaderColumn>
-                    <AssetHeaderColumn>
-                        <p>ACTIONS</p>
-                    </AssetHeaderColumn>
+                    {!isMobile && (
+                        <AssetHeaderColumn>
+                            <p>ACTIONS</p>
+                        </AssetHeaderColumn>
+                    )}
                 </AssetHeader>
                 {this.showAvailableAssets()}
             </AssetContainer>     

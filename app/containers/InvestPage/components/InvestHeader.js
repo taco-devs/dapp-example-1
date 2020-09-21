@@ -6,19 +6,23 @@ const InvestHeaderRow = styled.div`
     display: flex;
     flex-direction: row;
     margin: 1em 0 0.5em 0;
+    flex: 1;
+    width: 100%;
     justify-content: space-between;
+    font-size: ${props => props.isMobile ? '0.8em' : '1em'};
 `
 
 const InvestHeaderColumn = styled.div`
     display: flex;
     flex-direction: column;
+    flex: ${props => props.flex || '1'};
 `
 
 const SearchContainer = styled.div`
     display: flex;
     flex-direction: row;
     align-items: center;
-    width: 350px;
+    width: ${props => props.isMobile ? '100%' : '350px'};
     color: white;
     background-color: rgba(255, 255, 255, .05);
     height: 40px;
@@ -38,7 +42,9 @@ const StyledSearchBox = styled.input`
 const PaginationButtons = styled.div`
     display: flex;
     flex-direction: row;
-    width: 150px;
+    width: 100%;
+    justify-content: flex-end;
+
     color: white;
     height: 40px;
     align-items: center;
@@ -107,12 +113,12 @@ export default class InvestHeader extends Component {
     }
 
     render() {
-        const {search} = this.props;
+        const {search, isMobile} = this.props;
         return (
-            <InvestHeaderRow>
-                <InvestHeaderColumn>
-                    <SearchContainer>
-                        <BsSearch style={{margin: '0 15px 0 15px'}} />
+            <InvestHeaderRow isMobile={isMobile}>
+                <InvestHeaderColumn flex={isMobile ? 2.5 : 1}>
+                    <SearchContainer isMobile={isMobile}>
+                        <BsSearch style={{margin: isMobile ? '0 8px 0 8px' : '0 15px 0 15px'}} />
                         <StyledSearchBox 
                             placeholder="FILTER BY TOKEN, PROTOCOL OR POOL"
                             value={search}
@@ -120,11 +126,11 @@ export default class InvestHeader extends Component {
                         />
                     </SearchContainer>
                 </InvestHeaderColumn>
-                <InvestHeaderColumn>
+                <InvestHeaderColumn flex={1}>
                     <PaginationButtons>
-                        <BsArrowLeftShort class="hover-item" size="1.5em" style={{margin: '0 15px 0 0'}} onClick={() => this.handlePagination('back')} />
+                        <BsArrowLeftShort class="hover-item" size="1.5em" style={{margin: isMobile ? '0 5px 0 0' : '0 15px 0 0'}} onClick={() => this.handlePagination('back')} />
                         <p>{this.showPagination()}</p>
-                        <BsArrowRightShort class="hover-item" size="1.5em" style={{margin: '0 0 0 15px'}} onClick={() => this.handlePagination('forward')} />
+                        <BsArrowRightShort class="hover-item" size="1.5em" style={{margin: isMobile ? '0 0 0 5px' : '0 0 0 15px'}} onClick={() => this.handlePagination('forward')} />
                     </PaginationButtons>
                 </InvestHeaderColumn>
             </InvestHeaderRow>
