@@ -510,7 +510,7 @@ class ActionModal extends React.Component {
                 {modal_type === 'redeem' && <PrimaryLabel> {Math.round(this.calculateBurningFee() * 100) / 100} {asset.native}  ({(asset.burning_fee * 100).toFixed(2)}%)</PrimaryLabel>}   
               </SummaryColumn>
             </SummaryRow>
-            {modal_type === 'redeem' && is_native && (
+            {is_native && (
               <SummaryRow>
                 <SummaryColumn>
                   <SummaryRow>
