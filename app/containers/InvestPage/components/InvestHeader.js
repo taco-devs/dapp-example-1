@@ -37,6 +37,7 @@ const StyledSearchBox = styled.input`
     color: white;
     outline: none;
     font-size: 0.85em;
+    space: nowrap;
 `
 
 const PaginationButtons = styled.div`
