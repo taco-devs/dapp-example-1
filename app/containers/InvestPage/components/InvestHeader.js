@@ -122,7 +122,7 @@ export default class InvestHeader extends Component {
                     <SearchContainer isMobile={isMobile}>
                         <BsSearch style={{margin: isMobile ? '0 8px 0 8px' : '0 15px 0 15px'}} />
                         <StyledSearchBox 
-                            placeholder="FILTER BY TOKEN, PROTOCOL OR POOL"
+                            placeholder={isMobile ? "FILTER ASSETS" : "FILTER BY TOKEN, PROTOCOL OR POOL"}
                             value={search}
                             onChange={(e) => this.handleSearch(e.target.value)}
                         />

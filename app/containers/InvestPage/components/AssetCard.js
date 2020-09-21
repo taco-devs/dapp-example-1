@@ -33,7 +33,7 @@ const CardColumn = styled.div`
 
 const AssetLogo = styled.img`
     width: ${props => props.isMobile ? '25px' : '40px'};
-    height: ${props => props.isMobile ? '25px' : '40px'};
+    height: auto;
 `
 
 const PrimaryLabel = styled.p`

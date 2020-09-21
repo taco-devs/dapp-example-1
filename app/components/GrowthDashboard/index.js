@@ -19,46 +19,46 @@ import {
 
 const data = [
   {
-    name: 'Page A', uv: 0, pv: 2400, amt: 2400,
+    name: 'SEPT 01', uv: 0, pv: 2400, amt: 2400,
   },
   {
-    name: 'Page B', uv: 2, pv: 1398, amt: 2210,
+    name: 'SEPT 03', uv: 200000, pv: 1398, amt: 2210,
   },
   {
-    name: 'Page C', uv: 4, pv: 9800, amt: 2290,
+    name: 'SEPT 05', uv: 400000, pv: 9800, amt: 2290,
   },
   {
-    name: 'Page D', uv: 8, pv: 3908, amt: 2000,
+    name: 'SEPT 07', uv: 800000, pv: 3908, amt: 2000,
   },
   {
-    name: 'Page E', uv: 10, pv: 4800, amt: 2181,
+    name: 'SEPT 08', uv: 1000000, pv: 4800, amt: 2181,
   },
   {
-    name: 'Page F', uv: 16, pv: 3800, amt: 2500,
+    name: 'SEPT 09', uv: 1600000, pv: 3800, amt: 2500,
   },
   {
-    name: 'Page G', uv: 30, pv: 4300, amt: 2100,
+    name: 'SEPT 11', uv: 3000000, pv: 4300, amt: 2100,
   },
   {
-    name: 'Page A', uv: 18, pv: 4500, amt: 2400,
+    name: 'SEPT 13', uv: 1800000, pv: 4500, amt: 2400,
   },
   {
-    name: 'Page B', uv: 20, pv: 4700, amt: 2210,
+    name: 'SEPT 15', uv: 2000000, pv: 4700, amt: 2210,
   },
   {
-    name: 'Page C', uv: 25, pv: 5000, amt: 2290,
+    name: 'SEPT 17', uv: 2500000, pv: 5000, amt: 2290,
   },
   {
-    name: 'Page D', uv: 32, pv: 4600, amt: 2000,
+    name: 'SEPT 01', uv: 3200000, pv: 4600, amt: 2000,
   },
   {
-    name: 'Page E', uv: 45, pv: 4800, amt: 2181,
+    name: 'SEPT 01', uv: 4500000, pv: 4800, amt: 2181,
   },
   {
-    name: 'Page F', uv: 40, pv: 4000, amt: 2500,
+    name: 'SEPT 01', uv: 4000000, pv: 4000, amt: 2500,
   },
   {
-    name: 'Page G', uv: 30, pv: 6000, amt: 2100,
+    name: 'SEPT 01', uv: 3000000, pv: 6000, amt: 2100,
   },
 ];
 
@@ -93,6 +93,28 @@ const GrowthDashboardStats = styled.div`
   box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
 `
 
+const StyledTooltip = styled.div`
+  background: rgb(22,29,107);
+  border-radius: 5px;
+  padding: 0 1em 0 1em;
+  color: white;
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgb(22,29,107);
+`
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active) {
+    return (
+      <StyledTooltip>
+        <p className="label">{`${data[label].name} - $${payload[0].value.toLocaleString('En-en')} USD`}</p>
+      </StyledTooltip>
+    );
+  }
+
+  return null;
+};
+
 class GrowthDashboard extends React.Component {
   render () {
     return (
@@ -120,7 +142,7 @@ class GrowthDashboard extends React.Component {
                 {/* <CartesianGrid strokeDasharray="3 3" /> */}
                 {/* <XAxis dataKey="name" />
                 <YAxis /> */}
-                <Tooltip />
+                <Tooltip content={<CustomTooltip />}/>
                 <Area type="monotone" dataKey="uv" stroke="#161d6b" fill="#00d395" />
               </AreaChart>
             </ResponsiveContainer>
