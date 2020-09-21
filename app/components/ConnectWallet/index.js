@@ -26,6 +26,7 @@ const ConnectButton = styled.div`
   border-style: solid;
   color: white;
   padding: 0.5em 1em 0.5em 1em;
+  font-size: ${props => props.isMobile ? '0.80em' : '1em'};
 
   &:hover {
     cursor: pointer;
@@ -217,7 +218,7 @@ class ConnectWallet extends React.Component {
   }
 
   render () {
-    const {address, GrowTokenInstance} = this.props;
+    const {address, GrowTokenInstance, isMobile} = this.props;
     const {balance, isOpen} = this.state;
 
     if (GrowTokenInstance && !balance) {
@@ -263,7 +264,10 @@ class ConnectWallet extends React.Component {
           </DropDownContainer>
           
         ) : (
-          <ConnectButton onClick={this.handleToggleModal}>
+          <ConnectButton 
+            isMobile={isMobile}
+            onClick={this.handleToggleModal}
+          >
             <FormattedMessage {...messages.header} />
           </ConnectButton>
         )}

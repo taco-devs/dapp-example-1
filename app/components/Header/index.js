@@ -47,20 +47,23 @@ const Burger = styled.a`
 class Header extends React.Component {
 
   render () {
+    const {address} = this.props;
     return (
       <StyledHeader>
           <StyledLogo 
             src="https://growthdefi.com/img/logo.png" 
             isMobile={isMobile}
           />
-          {isMobile ? (  
+          {address && isMobile ? (  
             <Burger>
               <GiHamburgerMenu size="1.5em"/>
             </Burger>
           ) : (
-            <ConnectWallet {...this.props}/>
+            <ConnectWallet 
+            {...this.props}
+              isMobile={isMobile}
+            />
           )}
-          
       </StyledHeader>
     )
   }
