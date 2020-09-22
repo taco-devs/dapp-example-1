@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import ActionModal from 'components/ActionModal';
+import ActionDrawer from 'components/ActionDrawer';
 
 const Card = styled.div`
     display: flex;
@@ -51,51 +52,97 @@ const SecondaryLabel = styled.p`
 
 export default class AssetCard extends Component {
 
+    state = {
+        isMobileDrawerOpen: false,
+    }
+
+    toggleMobileDrawer = () => {
+        this.setState({isMobileDrawerOpen: !this.state.isMobileDrawerOpen});
+    }
+
     render() {
         const {asset, data, isMobile} = this.props;
+        const {isMobileDrawerOpen} = this.state;
         return (
-            <Card isMobile={isMobile}>
-                <CardColumn
-                    direction="row"
-                    align="center"
-                    justify="flex-start"
-                    margin="0 0 0 1em"
-                >
-                    <AssetLogo src={asset.img_url} isMobile={isMobile} />
-                    <PrimaryLabel>{asset.g_asset} {!isMobile && '/'} {asset.base_asset}</PrimaryLabel>
-                </CardColumn>
-                <CardColumn 
-                    direction="column"
-                >
-                    <PrimaryLabel>{asset.tvl}</PrimaryLabel>
-                    <SecondaryLabel>{asset.total_supply.toLocaleString('En-en')} {asset.g_asset}</SecondaryLabel>
-                </CardColumn>
-                <CardColumn 
-                    direction="column"
-                >
-                    <PrimaryLabel>{asset.apy_avg} AVG</PrimaryLabel>
-                    <SecondaryLabel>{asset.apy_7days} 7D</SecondaryLabel>
-                </CardColumn>
-                {!isMobile && (
-                    <CardColumn 
-                        direction="row"
+            <React.Fragment>
+                {isMobile ? (
+                    <ActionDrawer
+                        type="mint"
+                        text="MINT"
+                        data={data}
+                        asset={asset}
+                        toggleMobileDrawer={this.toggleMobileDrawer}
+                        isMobileDrawerOpen={isMobileDrawerOpen}
                     >
-                        <ActionModal 
-                            type="mint"
-                            text="MINT"
-                            data={data}
-                            asset={asset}
-                        />
-                        <ActionModal 
-                            type="redeem"
-                            text="REDEEM"
-                            data={data}
-                            asset={asset}
-                        />
-                    </CardColumn>
+                        <Card 
+                            isMobile={isMobile}
+                            onClick={this.toggleMobileDrawer}
+                        >
+                            <CardColumn
+                                direction="row"
+                                align="center"
+                                justify="flex-start"
+                                margin="0 0 0 1em"
+                            >
+                                <AssetLogo src={asset.img_url} isMobile={isMobile} />
+                                <PrimaryLabel>{asset.g_asset} {!isMobile && '/'} {asset.base_asset}</PrimaryLabel>
+                            </CardColumn>
+                            <CardColumn 
+                                direction="column"
+                            >
+                                <PrimaryLabel>{asset.tvl}</PrimaryLabel>
+                                <SecondaryLabel>{asset.total_supply.toLocaleString('En-en')} {asset.g_asset}</SecondaryLabel>
+                            </CardColumn>
+                            <CardColumn 
+                                direction="column"
+                            >
+                                <PrimaryLabel>{asset.apy_avg} AVG</PrimaryLabel>
+                                <SecondaryLabel>{asset.apy_7days} 7D</SecondaryLabel>
+                            </CardColumn>
+                        </Card>
+                    </ActionDrawer>
+                ) : (
+                    <Card isMobile={isMobile}>
+                        <CardColumn
+                            direction="row"
+                            align="center"
+                            justify="flex-start"
+                            margin="0 0 0 1em"
+                        >
+                            <AssetLogo src={asset.img_url} isMobile={isMobile} />
+                            <PrimaryLabel>{asset.g_asset} {!isMobile && '/'} {asset.base_asset}</PrimaryLabel>
+                        </CardColumn>
+                        <CardColumn 
+                            direction="column"
+                        >
+                            <PrimaryLabel>{asset.tvl}</PrimaryLabel>
+                            <SecondaryLabel>{asset.total_supply.toLocaleString('En-en')} {asset.g_asset}</SecondaryLabel>
+                        </CardColumn>
+                        <CardColumn 
+                            direction="column"
+                        >
+                            <PrimaryLabel>{asset.apy_avg} AVG</PrimaryLabel>
+                            <SecondaryLabel>{asset.apy_7days} 7D</SecondaryLabel>
+                        </CardColumn>
+                        <CardColumn 
+                            direction="row"
+                        >
+                            <ActionModal 
+                                type="mint"
+                                text="MINT"
+                                data={data}
+                                asset={asset}
+                            />
+                            <ActionModal 
+                                type="redeem"
+                                text="REDEEM"
+                                data={data}
+                                asset={asset}
+                            />
+                        </CardColumn>
+                    </Card>
                 )}
-                
-            </Card>
+            </React.Fragment>
         )
     }
 }
