@@ -16,4 +16,20 @@ export default defineMessages({
     id: `${scope}.features`,
     defaultMessage: 'Features',
   },
+  invest: {
+    id: `${scope}.invest`,
+    defaultMessage: 'INVEST',
+  },
+  vote: {
+    id: `${scope}.vote`,
+    defaultMessage: 'VOTE',
+  },
+  transactions: {
+    id: `${scope}.transactions`,
+    defaultMessage: 'TRANSACTIONS',
+  },
+  balance: {
+    id: `${scope}.balance`,
+    defaultMessage: 'BALANCE',
+  },
 });

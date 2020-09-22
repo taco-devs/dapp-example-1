@@ -1,7 +1,13 @@
 import React, { Component } from 'react';
 import * as Drawer from '@accessible/drawer'
+import { FormattedMessage } from 'react-intl';
+import messages from './messages';
 import styled from 'styled-components';
 import {GiHamburgerMenu} from 'react-icons/gi'
+import { BiLineChart, BiTransfer } from 'react-icons/bi';
+import { FaVoteYea } from 'react-icons/fa';
+import { MdAccountBalanceWallet } from 'react-icons/md';
+import {Link} from 'react-router-dom';
 
 
 const Burger = styled.a`
@@ -40,9 +46,93 @@ const StyledDrawerContainer = styled.div`
   box-shadow: -5px 0px 10px 0px rgba(0,0,0,0.75);
   height: 100vh;
   z-index: 121;
+  padding: 2em 1em 1em 1em;
+`
+
+const WalletContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  border-radius: 5px;
+  background-color: white;
+  width: 100%;
+  -webkit-box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
+  -moz-box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
+  box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
+  font-size: 0.75em;
 `
 
 
+const BalanceContainer = styled.div`
+  display: flex;
+  flex: 1.25;
+  flex-direction: row;
+  justify-content: center;
+  background-color: white;
+  border-radius: 5px;
+  color: black;
+  padding: 0.5em 1em 0.5em 1em;
+`
+
+const AddressContainer = styled.div`
+  display: flex;
+  flex: 1.25;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #00d395;
+  border-radius: 5px;
+  color: white;
+  padding: 0.5em 1em 0.5em 1em;
+  -webkit-box-shadow: -5px -1px 5px -1px rgba(0,0,0,0.75);
+  -moz-box-shadow: -5px -1px 5px -1px rgba(0,0,0,0.75);
+  box-shadow: -5px -1px 5px -1px rgba(0,0,0,0.75);
+
+  &:hover {
+    cursor: pointer;
+    opacity: 0.9;
+  }
+`
+
+const Menu = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin: 1.5em 0 0 0;
+`
+
+const MenuTab = styled.div`
+  display: flex;
+  flex-direction: row;
+  min-width: 120px;
+  justify-content: center;
+  align-items: center;
+  margin: 1em 0 1em 0;
+  padding: 0.5em 0 0.5em 0;
+  border-radius: 5px;
+  ${props => props.active && `
+    background-color: #00d395;
+    -webkit-box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
+    box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
+  `}
+  -moz-transition: background-color 0.15s linear;
+  -webkit-transition: background-color 0.15s linear;
+  -o-transition: background-color 0.15s linear;
+  transition: background-color 0.15s linear;
+
+  &:hover {
+    cursor: pointer;
+    opacity: ${props => !props.active && '0.65'};
+  }
+`
+
+const StyledMessage = styled.div`
+  margin: 0 1em 0 1em;
+`
+
+const StyledLink = styled(Link)`
+  text-decoration: none;
+  color: white;
+`
 
 export default class MenuDrawer extends Component {
 
@@ -53,8 +143,20 @@ export default class MenuDrawer extends Component {
     }
 
     state = {
-        open: false
+        open: false,
+        active: '/'
     }
+
+    // Detect the active key depending on the route
+    componentDidMount = () => {
+        const {pathname} = window.location;
+        this.setState({active: pathname});
+    }
+
+    selectActive = (active) => {
+        this.setState({active});
+    }
+
 
     componentDidMount() {
         document.addEventListener('mousedown', this.handleClickOutside);
@@ -65,7 +167,6 @@ export default class MenuDrawer extends Component {
     }
 
     handleClickOutside = (event) => {
-        console.log(this.containerRef)
         if (this.containerRef && !this.containerRef.current.contains(event.target)) {
             this.setState({open: false});
         }
@@ -76,8 +177,27 @@ export default class MenuDrawer extends Component {
         this.setState({open: !this.state.open});
     }
 
+    parseAddress = (address) => {
+        const front_tail = address.substring(0,5);
+        const end_tail = address.substring(address.length - 5, address.length);
+        return `${front_tail}...${end_tail}`; 
+    }
+
+    getBalance = async (GrowTokenInstance) => {
+        const {address} = this.props;
+        const GROBalance = await GrowTokenInstance.methods.balanceOf(address).call();
+        const balance = (GROBalance / 1e18).toLocaleString('En-en');
+        this.setState({balance});
+      }
+
     render() {
-        const {open} = this.state;
+        const {address, GrowTokenInstance} = this.props;
+        const {open, balance, active} = this.state;
+
+        if (GrowTokenInstance && !balance) {
+            this.getBalance(GrowTokenInstance);
+        }
+      
         return (
             <div ref={this.containerRef}>
                 <Drawer.Drawer 
@@ -100,7 +220,60 @@ export default class MenuDrawer extends Component {
                                 onClick={() => this.toggle()}
                             />
                             <StyledDrawerContainer>
-
+                                <WalletContainer>
+                                    <BalanceContainer>
+                                        {balance && `${balance} GRO`}
+                                    </BalanceContainer>
+                                    <AddressContainer>
+                                        {address && this.parseAddress(address)}
+                                    </AddressContainer>
+                                </WalletContainer>
+                                <Menu>
+                                    <StyledLink to="/">
+                                        <MenuTab 
+                                            active={active === '/'}
+                                            onClick={() => this.selectActive('/')}
+                                        >
+                                            <BiLineChart />
+                                            <StyledMessage>
+                                            <FormattedMessage {...messages.invest} />
+                                            </StyledMessage>
+                                        </MenuTab>
+                                    </StyledLink>
+                                    <StyledLink to="/vote">
+                                        <MenuTab
+                                            active={active === '/vote'}
+                                            onClick={() => this.selectActive('/vote')}
+                                        >
+                                            <FaVoteYea />
+                                            <StyledMessage>
+                                            <FormattedMessage {...messages.vote} />
+                                            </StyledMessage>
+                                        </MenuTab>
+                                        </StyledLink>
+                                        <StyledLink to="/transactions">
+                                        <MenuTab
+                                            active={active === '/transactions'}
+                                            onClick={() => this.selectActive('/transactions')}
+                                        >
+                                            <BiTransfer />
+                                            <StyledMessage>
+                                            <FormattedMessage {...messages.transactions} />
+                                            </StyledMessage>
+                                        </MenuTab>
+                                        </StyledLink>
+                                        <StyledLink to="/balance">
+                                        <MenuTab
+                                            active={active === '/balance'}
+                                            onClick={() => this.selectActive('/balance')}
+                                        >
+                                            <MdAccountBalanceWallet />
+                                            <StyledMessage>
+                                            <FormattedMessage {...messages.balance} />
+                                            </StyledMessage>
+                                        </MenuTab>
+                                    </StyledLink>
+                                </Menu>
                             </StyledDrawerContainer>
                         </MaskContainer>
                     </Drawer.Target>

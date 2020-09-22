@@ -36,14 +36,6 @@ const StyledLogo = styled.img`
   }
 `
 
-const Burger = styled.a`
-  color: white;
-
-  &:hover {
-    cursor: pointer;
-    color: #00d395;
-  }
-`
 
 class Header extends React.Component {
 
@@ -56,10 +48,12 @@ class Header extends React.Component {
             isMobile={isMobile}
           />
           {address && isMobile ? (  
-              <MenuDrawer />
+              <MenuDrawer 
+                {...this.props}
+              />
           ) : (
             <ConnectWallet 
-            {...this.props}
+              {...this.props}
               isMobile={isMobile}
             />
           )}
