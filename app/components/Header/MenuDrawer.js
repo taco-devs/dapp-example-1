@@ -7,6 +7,7 @@ import {GiHamburgerMenu} from 'react-icons/gi'
 import { BiLineChart, BiTransfer } from 'react-icons/bi';
 import { FaVoteYea } from 'react-icons/fa';
 import { MdAccountBalanceWallet } from 'react-icons/md';
+import { RiSettings3Fill } from 'react-icons/ri';
 import {Link} from 'react-router-dom';
 
 
@@ -96,7 +97,7 @@ const AddressContainer = styled.div`
 const Menu = styled.div`
   display: flex;
   flex-direction: column;
-  margin: 1.5em 0 0 0;
+  margin: 0 0 0 0;
 `
 
 const MenuTab = styled.div`
@@ -132,6 +133,35 @@ const StyledMessage = styled.div`
 const StyledLink = styled(Link)`
   text-decoration: none;
   color: white;
+`
+
+const NetworkLabel = styled.p`
+  margin: 0 0 0 5px;
+  font-size: 0.7em;
+  color: #00d395;
+`
+
+const NetworkRow = styled.div`
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 0 10px 0;
+`
+
+const NetworkColumn = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 0 0 10px 0;
+`
+
+const Divider = styled.div`
+  height: 2px;
+  background-color: white;
+  width: 100%;
+  margin: 1em 0 1em 0;
 `
 
 export default class MenuDrawer extends Component {
@@ -190,6 +220,19 @@ export default class MenuDrawer extends Component {
         this.setState({balance});
       }
 
+    connectedNetwork = () => {
+        const {network_id} = this.props;
+        if (!network_id) return '-';
+    
+        if (network_id === 'eth') return 'Mainnet';
+        if (network_id === 'ropsten') return 'Ropsten';
+        if (network_id === 'kovan') return 'Kovan';
+        if (network_id === 'rinkeby') return 'Rinkeby';
+    
+        return network_id;
+    }
+    
+
     render() {
         const {address, GrowTokenInstance} = this.props;
         const {open, balance, active} = this.state;
@@ -220,6 +263,19 @@ export default class MenuDrawer extends Component {
                                 onClick={() => this.toggle()}
                             />
                             <StyledDrawerContainer>
+                                <NetworkRow>
+                                    <NetworkColumn>
+                                        <div class="livenow">
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                        </div>
+                                        <NetworkLabel>Connected ( {this.connectedNetwork()} )</NetworkLabel>
+                                    </NetworkColumn>
+                                    <NetworkColumn>
+                                        <RiSettings3Fill size="1.5em" style={{color: 'white'}} />
+                                    </NetworkColumn>
+                                </NetworkRow>
                                 <WalletContainer>
                                     <BalanceContainer>
                                         {balance && `${balance} GRO`}
@@ -228,6 +284,7 @@ export default class MenuDrawer extends Component {
                                         {address && this.parseAddress(address)}
                                     </AddressContainer>
                                 </WalletContainer>
+                                <Divider />
                                 <Menu>
                                     <StyledLink to="/">
                                         <MenuTab 
