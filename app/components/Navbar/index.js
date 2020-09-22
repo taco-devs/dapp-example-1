@@ -32,6 +32,8 @@ const NavbarContainer = styled.div`
 const NavbarTab = styled.div`
   display: flex;
   flex-direction: row;
+  outline: none;
+  box-shadow: none;
   min-width: 120px;
   justify-content: space-around;
   align-items: center;
@@ -59,11 +61,15 @@ const NavbarTab = styled.div`
 
 const StyledMessage = styled.div`
   margin: 0 1em 0 1em;
+  outline: none;
+  box-shadow: none;
 `
 
 const StyledLink = styled(Link)`
   text-decoration: none;
   color: white;
+  outline: none;
+  box-shadow: none;
 `
 
 class Navbar extends React.Component {
