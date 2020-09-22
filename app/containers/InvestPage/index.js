@@ -49,7 +49,7 @@ class InvestPage extends React.Component {
 
   render () {
     const {network_id} = this.props;
-    const Network = NetworkData[network_id];
+    const Network = network_id ? NetworkData[network_id] : NetworkData['eth'];
     const assets = this.assetKeys(Network);
     return (
       <Invest isMobile={isMobile}>

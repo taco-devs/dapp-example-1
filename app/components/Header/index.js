@@ -10,7 +10,8 @@ import Banner from './banner.jpg';
 import messages from './messages';
 import ConnectWallet from '../ConnectWallet';
 import {GiHamburgerMenu} from 'react-icons/gi'
-import {withWindowDimensions} from '../../utils/withWindowDimensions.js';
+import * as Drawer from '@accessible/drawer'
+import MenuDrawer from './MenuDrawer';
 
 import styled from 'styled-components';
 
@@ -55,9 +56,7 @@ class Header extends React.Component {
             isMobile={isMobile}
           />
           {address && isMobile ? (  
-            <Burger>
-              <GiHamburgerMenu size="1.5em"/>
-            </Burger>
+              <MenuDrawer />
           ) : (
             <ConnectWallet 
             {...this.props}
