@@ -122,7 +122,10 @@ export default class AssetCard extends Component {
                     <Card 
                         isMobile={isMobile}
                         isOpen={currentOpenExtension === asset_key}
-                        onClick={() => this.handleToggleExtension(asset_key)}
+                        onClick={(e) => {
+                            e.stopPropagation()
+                            this.handleToggleExtension(asset_key)
+                        }}
                     >
                         <CardRow>
                             <CardColumn

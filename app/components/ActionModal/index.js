@@ -393,37 +393,57 @@ class ActionModal extends React.Component {
     const {type, asset} = this.props;
     const {show, modal_type, value, is_native} = this.state;
     return (
-      <React.Fragment>
+      <div
+        onClick={(e) => {
+          e.stopPropagation();
+          this.toggleModal()
+        }}
+      >
         <ActionButton
           type={type}
-          onClick={() => this.toggleModal()}
+          onClick={(e) => {
+            e.stopPropagation();
+            this.toggleModal()
+          }}
         >
           {this.props.text}
         </ActionButton>
         <Modal
           isOpen={show}
           // onAfterOpen={afterOpenModal}
-          onRequestClose={() => this.toggleModal(type)}
+          onRequestClose={(e) => {
+            this.toggleModal(type);
+          }}
           style={customStyles}
           contentLabel="Example Modal"
         >
-          <ModalHeader>
+          <ModalHeader 
+            onClick={e => e.stopPropagation()}
+          >
             <ModalHeaderOption
               active={modal_type === 'mint'}
               defaultColor="#00d395"
-              onClick={() => this.changeType('mint')} 
+              onClick={(e) => {
+                e.stopPropagation();
+                this.changeType('mint')
+              }} 
             >
               <p>MINT</p>
             </ModalHeaderOption>
             <ModalHeaderOption
               active={modal_type === 'redeem'}
               defaultColor="#161d6b"
-              onClick={() => this.changeType('redeem')} 
+              onClick={(e) => {
+                e.stopPropagation();
+                this.changeType('redeem')
+              }} 
             >
               <p>REDEEM</p>
             </ModalHeaderOption>
           </ModalHeader>
-          <InputContainer>
+          <InputContainer
+            onClick={e => e.stopPropagation()}
+          >
             <InputSection>
               <InputSectionColumn
                 flex="2"
@@ -435,7 +455,10 @@ class ActionModal extends React.Component {
                       value={value}
                       placeholder="0.0"
                       type="number"
-                      onChange={e => this.handleInputChange(e.target.value)}
+                      onClick={e => e.stopPropagation()}
+                      onChange={e => {
+                        this.handleInputChange(e.target.value)
+                      }}
                     />
                   </AmountInput>
                   <MaxButton
@@ -457,8 +480,10 @@ class ActionModal extends React.Component {
               </InputSectionColumn>
             </InputSection>            
           </InputContainer>
-          <AssetTypeToggle>
-            <SwitchBox modal_type={modal_type}>
+          <AssetTypeToggle
+            onClick={e => e.stopPropagation()}
+          >
+            <SwitchBox modal_type={modal_type} onClick={e => e.stopPropagation()}>
               <input type="checkbox" />
               <SwitchSlider className="slider" modal_type={modal_type} onClick={() => this.toggleNativeSelector()}>
                 <SwitchLabel is_native={is_native} modal_type={modal_type}>
@@ -470,7 +495,9 @@ class ActionModal extends React.Component {
               </SwitchSlider>
             </SwitchBox>
           </AssetTypeToggle>
-          <Summary>
+          <Summary
+            onClick={e => e.stopPropagation()}
+          >
             <SummaryRow>
               <SummaryColumn>
                 <PrimaryLabel>PRICE</PrimaryLabel>
@@ -544,7 +571,7 @@ class ActionModal extends React.Component {
             </SummaryRow>
           </Summary>
         </Modal>
-      </React.Fragment>
+      </div>
     );
   }
   
