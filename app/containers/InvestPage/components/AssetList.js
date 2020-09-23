@@ -29,7 +29,11 @@ const AssetHeaderColumn = styled.div`
 
 export default class AssetList extends Component {
 
-    showAvailableAssets = () => {
+    state = {
+        currentOpenExtension: null,
+    }
+
+    showAvailableAssets = (currentOpenExtension) => {
         const {assets, pagination, Network, search} = this.props;
         if (!assets || !Network) return;
         const assets_per_page = 10;
@@ -43,10 +47,32 @@ export default class AssetList extends Component {
                     return `g${asset_key}`.toUpperCase().indexOf(search.toUpperCase()) > -1;
                 })
                 .slice(slice_start, slice_end);
-        return page_assets.map(asset_key => <AssetCard  {...this.props} asset={Network.available_assets[asset_key]} />)
+        return page_assets.map((asset_key) => (
+            <AssetCard  
+                {...this.props} 
+                asset_key={asset_key}
+                currentOpenExtension={currentOpenExtension}
+                asset={Network.available_assets[asset_key]} 
+                toggleExtension={this.toggleExtension}
+            />
+            )
+        )
     }
 
+
+    toggleExtension = (asset_key) => {
+        const {currentOpenExtension} = this.state;
+        
+        if (asset_key === currentOpenExtension) {
+            this.setState({currentOpenExtension: null});
+        } else {
+            this.setState({currentOpenExtension: asset_key});
+        }        
+    }
+
+
     render() {
+        const {currentOpenExtension} = this.state;
         const {isMobile} = this.props;
         return (
             <AssetContainer isMobile={isMobile}>
@@ -66,7 +92,7 @@ export default class AssetList extends Component {
                         </AssetHeaderColumn>
                     )}
                 </AssetHeader>
-                {this.showAvailableAssets()}
+                {this.showAvailableAssets(currentOpenExtension)}
             </AssetContainer>     
         )
     }
