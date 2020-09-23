@@ -153,22 +153,35 @@ class ConnectWallet extends React.Component {
 
   constructor (props) {
     super(props);
-
     this.containerRef = React.createRef();
   }
 
   state = {
     balance: null,
     isOpen: false,
+    scroll_y: null,
   }
 
   componentDidMount() {
+      this.prev = window.scrollY;
       document.addEventListener('mousedown', this.handleClickOutside);
+      window.addEventListener('scroll', this.handleNavigation);
   }
 
   componentWillUnmount() {
       document.removeEventListener('mousedown', this.handleClickOutside);
+      window.removeEventListener('scroll', this.handleNavigation);
   }
+
+  handleNavigation = (e) => {
+    const window = e.currentTarget;
+
+    if (this.prev < window.scrollY) {
+      this.setState({isOpen: false});
+    }
+
+    this.prev = window.scrollY;
+  };
 
 
   handleToggleModal = () => {
