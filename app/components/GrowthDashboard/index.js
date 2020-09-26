@@ -130,7 +130,7 @@ class GrowthDashboard extends React.Component {
           <FormattedMessage {...messages.more} />
         </GrowthDashboardHeader>
         <GrowthDashboardStats>
-          <div style={{ width: '100%', height: 180 }}>
+          <div style={{ width: '100%', height: '100%' }}>
             <ResponsiveContainer>
               <AreaChart
                 height={180}

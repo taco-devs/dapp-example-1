@@ -14,7 +14,9 @@ import { Switch, Route } from 'react-router-dom';
 import HomePage from 'containers/HomePage/Loadable';
 import FeaturePage from 'containers/FeaturePage/Loadable';
 import InvestPage from 'containers/InvestPage/Loadable';
+import BalancePage from 'containers/BalancePage/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
+import GrowthStats from 'containers/GrowthStats/Loadable';
 import Header from 'components/Header';
 import Navbar from 'components/Navbar';
 import StatsContainer from 'components/StatsContainer';
@@ -235,7 +237,7 @@ class App extends React.Component {
           toggleModal={this.toggleModal}
           resetApp={this.resetApp}
         />
-        <StatsContainer {...this.state} />
+        <GrowthStats {...this.state} />
         <Navbar />
         <Switch>
           <Route 
@@ -248,7 +250,15 @@ class App extends React.Component {
               />
             )}
           />
-          <Route path="/features" component={FeaturePage} />
+          <Route 
+            path="/balance" 
+            render={(props) => (
+              <BalancePage 
+                {...props}
+                {...this.state}
+              />
+            )}
+          />
           <Route path="" component={NotFoundPage} />
         </Switch>
         <Footer />

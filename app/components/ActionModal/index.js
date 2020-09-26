@@ -35,7 +35,7 @@ const ActionButton = styled.div`
         padding: 0.5em 1em 0.5em 1em;
         color: white;
         border-radius: 5px;
-        width: 90px;
+        min-width: 100px;
       
         &:hover {
           cursor: pointer;
@@ -51,10 +51,10 @@ const ActionButton = styled.div`
         border-width: 3px;
         border-style: solid;
         margin: 0 0.5em 0 0.5em ;
-        padding: 0.5em 1em 0.5em 1em;
+        padding: 0.5em 0 0.5em 0;
         color: #161d6b;
         border-radius: 5px;
-        min-width: 120px;
+        min-width: 100px;
       
         &:hover {
           cursor: pointer;
