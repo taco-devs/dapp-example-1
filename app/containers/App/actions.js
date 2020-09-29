@@ -15,7 +15,7 @@
  *    }
  */
 
-import { LOAD_REPOS, LOAD_REPOS_SUCCESS, LOAD_REPOS_ERROR } from './constants';
+import { LOAD_REPOS, LOAD_REPOS_SUCCESS, LOAD_REPOS_ERROR, SETUP_NETWORK } from './constants';
 
 /**
  * Load the repositories, this action starts the request saga
@@ -55,5 +55,12 @@ export function repoLoadingError(error) {
   return {
     type: LOAD_REPOS_ERROR,
     error,
+  };
+}
+
+export function setupNetwork(network) {
+  return {
+    type: SETUP_NETWORK,
+    network,
   };
 }

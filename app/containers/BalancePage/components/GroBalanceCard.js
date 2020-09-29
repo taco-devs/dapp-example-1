@@ -83,7 +83,7 @@ export default class GroBalanceCard extends Component {
 
         // Get Grow Balance
         const GRO = balances.find((balance) => balance.name === 'GRO');
-        return Math.round(GRO.balance / 1e18 * 1000 ) / 1000;
+        return GRO.balance > 0.001 ? (Math.round(GRO.balance / 1e18 * 1000 ) / 1000).toLocaleString('En-en') : '0.00';
       }
 
     getGroPrice = (balances, eth_price) => {
@@ -96,11 +96,11 @@ export default class GroBalanceCard extends Component {
         if (!balances || !eth_price) return 0;
         const GRO = balances.find((balance) => balance.name === 'GRO');
         const usd_price = eth_price / GRO.price_eth;
-        return (Math.round((GRO.balance / 1e18) * usd_price * 100) / 100).toLocaleString('En-en')
+        return GRO.balance > 0.001 ? (Math.round((GRO.balance / 1e18) * usd_price * 100) / 100).toLocaleString('En-en') : '0.00'
     }
 
     render() {
-        const {asset, data, isMobile, asset_key, currentOpenExtension, GrowTokenInstance, balances, eth_price} = this.props;
+        const {asset, data, isMobile, asset_key, currentOpenExtension, balances, eth_price} = this.props;
         const { balance, gro_price } = this.state;
       
         return (

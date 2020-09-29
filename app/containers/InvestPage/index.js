@@ -14,6 +14,7 @@ import { compose } from 'redux';
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
 import { makeSelectPagination, makeSelectSearch } from './selectors';
+import { makeSelectCurrrentNetwork } from '../App/selectors';
 import {isMobile} from 'react-device-detect';
 import reducer from './reducer';
 import saga from './saga';
@@ -48,8 +49,8 @@ class InvestPage extends React.Component {
   }
 
   render () {
-    const {network_id} = this.props;
-    const Network = network_id ? NetworkData[network_id] : NetworkData['eth'];
+    const {network} = this.props;
+    const Network = network ? NetworkData[network] : NetworkData['eth'];
     const assets = this.assetKeys(Network);
     return (
       <Invest isMobile={isMobile}>
@@ -82,6 +83,7 @@ const withReducer = injectReducer({ key: 'investPage', reducer });
 const withSaga = injectSaga({ key: 'investSaga', saga });
 
 const mapStateToProps = createStructuredSelector({
+  network: makeSelectCurrrentNetwork(),
   pagination: makeSelectPagination(),
   search: makeSelectSearch()
 });

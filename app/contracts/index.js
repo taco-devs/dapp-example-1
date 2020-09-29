@@ -1,10 +1,12 @@
 import GrowToken from './GrowToken.json';
+import GCToken from './GCToken.json';
 
 const assets = {
     eth: {
         growth_token: {
             ticker: 'GRO',
             abi: GrowToken,
+            address: '0x09e64c2b61a5f1690ee6fbed9baf5d6990f8dfd0'
         },
         available_assets: {
             cDAI: {
@@ -184,7 +186,73 @@ const assets = {
         }
     },
     ropsten: {},
-    kovan: {},
+    kovan: {
+        growth_token: {
+            ticker: 'GRO',
+            abi: GrowToken,
+            address: '0xfcb74f30d8949650aa524d8bf496218a20ce2db4'
+        },
+        available_assets: {
+            cDAI: {
+                address: '0xD4c84Fc7d3EA365A2824A8C908f93136e625bCeA',
+                abi: GCToken,
+                native: 'DAI',
+                base_asset: 'cDAI',
+                g_asset: 'gcDAI',
+                tvl: '$25.34M',
+                base_total_supply: 25340000,
+                total_supply: 11234110,
+                balance: 1466.68,
+                price_usd: 1.22,
+                g_price: 1.20,
+                apy_avg: '12.58%',
+                apy_7days: '0.58%',
+                img_url: 'https://s2.coinmarketcap.com/static/img/coins/64x64/5263.png',
+                native_img_url: 'https://s2.coinmarketcap.com/static/img/coins/64x64/4943.png',
+                minting_fee: 0.01,
+                burning_fee: 0.01,
+            },
+            cUSDC: {
+                address: '0xEf8cCAd850357B8D1b09a755Bd2f17183AEAfd06',
+                abi: GCToken,
+                native: 'USDC',
+                base_asset: 'cUSDC',
+                g_asset: 'gcUSDC',
+                tvl: '$25.34M',
+                base_total_supply: 25340000,
+                total_supply: 11234110,
+                balance: 1466.68,
+                price_usd: 1.22,
+                g_price: 1.20,
+                apy_avg: '12.58%',
+                apy_7days: '0.58%',
+                img_url: 'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png',
+                native_img_url: 'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png',
+                minting_fee: 0.01,
+                burning_fee: 0.01,
+            },
+            gcUSDT: {
+                address: '0x8e24ec37256BA942153062bB29b36d36369Bd4cb',
+                abi: GCToken,
+                native: 'USDT',
+                base_asset: 'cUSDT',
+                g_asset: 'gcUSDT',
+                tvl: '$25.34M',
+                base_total_supply: 25340000,
+                total_supply: 11234110,
+                balance: 1466.68,
+                price_usd: 1.22,
+                g_price: 1.20,
+                apy_avg: '12.58%',
+                apy_7days: '0.58%',
+                img_url: 'https://s2.coinmarketcap.com/static/img/coins/64x64/5745.png',
+                native_img_url: 'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png',
+                minting_fee: 0.01,
+                burning_fee: 0.01,
+            },
+        }
+
+    },
     rinkeby: {},
 }
 

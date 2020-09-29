@@ -21,6 +21,8 @@ import messages from './messages';
 import StatsContainer from 'components/StatsContainer';
 import { getBalances } from './actions';
 import { makeSelectBalances, makeSelectEthPrice } from '../GrowthStats/selectors';
+
+import { makeSelectCurrrentNetwork } from '../App/selectors'
  
 
 class GrowthStats extends React.Component {
@@ -56,6 +58,7 @@ const withSaga = injectSaga({ key: 'statsSaga', saga });
 
 const mapStateToProps = createStructuredSelector({
   balances: makeSelectBalances(),
+  network: makeSelectCurrrentNetwork(),
   eth_price: makeSelectEthPrice()
 ,});
 

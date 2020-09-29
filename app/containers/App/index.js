@@ -10,6 +10,11 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import styled from 'styled-components';
 import { Switch, Route } from 'react-router-dom';
+import { connect } from 'react-redux';
+import injectSaga from 'utils/injectSaga';
+import injectReducer from 'utils/injectReducer';
+import { createStructuredSelector } from 'reselect';
+import { compose } from 'redux';
 
 import HomePage from 'containers/HomePage/Loadable';
 import FeaturePage from 'containers/FeaturePage/Loadable';
@@ -26,6 +31,12 @@ import Web3 from "web3";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { getChainData } from '../../utils/utilities';
+
+import NetworkData from 'contracts';
+
+import reducer from './reducer';
+import { setupNetwork } from './actions'
+import { makeSelectCurrrentNetwork } from './selectors';
 
 import GlobalStyle from '../../global-styles';
 
@@ -115,10 +126,19 @@ class App extends React.Component {
   getNetwork = () => getChainData(this.state.chainId).network;
 
   // Load Contracts
-  loadContracts = async (web3) => {
+  loadContracts = async (web3, network_id) => {
+
+  
+    // Get the correct network
+    this.props.setupNetwork(network_id);
+    const Network = NetworkData[network_id];
+
     // Change for environment variables
-    const GrowTokenInstance = await new web3.eth.Contract(GrowToken, '0x09e64c2B61a5f1690Ee6fbeD9baf5D6990F8dFd0');
-    this.setState({GrowTokenInstance});
+    if (Network.growth_token) {
+      const GrowTokenInstance = await new web3.eth.Contract(Network.growth_token.abi, Network.growth_token.address);
+      this.setState({GrowTokenInstance});
+    }
+    
   }
 
   // On Connect Wallet 
@@ -139,7 +159,7 @@ class App extends React.Component {
 
     const network_id = NetworkChainIds[networkId];
 
-    await this.loadContracts(web3);
+    await this.loadContracts(web3, network_id);
 
     await this.setState({
       web3,
@@ -268,4 +288,26 @@ class App extends React.Component {
   }
 }
 
-export default App;
+//export default App;
+
+const withReducer = injectReducer({ key: 'global', reducer });
+
+const mapStateToProps = createStructuredSelector({
+  network: makeSelectCurrrentNetwork()
+});
+
+function mapDispatchToProps(dispatch) {
+  return {
+    setupNetwork: (network) => dispatch(setupNetwork(network))
+  };
+}
+
+const withConnect = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+);
+
+export default compose(
+    withReducer,
+    withConnect,
+  )(App);

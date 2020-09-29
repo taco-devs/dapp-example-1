@@ -22,6 +22,7 @@ import messages from './messages';
 import styled from 'styled-components';
 import NetworkData from 'contracts';
 import { makeSelectBalances, makeSelectEthPrice } from '../GrowthStats/selectors';
+import { makeSelectCurrrentNetwork } from '../App/selectors';
 
 
 const Balance = styled.div`
@@ -50,8 +51,8 @@ class BalancePage extends React.Component {
   }
 
   render () {
-    const {network_id} = this.props;
-    const Network = network_id ? NetworkData[network_id] : NetworkData['eth'];
+    const {network} = this.props;
+    const Network = network ? NetworkData[network] : NetworkData['eth'];
     const assets = this.assetKeys(Network);
     return (
       <Balance>
@@ -78,6 +79,7 @@ const withReducer = injectReducer({ key: 'balancePage', reducer });
 const withSaga = injectSaga({ key: 'balancePage', saga });
 
 const mapStateToProps = createStructuredSelector({
+  network_id: makeSelectCurrrentNetwork(),
   balances: makeSelectBalances(),
   eth_price: makeSelectEthPrice()
 });
