@@ -117,6 +117,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 class GrowthDashboard extends React.Component {
   render () {
+    const {isMobile} = this.props;
     return (
       <GrowthContainer>
         <GrowthDashboardHeader>
@@ -130,7 +131,7 @@ class GrowthDashboard extends React.Component {
           <FormattedMessage {...messages.more} />
         </GrowthDashboardHeader>
         <GrowthDashboardStats>
-          <div style={{ width: '100%', height: '100%' }}>
+          <div style={{ width: '100%', height: isMobile ? '180px' : '100%' }}>
             <ResponsiveContainer>
               <AreaChart
                 height={180}

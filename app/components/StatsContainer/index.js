@@ -32,7 +32,10 @@ class StatsContainer extends React.Component {
     return (
       <Container isMobile={isMobile}>
         <WalletDashboard {...this.props} />
-        <GrowthDashboard {...this.props} />
+        <GrowthDashboard 
+          {...this.props} 
+          isMobile={isMobile}
+        />
       </Container>
     );
   }
