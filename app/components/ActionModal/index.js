@@ -108,7 +108,7 @@ const InputSectionColumn = styled.div`
   display: flex;
   flex-direction: column;
   flex: ${props => props.flex || '1'};
-  padding: 0.5em 1em 0.25em 1em;
+  padding: 0.5em 0.75em 0.25em 0.5em;
   justify-content: space-around;
 `
 
@@ -306,6 +306,14 @@ const SwitchLabel = styled.div`
   font-size: 0.85em;
 `
 
+const BalanceRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-between;
+  font-size: 0.9em;
+`
+
 const customStyles = {
   content : {
     top                   : '50%',
@@ -332,6 +340,12 @@ class ActionModal extends React.Component {
     modal_type: 'mint',
     value: null,
     is_native: true,
+    underlying_balance: null,
+    asset_balance: null,
+    total_supply: null,
+    deposit_fee: null,
+    exchange_rate: null,
+    total_reserve: null,
   }
 
   componentDidMount = () => {
@@ -339,8 +353,29 @@ class ActionModal extends React.Component {
     this.setState({ modal_type: type });
   }
 
+  fetchBalance = async () => {
+
+    const { asset, web3, address } = this.props;
+    
+    const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+    const UnderlyingContractInstance = await new web3.eth.Contract(asset.underlying_abi, asset.underlying_address);
+    const BaseContractInstance = await new web3.eth.Contract(asset.underlying_abi, asset.underlying_address);
+    
+     const total_supply = await GContractInstance.methods.totalSupply().call();
+     const deposit_fee = await GContractInstance.methods.depositFee().call();
+     const exchange_rate = await GContractInstance.methods.exchangeRate().call();
+     const total_reserve = await GContractInstance.methods.totalReserve().call(); 
+
+     // Balance of the underlying asset
+     const underlying_balance = await UnderlyingContractInstance.methods.balanceOf(address).call(); 
+     const asset_balance = await BaseContractInstance.methods.balanceOf(address).call(); 
+
+     this.setState({total_supply, deposit_fee, exchange_rate, total_reserve, underlying_balance, asset_balance});
+  }
+
   toggleModal = (modal_type) => {
     this.setState({show: !this.state.show});
+    this.fetchBalance();
 
     if (modal_type) {
       this.changeType(modal_type);
@@ -388,10 +423,25 @@ class ActionModal extends React.Component {
   toggleNativeSelector = () => {
     this.setState({is_native: !this.state.is_native})
   }
+
+  parseNumber = (number, decimals) => {
+    const float_number = number / decimals;
+    return Math.round(float_number * 100) / 100;
+  }
+
+  showBalance = (is_native) => {
+      const { underlying_balance, asset_balance } = this.state;
+      if (!underlying_balance || !asset_balance) return '-';
+      if (is_native) {
+        return underlying_balance / 1e18;
+      } else {
+        return asset_balance / 1e16;
+      }
+  }
   
   render () {
     const {type, asset} = this.props;
-    const {show, modal_type, value, is_native} = this.state;
+    const {show, modal_type, value, is_native, total_supply, total_reserve, deposit_fee, exchange_rate } = this.state;
     return (
       <div
         onClick={(e) => {
@@ -471,7 +521,11 @@ class ActionModal extends React.Component {
               <InputSectionColumn
                 flex="1"
               >
-                <BalanceLabel>BALANCE 80.12</BalanceLabel>
+                <BalanceRow>
+                  <BalanceLabel>BALANCE:</BalanceLabel>
+                  <BalanceLabel>{this.showBalance(is_native)}</BalanceLabel>
+                </BalanceRow>
+                
                 <SelectorRow>
                   <IconLogo src={modal_type === 'mint' && is_native ? asset.native_img_url : asset.img_url} />
                   <AssetLabel>{modal_type === 'mint' ? is_native ? asset.native : asset.base_asset : asset.g_asset}</AssetLabel>
@@ -514,7 +568,7 @@ class ActionModal extends React.Component {
                 <PrimaryLabel>{asset.base_asset} SUPPLY</PrimaryLabel>
               </SummaryColumn>
               <SummaryColumn align="flex-end">
-                <PrimaryLabel>{asset.base_total_supply.toLocaleString('En-en')} {asset.base_asset}</PrimaryLabel>
+                <PrimaryLabel>{total_reserve ?  this.parseNumber(total_reserve, 1e8).toLocaleString('En-en') : '-'} {asset.base_asset}</PrimaryLabel>
               </SummaryColumn>
             </SummaryRow>
             <SummaryRow>
@@ -522,22 +576,22 @@ class ActionModal extends React.Component {
                 <PrimaryLabel>{asset.g_asset} SUPPLY</PrimaryLabel>
               </SummaryColumn>
               <SummaryColumn align="flex-end">
-                <PrimaryLabel>{asset.total_supply.toLocaleString('En-en')} {asset.g_asset}</PrimaryLabel>
+                <PrimaryLabel>{total_supply ? this.parseNumber(total_supply, 1e8).toLocaleString('En-en') : '-'} {asset.g_asset}</PrimaryLabel>
               </SummaryColumn>
             </SummaryRow>
             <SummaryRow>
               <SummaryColumn>
                 <SummaryRow>
-                  <PrimaryLabel margin="0 5px 0 0">BURNING FEE</PrimaryLabel>
+                  <PrimaryLabel margin="0 5px 0 0">FEE</PrimaryLabel>
                   <BsInfoCircleFill style={{color: '#BEBEBE' }} />
                 </SummaryRow>
               </SummaryColumn>
               <SummaryColumn align="flex-end">
-                {modal_type === 'mint' && <PrimaryLabel> {Math.round(this.calculateMintingFee() * 100) / 100} {asset.native}  ({(asset.minting_fee * 100).toFixed(2)}%)</PrimaryLabel>}
+                {modal_type === 'mint' && <PrimaryLabel> {this.parseNumber(deposit_fee, 1e18)} {asset.native}  ({this.parseNumber(deposit_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}
                 {modal_type === 'redeem' && <PrimaryLabel> {Math.round(this.calculateBurningFee() * 100) / 100} {asset.native}  ({(asset.burning_fee * 100).toFixed(2)}%)</PrimaryLabel>}   
               </SummaryColumn>
             </SummaryRow>
-            {is_native && (
+            {/* is_native && (
               <SummaryRow>
                 <SummaryColumn>
                   <SummaryRow>
@@ -549,7 +603,7 @@ class ActionModal extends React.Component {
                   <PrimaryLabel>0.1 ETH</PrimaryLabel>
                 </SummaryColumn>
               </SummaryRow>
-            )}
+            ) */}
             <SummaryRow>
               <SummaryColumn>
                 <SummaryRow>

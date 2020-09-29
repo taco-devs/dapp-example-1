@@ -15,6 +15,7 @@ import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
 import { makeSelectPagination, makeSelectSearch } from './selectors';
 import { makeSelectCurrrentNetwork } from '../App/selectors';
+import { makeSelectBalances } from '../GrowthStats/selectors';
 import {isMobile} from 'react-device-detect';
 import reducer from './reducer';
 import saga from './saga';
@@ -84,6 +85,7 @@ const withSaga = injectSaga({ key: 'investSaga', saga });
 
 const mapStateToProps = createStructuredSelector({
   network: makeSelectCurrrentNetwork(),
+  balances: makeSelectBalances(),
   pagination: makeSelectPagination(),
   search: makeSelectSearch()
 });

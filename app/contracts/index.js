@@ -1,6 +1,10 @@
 import GrowToken from './GrowToken.json';
 import GCToken from './GCToken.json';
 
+import { CToken } from './Interop';
+import { DAI } from './Underlying';
+
+
 const assets = {
     eth: {
         growth_token: {
@@ -194,8 +198,12 @@ const assets = {
         },
         available_assets: {
             cDAI: {
-                address: '0xD4c84Fc7d3EA365A2824A8C908f93136e625bCeA',
-                abi: GCToken,
+                base_address: '0xf0d0eb522cfa50b716b3b1604c4f0fa6f04376ad',
+                gtoken_address: '0xD4c84Fc7d3EA365A2824A8C908f93136e625bCeA',
+                underlying_address: '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
+                base_abi: CToken,
+                gtoken_abi: GCToken,
+                underlying_abi: DAI,
                 native: 'DAI',
                 base_asset: 'cDAI',
                 g_asset: 'gcDAI',
@@ -213,8 +221,12 @@ const assets = {
                 burning_fee: 0.01,
             },
             cUSDC: {
-                address: '0xEf8cCAd850357B8D1b09a755Bd2f17183AEAfd06',
-                abi: GCToken,
+                base_address: '0xf0d0eb522cfa50b716b3b1604c4f0fa6f04376ad',
+                gtoken_address: '0xEf8cCAd850357B8D1b09a755Bd2f17183AEAfd06',
+                underlying_address: '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
+                base_abi: CToken,
+                gtoken_abi: GCToken,
+                underlying_abi: DAI,
                 native: 'USDC',
                 base_asset: 'cUSDC',
                 g_asset: 'gcUSDC',
@@ -232,8 +244,12 @@ const assets = {
                 burning_fee: 0.01,
             },
             gcUSDT: {
-                address: '0x8e24ec37256BA942153062bB29b36d36369Bd4cb',
-                abi: GCToken,
+                base_address: '0xf0d0eb522cfa50b716b3b1604c4f0fa6f04376ad',
+                gtoken_address: '0x8e24ec37256BA942153062bB29b36d36369Bd4cb',
+                underlying_address: '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
+                base_abi: CToken,
+                gtoken_abi: GCToken,
+                underlying_abi: DAI,
                 native: 'USDT',
                 base_asset: 'cUSDT',
                 g_asset: 'gcUSDT',

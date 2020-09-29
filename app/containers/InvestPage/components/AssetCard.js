@@ -153,12 +153,14 @@ export default class AssetCard extends Component {
                                 direction="row"
                             >
                                 <ActionModal 
+                                    {...this.props}
                                     type="mint"
                                     text="MINT"
                                     data={data}
                                     asset={asset}
                                 />
                                 <ActionModal 
+                                    {...this.props}
                                     type="redeem"
                                     text="REDEEM"
                                     data={data}

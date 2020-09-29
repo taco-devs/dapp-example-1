@@ -63,7 +63,7 @@ const AddressContainer = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  background-color: #00d395;
+  background-color: ${props => props.mainnet ? '#00d395' : 'gray'};
   border-radius: 5px;
   color: white;
   padding: 0.5em 1em 0.5em 1em;
@@ -104,13 +104,12 @@ const DropDownList = styled.ul`
   padding: 0 0 0.25em 0;
   margin: 0;
   padding-left: 1em;
-  background: #161d6b;
+  background-color: ${props => props.mainnet ? '#161d6b' : 'white'};
   border-radius: 5px;
   box-sizing: border-box;
-  color: #3faffa;
   font-size: 1.3rem;
   font-weight: 500;
-
+  color: ${props => props.mainnet ? 'white' : 'black'};
   -webkit-box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
   -moz-box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
   box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
@@ -128,7 +127,6 @@ const ListItem = styled.li`
   list-style: none;
   margin-bottom: 1em;
   font-size: 0.85em;
-  color: white;
   
   &:hover {
     ${props => props.hoverable && 'cursor: pointer;' }
@@ -144,7 +142,7 @@ const DropdownLabel = styled.p`
 const NetworkLabel = styled.p`
   margin: 0 0 0 1em;
   font-size: 0.85em;
-  color: #00d395;
+  color: ${props => props.mainnet ? '#00d395' : 'black'};
 `
 
 
@@ -231,7 +229,7 @@ class ConnectWallet extends React.Component {
   }
 
   render () {
-    const {address, GrowTokenInstance, isMobile} = this.props;
+    const {address, GrowTokenInstance, isMobile, network_id} = this.props;
     const {balance, isOpen} = this.state;
 
     if (GrowTokenInstance && !balance) {
@@ -246,7 +244,10 @@ class ConnectWallet extends React.Component {
               <BalanceContainer>
                 {balance && `${balance} GRO`}
               </BalanceContainer>
-              <AddressContainer onClick={this.toggleDropdown}>
+              <AddressContainer 
+                onClick={this.toggleDropdown}
+                mainnet={network_id === 'eth'}
+              >
                 {this.parseAddress(address)}
                 <FaChevronDown />
               </AddressContainer>
@@ -261,7 +262,7 @@ class ConnectWallet extends React.Component {
                       <div></div>
                       <div></div>
                     </div>
-                    <NetworkLabel>Connected ( {this.connectedNetwork()} )</NetworkLabel>
+                    <NetworkLabel mainnet={network_id === 'eth'}>Connected ( {this.connectedNetwork()} )</NetworkLabel>
                   </ListItem>
                   <ListItem hoverable>
                     <HiSwitchHorizontal />

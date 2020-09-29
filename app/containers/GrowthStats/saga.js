@@ -47,9 +47,10 @@ const fetch_balances = async (available_assets, web3, address) => {
       const asset = available_assets[key];
 
       // Check for abi and address
-      if (!asset.abi || !asset.address) continue;
+      if (!asset.gtoken_abi || !asset.gtoken_address) continue;
 
-      const ContractInstance = await new web3.eth.Contract(asset.abi, asset.address);
+      // Fetch asset balance
+      const ContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
       const balance = await ContractInstance.methods.balanceOf(address).call();
       const deposit_fee = await ContractInstance.methods.depositFee().call();
       const exchange_rate = await ContractInstance.methods.exchangeRate().call();
