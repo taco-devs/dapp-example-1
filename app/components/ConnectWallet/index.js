@@ -255,7 +255,9 @@ class ConnectWallet extends React.Component {
 
             {isOpen && (
               <DropDownListContainer>
-                <DropDownList>
+                <DropDownList
+                  mainnet={network_id === 'eth'}
+                >
                   <ListItem>
                     <div class="livenow">
                       <div></div>

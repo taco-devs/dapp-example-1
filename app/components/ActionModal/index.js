@@ -10,6 +10,7 @@ import Modal from 'react-modal';
 // import styled from 'styled-components';
 
 import { FormattedMessage } from 'react-intl';
+import debounce from 'lodash.debounce';
 import messages from './messages';
 import styled from 'styled-components';
 import {FaChevronDown} from 'react-icons/fa';
@@ -116,6 +117,14 @@ const PrimaryLabel = styled.b`
   color: #161d6b;
   opacity: 0.75; 
   margin: ${props => props.margin || '0'};
+  text-align: ${props => props.align || 'left'};
+`
+
+const TotalLabel = styled.p`
+  color: #161d6b;
+  opacity: 0.75; 
+  font-size: 0.85em;
+  margin: ${props => props.margin || '0'};
 `
 
 const InputRow = styled.div`
@@ -129,7 +138,7 @@ const AmountInput = styled.div`
 `
 
 const StyledInput = styled.input`
-  width: 100px;
+  width: 100%;
   border: 0;
   outline: none;
   font-size: 1.2em;
@@ -146,12 +155,18 @@ const MaxButton = styled.div`
   background-color: ${props => {
     if (props.modal_type === 'mint') return '#00d395';
     if (props.modal_type === 'redeem') return '#161d6b';
-  }}
+  }};
+
+  &:hover {
+    opacity: 0.85;
+    cursor: pointer;
+  }
 `
 
 const BalanceLabel = styled.b`
   color: #161d6b;
-  font-size: 0.85em;
+  text-align: ${props => props.align || 'left'};
+  margin: ${props => props.margin || '0'};
 `
 
 const AssetLabel = styled.b`
@@ -311,7 +326,6 @@ const BalanceRow = styled.div`
   flex-direction: row;
   width: 100%;
   justify-content: space-between;
-  font-size: 0.9em;
 `
 
 const customStyles = {
@@ -346,6 +360,8 @@ class ActionModal extends React.Component {
     deposit_fee: null,
     exchange_rate: null,
     total_reserve: null,
+    total: null,
+    underlying_conversion: null,
   }
 
   componentDidMount = () => {
@@ -359,7 +375,7 @@ class ActionModal extends React.Component {
     
     const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
     const UnderlyingContractInstance = await new web3.eth.Contract(asset.underlying_abi, asset.underlying_address);
-    const BaseContractInstance = await new web3.eth.Contract(asset.underlying_abi, asset.underlying_address);
+    const BaseContractInstance = await new web3.eth.Contract(asset.base_abi, asset.base_address);
     
      const total_supply = await GContractInstance.methods.totalSupply().call();
      const deposit_fee = await GContractInstance.methods.depositFee().call();
@@ -387,17 +403,18 @@ class ActionModal extends React.Component {
   }
 
   handleInputChange = (value) => {
+    const {modal_type, is_native} = this.state;
     if (value < 0) {
       this.setState({value: 0});
     } else {
+
+      // Route total logic
+      if (modal_type === 'mint') {
+        this.calculateMintingTotal(value);
+      }
+
       this.setState({value});
     }
-  }
-
-  calculateMintingFee = () => {
-    const {asset} = this.props;
-    const total_minting = ((1 + asset.minting_fee) * asset.base_total_supply) / asset.total_supply;
-    return total_minting;
   }
 
   calculateBurningFee = () => {
@@ -406,12 +423,40 @@ class ActionModal extends React.Component {
     return total_minting;
   }
 
-  calculateMintingTotal = () => {
-    const {value} = this.state;
-  
-    const minting_ratio = this.calculateMintingFee();
-    return value / minting_ratio;
-  }
+  calculateMintingTotal = debounce(async (value) => {
+    const { web3, asset } = this.props;
+    const { is_native, total_reserve, total_supply, exchange_rate, deposit_fee} = this.state;
+
+    const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+
+    // Handle 0 value transactions
+    if (!value || value.length <= 0) {
+      this.setState({
+        real_fee: null,
+        total: null,
+      })
+    }
+
+    if (is_native) {
+      const netShares = await web3.utils.toWei(value).toString();
+      const underlying_conversion = await GContractInstance.methods.calcCostFromUnderlyingCost(netShares, exchange_rate).call();
+      const result = await GContractInstance.methods.calcDepositCostFromShares(underlying_conversion, total_reserve, total_supply, deposit_fee).call();
+      const {_cost, _feeShares} = result;
+      this.setState({
+        real_fee: _feeShares,
+        total: _cost,
+      });
+
+    } else {
+      const netShares = value * 1e8;
+      const result = await GContractInstance.methods.calcDepositCostFromShares(netShares, total_reserve, total_supply, deposit_fee).call();
+      const {_cost, _feeShares} = result;
+      this.setState({
+        real_fee: _feeShares,
+        total: _cost
+      })
+    }
+  }, 300);
 
   calculateBurningTotal = () => {
     const {value} = this.state;
@@ -433,19 +478,38 @@ class ActionModal extends React.Component {
       const { underlying_balance, asset_balance } = this.state;
       if (!underlying_balance || !asset_balance) return '-';
       if (is_native) {
-        return underlying_balance / 1e18;
+        return (underlying_balance / 1e18).toFixed(2);
       } else {
-        return asset_balance / 1e16;
+        return (asset_balance / 1e8).toFixed(2);
       }
   }
+
+  setMax = () => {
+    const {modal_type, is_native, underlying_balance, asset_balance} = this.state;
+    
+    if (modal_type === 'mint') {
+      if (is_native) {
+        const value = underlying_balance / 1e18;
+        this.setState({value});
+        this.handleInputChange(value)
+      } else {
+        const value = asset_balance / 1e8;
+        this.setState({value});
+        this.handleInputChange(value)
+      }
+    }
+  }
+
+  
   
   render () {
     const {type, asset} = this.props;
-    const {show, modal_type, value, is_native, total_supply, total_reserve, deposit_fee, exchange_rate } = this.state;
+    const {show, modal_type, value, is_native, total_supply, total_reserve, deposit_fee, total, exchange_rate } = this.state;
     return (
       <div
         onClick={(e) => {
           e.stopPropagation();
+          this.setState({is_native: true});
           this.toggleModal()
         }}
       >
@@ -498,7 +562,7 @@ class ActionModal extends React.Component {
               <InputSectionColumn
                 flex="2"
               >
-                <PrimaryLabel>TOTAL</PrimaryLabel>
+                <BalanceLabel>BALANCE: {this.showBalance(is_native)}</BalanceLabel>
                 <InputRow>
                   <AmountInput>
                     <StyledInput
@@ -513,7 +577,8 @@ class ActionModal extends React.Component {
                   </AmountInput>
                   <MaxButton
                     modal_type={modal_type}
-                  >
+                    onClick={() => this.setMax()}
+                  > 
                     MAX
                   </MaxButton>
                 </InputRow>
@@ -521,11 +586,7 @@ class ActionModal extends React.Component {
               <InputSectionColumn
                 flex="1"
               >
-                <BalanceRow>
-                  <BalanceLabel>BALANCE:</BalanceLabel>
-                  <BalanceLabel>{this.showBalance(is_native)}</BalanceLabel>
-                </BalanceRow>
-                
+                <PrimaryLabel align="right">ASSET</PrimaryLabel>
                 <SelectorRow>
                   <IconLogo src={modal_type === 'mint' && is_native ? asset.native_img_url : asset.img_url} />
                   <AssetLabel>{modal_type === 'mint' ? is_native ? asset.native : asset.base_asset : asset.g_asset}</AssetLabel>
@@ -595,24 +656,24 @@ class ActionModal extends React.Component {
               <SummaryRow>
                 <SummaryColumn>
                   <SummaryRow>
-                    <PrimaryLabel margin="0 5px 0 0">EXCHANGE FEE</PrimaryLabel>
+                    <PrimaryLabel margin="0 5px 0 0">SWAP RATE</PrimaryLabel>
                     <BsInfoCircleFill style={{color: '#BEBEBE' }} />
                   </SummaryRow>
                 </SummaryColumn>
                 <SummaryColumn align="flex-end">
-                  <PrimaryLabel>0.1 ETH</PrimaryLabel>
+                  <PrimaryLabel>{exchange_rate ? `${this.parseNumber(exchange_rate, 1e8)} ${asset.base_asset} = 1 ${asset.native}` : '-'}</PrimaryLabel>
                 </SummaryColumn>
               </SummaryRow>
             ) */}
             <SummaryRow>
               <SummaryColumn>
                 <SummaryRow>
-                  <PrimaryLabel margin="0 5px 0 0">TOTAL</PrimaryLabel>
+                  <BalanceLabel margin="0 5px 0 0">TOTAL</BalanceLabel>
                   <BsInfoCircleFill style={{color: '#BEBEBE' }} />
                 </SummaryRow>
               </SummaryColumn>
               <SummaryColumn align="flex-end">
-                {modal_type === 'mint' && <PrimaryLabel>{Math.round(this.calculateMintingTotal() * 100) / 100} {asset.g_asset}</PrimaryLabel>}
+                {modal_type === 'mint' && <PrimaryLabel>{total ? this.parseNumber(total, 1e8) : '-'} {asset.g_asset}</PrimaryLabel>}
                 {modal_type === 'redeem' && <PrimaryLabel>{Math.round(this.calculateBurningTotal() * 100) / 100} {is_native ? asset.native : asset.base_asset}</PrimaryLabel>}
               </SummaryColumn>
             </SummaryRow>
