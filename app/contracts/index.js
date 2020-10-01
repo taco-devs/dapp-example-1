@@ -2,7 +2,7 @@ import GrowToken from './GrowToken.json';
 import GCToken from './GCToken.json';
 
 import { CToken } from './Interop';
-import { DAI } from './Underlying';
+import { DAI, USDC } from './Underlying';
 
 
 const assets = {
@@ -204,6 +204,7 @@ const assets = {
                 base_abi: CToken,
                 gtoken_abi: GCToken,
                 underlying_abi: DAI,
+                underlying_decimals: 1e18,
                 native: 'DAI',
                 base_asset: 'cDAI',
                 g_asset: 'gcDAI',
@@ -221,12 +222,13 @@ const assets = {
                 burning_fee: 0.01,
             },
             cUSDC: {
-                base_address: '0xf0d0eb522cfa50b716b3b1604c4f0fa6f04376ad',
+                base_address: '0x4a92E71227D294F041BD82dd8f78591B75140d63',
                 gtoken_address: '0xEf8cCAd850357B8D1b09a755Bd2f17183AEAfd06',
-                underlying_address: '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
+                underlying_address: '0xb7a4f3e9097c08da09517b5ab877f7a917224ede',
                 base_abi: CToken,
                 gtoken_abi: GCToken,
-                underlying_abi: DAI,
+                underlying_abi: USDC,
+                underlying_decimals: 1e6,
                 native: 'USDC',
                 base_asset: 'cUSDC',
                 g_asset: 'gcUSDC',

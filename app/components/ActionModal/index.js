@@ -484,10 +484,11 @@ class ActionModal extends React.Component {
   }
 
   showBalance = (is_native) => {
+      const {asset} = this.props;
       const { underlying_balance, asset_balance } = this.state;
       if (!underlying_balance || !asset_balance) return '-';
       if (is_native) {
-        return (underlying_balance / 1e18).toFixed(2);
+        return (underlying_balance / asset.underlying_decimals).toFixed(2);
       } else {
         return (asset_balance / 1e8).toFixed(2);
       }
