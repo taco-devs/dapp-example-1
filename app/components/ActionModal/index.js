@@ -352,7 +352,8 @@ class ActionModal extends React.Component {
   state = {
     show: false,
     modal_type: 'mint',
-    value: null,
+    value_base: '',
+    value_native: '',
     is_native: true,
     underlying_balance: null,
     asset_balance: null,
@@ -360,7 +361,8 @@ class ActionModal extends React.Component {
     deposit_fee: null,
     exchange_rate: null,
     total_reserve: null,
-    total: null,
+    total_native: null,
+    total_base: null,
     underlying_conversion: null,
   }
 
@@ -411,9 +413,14 @@ class ActionModal extends React.Component {
       // Route total logic
       if (modal_type === 'mint') {
         this.calculateMintingTotal(value);
-      }
 
-      this.setState({value});
+        // Route native field
+        if (is_native) {
+          this.setState({value_native: value})
+        } else {
+          this.setState({value_base: value});
+        }
+      }
     }
   }
 
@@ -440,23 +447,24 @@ class ActionModal extends React.Component {
     if (is_native) {
       const netShares = await web3.utils.toWei(value).toString();
       const underlying_conversion = await GContractInstance.methods.calcCostFromUnderlyingCost(netShares, exchange_rate).call();
-      const result = await GContractInstance.methods.calcDepositCostFromShares(underlying_conversion, total_reserve, total_supply, deposit_fee).call();
-      const {_cost, _feeShares} = result;
+      const result = await GContractInstance.methods.calcDepositSharesFromCost(underlying_conversion, total_reserve, total_supply, deposit_fee).call();
+      const {_netShares, _feeShares} = result;
       this.setState({
         real_fee: _feeShares,
-        total: _cost,
+        total_native: _netShares,
       });
 
     } else {
-      const netShares = value * 1e8;
-      const result = await GContractInstance.methods.calcDepositCostFromShares(netShares, total_reserve, total_supply, deposit_fee).call();
-      const {_cost, _feeShares} = result;
+      // CTokens only have 8 decimals
+      const _cost = value * 1e8;
+      const result = await GContractInstance.methods.calcDepositSharesFromCost(_cost, total_reserve, total_supply, deposit_fee).call();
+      const {_netShares, _feeShares} = result;
       this.setState({
         real_fee: _feeShares,
-        total: _cost
+        total_base: _netShares,
       })
     }
-  }, 300);
+  }, 250);
 
   calculateBurningTotal = () => {
     const {value} = this.state;
@@ -467,11 +475,12 @@ class ActionModal extends React.Component {
 
   toggleNativeSelector = () => {
     this.setState({is_native: !this.state.is_native})
+
   }
 
   parseNumber = (number, decimals) => {
     const float_number = number / decimals;
-    return Math.round(float_number * 100) / 100;
+    return Math.round(float_number * 10000) / 10000;
   }
 
   showBalance = (is_native) => {
@@ -489,22 +498,51 @@ class ActionModal extends React.Component {
     
     if (modal_type === 'mint') {
       if (is_native) {
-        const value = underlying_balance / 1e18;
-        this.setState({value});
-        this.handleInputChange(value)
+        const value_native = underlying_balance / 1e18;
+        this.setState({value_native});
+        this.handleInputChange(value_native)
       } else {
-        const value = asset_balance / 1e8;
-        this.setState({value});
-        this.handleInputChange(value)
+        const value_base = asset_balance / 1e8;
+        this.setState({value_base});
+        this.handleInputChange(value_base)
       }
     }
   }
 
-  
+  handleDeposit = async () => {
+    const {
+      asset, web3, address,
+      mintGTokenFromCToken,
+      mintGTokenFromUnderlying,
+    } = this.props;
+
+    const { is_native, value_base, value_native } = this.state;
+    
+    // Handle depending the asset
+    if (is_native) {
+
+      const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+      const _cost = (value_native * 1e18).toString();
+      mintGTokenFromUnderlying({
+        GContractInstance, 
+        _cost, 
+        address
+      })
+
+    } else {
+      const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+      const _cost = (value_base * 1e8).toString();
+      mintGTokenFromCToken({
+        GContractInstance, 
+        _cost, 
+        address
+      })
+    }
+  }
   
   render () {
     const {type, asset} = this.props;
-    const {show, modal_type, value, is_native, total_supply, total_reserve, deposit_fee, total, exchange_rate } = this.state;
+    const {show, modal_type, value_base, value_native, is_native, total_supply, total_reserve, deposit_fee, total_base, total_native, exchange_rate } = this.state;
     return (
       <div
         onClick={(e) => {
@@ -565,15 +603,28 @@ class ActionModal extends React.Component {
                 <BalanceLabel>BALANCE: {this.showBalance(is_native)}</BalanceLabel>
                 <InputRow>
                   <AmountInput>
-                    <StyledInput
-                      value={value}
-                      placeholder="0.0"
-                      type="number"
-                      onClick={e => e.stopPropagation()}
-                      onChange={e => {
-                        this.handleInputChange(e.target.value)
-                      }}
-                    />
+                    {is_native ? (
+                      <StyledInput
+                        value={value_native}
+                        placeholder="0.0"
+                        type="number"
+                        onClick={e => e.stopPropagation()}
+                        onChange={e => {
+                          this.handleInputChange(e.target.value)
+                        }}
+                      />
+                    ) : (
+                      <StyledInput
+                        value={value_base}
+                        placeholder="0.0"
+                        type="number"
+                        onClick={e => e.stopPropagation()}
+                        onChange={e => {
+                          this.handleInputChange(e.target.value)
+                        }}
+                      />
+                    )}
+                    
                   </AmountInput>
                   <MaxButton
                     modal_type={modal_type}
@@ -626,7 +677,7 @@ class ActionModal extends React.Component {
             </SummaryRow>
             <SummaryRow>
               <SummaryColumn>
-                <PrimaryLabel>{asset.base_asset} SUPPLY</PrimaryLabel>
+                <PrimaryLabel>{asset.base_asset} RESERVE</PrimaryLabel>
               </SummaryColumn>
               <SummaryColumn align="flex-end">
                 <PrimaryLabel>{total_reserve ?  this.parseNumber(total_reserve, 1e8).toLocaleString('En-en') : '-'} {asset.base_asset}</PrimaryLabel>
@@ -673,16 +724,25 @@ class ActionModal extends React.Component {
                 </SummaryRow>
               </SummaryColumn>
               <SummaryColumn align="flex-end">
-                {modal_type === 'mint' && <PrimaryLabel>{total ? this.parseNumber(total, 1e8) : '-'} {asset.g_asset}</PrimaryLabel>}
+                {modal_type === 'mint'&& is_native && <PrimaryLabel>{total_native ? this.parseNumber(total_native, 1e8) : '-'} {asset.g_asset}</PrimaryLabel>}
+                {modal_type === 'mint'&& !is_native && <PrimaryLabel>{total_base ? this.parseNumber(total_base, 1e8) : '-'} {asset.g_asset}</PrimaryLabel>}
                 {modal_type === 'redeem' && <PrimaryLabel>{Math.round(this.calculateBurningTotal() * 100) / 100} {is_native ? asset.native : asset.base_asset}</PrimaryLabel>}
               </SummaryColumn>
             </SummaryRow>
             <SummaryRow justify="center" flex="2">
-                <ActionConfirmButton modal_type={modal_type}>
-                    CONFIRM 
-                    {modal_type === 'mint' && ' MINT'}
-                    {modal_type === 'redeem' && ' REDEEM'}
-                </ActionConfirmButton>
+                {modal_type === 'mint' &&  (
+                  <ActionConfirmButton
+                    modal_type={modal_type}
+                    onClick={() => this.handleDeposit()}
+                  >
+                    CONFIRM MINT
+                  </ActionConfirmButton>
+                )}
+                {modal_type === 'redeem' &&  (
+                  <ActionConfirmButton modal_type={modal_type}>
+                    CONFIRM REDEEM
+                  </ActionConfirmButton>
+                )}
             </SummaryRow>
           </Summary>
         </Modal>

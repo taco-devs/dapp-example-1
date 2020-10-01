@@ -23,7 +23,7 @@ import messages from './messages';
 import styled from 'styled-components';
 import {AssetList, InvestHeader} from './components';
 import NetworkData from 'contracts';
-import { changePage, searchAssets } from './actions';
+import { changePage, searchAssets, mintGTokenFromCToken, mintGTokenFromUnderlying } from './actions';
 
 const Invest = styled.div`
   display: flex;
@@ -87,13 +87,15 @@ const mapStateToProps = createStructuredSelector({
   network: makeSelectCurrrentNetwork(),
   balances: makeSelectBalances(),
   pagination: makeSelectPagination(),
-  search: makeSelectSearch()
+  search: makeSelectSearch(),
 });
 
 function mapDispatchToProps(dispatch) {
   return {
     changePage: (pagination) => dispatch(changePage(pagination)),
-    searchAssets: (search) => dispatch(searchAssets(search))
+    searchAssets: (search) => dispatch(searchAssets(search)),
+    mintGTokenFromCToken: (payload) => dispatch(mintGTokenFromCToken(payload)),
+    mintGTokenFromUnderlying: (payload) => dispatch(mintGTokenFromUnderlying(payload)),
   };
 }
 
