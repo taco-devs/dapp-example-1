@@ -7,7 +7,7 @@
 import { 
   DEFAULT_ACTION, CHANGE_PAGE, SEARCH,
   MINT_GTOKEN_FROM_CTOKEN, MINT_GTOKEN_FROM_CTOKEN_SUCCESS, MINT_GTOKEN_FROM_CTOKEN_ERROR, 
-  MINT_GTOKEN_FROM_UNDERLYING, MINT_GTOKEN_FROM_UNDERLYING_SUCCESS, MINT_GTOKEN_FROM_UNDERLYING_ERROR
+  MINT_GTOKEN_FROM_UNDERLYING, MINT_GTOKEN_FROM_UNDERLYING_SUCCESS, MINT_GTOKEN_FROM_UNDERLYING_ERROR, REDEEM_GTOKEN_TO_CTOKEN, REDEEM_GTOKEN_TO_UNDERLYING
 } from './constants';
 
 export function defaultAction() {
@@ -70,6 +70,50 @@ export function mintGTokenFromUnderlyingSuccess(success) {
 export function mintGTokenFromUnderlyingError(error) {
   return {
     type: MINT_GTOKEN_FROM_UNDERLYING_ERROR,
+    error
+  }
+}
+
+// REDEEM GTOKEN TO CTOKEN
+export function redeemGTokenToCToken(payload) {
+  return {
+    type: REDEEM_GTOKEN_TO_CTOKEN,
+    payload
+  }
+}
+
+export function redeemGTokenToCTokenSuccess(success) {
+  return {
+    type: REDEEM_GTOKEN_TO_CTOKEN_SUCCESS,
+    success
+  }
+}
+
+export function redeemGTokenToCTokenError(error) {
+  return {
+    type: REDEEM_GTOKEN_TO_CTOKEN_ERROR,
+    error
+  }
+}
+
+// REDEEM GTOKEN TO UNDERLYING
+export function redeemGTokenToUnderlying(payload) {
+  return {
+    type: REDEEM_GTOKEN_TO_UNDERLYING,
+    payload
+  }
+}
+
+export function redeemGTokenToUnderlyingSuccess(success) {
+  return {
+    type: REDEEM_GTOKEN_TO_UNDERLYING_SUCCESS,
+    success
+  }
+}
+
+export function redeemGTokenToUnderlyingError(error) {
+  return {
+    type: REDEEM_GTOKEN_TO_UNDERLYING_ERROR,
     error
   }
 }

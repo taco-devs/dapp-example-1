@@ -23,7 +23,7 @@ import messages from './messages';
 import styled from 'styled-components';
 import {AssetList, InvestHeader} from './components';
 import NetworkData from 'contracts';
-import { changePage, searchAssets, mintGTokenFromCToken, mintGTokenFromUnderlying } from './actions';
+import { changePage, searchAssets, mintGTokenFromCToken, mintGTokenFromUnderlying, redeemGTokenToCToken, redeemGTokenToUnderlying } from './actions';
 
 const Invest = styled.div`
   display: flex;
@@ -96,6 +96,8 @@ function mapDispatchToProps(dispatch) {
     searchAssets: (search) => dispatch(searchAssets(search)),
     mintGTokenFromCToken: (payload) => dispatch(mintGTokenFromCToken(payload)),
     mintGTokenFromUnderlying: (payload) => dispatch(mintGTokenFromUnderlying(payload)),
+    redeemGTokenToCToken: (payload) => dispatch(redeemGTokenToCToken(payload)),
+    redeemGTokenToUnderlying: (payload) => dispatch(redeemGTokenToUnderlying(payload))
   };
 }
 

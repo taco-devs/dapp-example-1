@@ -16,6 +16,7 @@ import styled from 'styled-components';
 import {FaChevronDown} from 'react-icons/fa';
 import { HiSwitchHorizontal } from 'react-icons/hi';
 import { BsInfoCircleFill } from 'react-icons/bs';
+import { mintGTokenFromUnderlying } from '../../containers/InvestPage/actions';
 
 
 
@@ -354,15 +355,19 @@ class ActionModal extends React.Component {
     modal_type: 'mint',
     value_base: '',
     value_native: '',
+    value_redeem: '',
     is_native: true,
     underlying_balance: null,
     asset_balance: null,
     total_supply: null,
     deposit_fee: null,
+    withdrawal_fee: null,
     exchange_rate: null,
     total_reserve: null,
     total_native: null,
     total_base: null,
+    total_native_redeem: null,
+    total_base_redeem: null,
     underlying_conversion: null,
   }
 
@@ -381,14 +386,16 @@ class ActionModal extends React.Component {
     
      const total_supply = await GContractInstance.methods.totalSupply().call();
      const deposit_fee = await GContractInstance.methods.depositFee().call();
+     const withdrawal_fee = await GContractInstance.methods.withdrawalFee().call();
      const exchange_rate = await GContractInstance.methods.exchangeRate().call();
      const total_reserve = await GContractInstance.methods.totalReserve().call(); 
 
      // Balance of the underlying asset
+     const g_balance = await GContractInstance.methods.balanceOf(address).call(); 
      const underlying_balance = await UnderlyingContractInstance.methods.balanceOf(address).call(); 
      const asset_balance = await BaseContractInstance.methods.balanceOf(address).call(); 
 
-     this.setState({total_supply, deposit_fee, exchange_rate, total_reserve, underlying_balance, asset_balance});
+     this.setState({total_supply, deposit_fee, withdrawal_fee, exchange_rate, total_reserve, underlying_balance, asset_balance, g_balance});
   }
 
   toggleModal = (modal_type) => {
@@ -420,6 +427,11 @@ class ActionModal extends React.Component {
         } else {
           this.setState({value_base: value});
         }
+      } 
+    
+      if (modal_type === 'redeem') {
+        this.calculateBurningTotal(value);
+        this.setState({value_redeem: value})
       }
     }
   }
@@ -432,7 +444,7 @@ class ActionModal extends React.Component {
 
   calculateMintingTotal = debounce(async (value) => {
     const { web3, asset } = this.props;
-    const { is_native, total_reserve, total_supply, exchange_rate, deposit_fee} = this.state;
+    const { modal_type, is_native, total_reserve, total_supply, exchange_rate, deposit_fee} = this.state;
 
     const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
 
@@ -444,34 +456,68 @@ class ActionModal extends React.Component {
       })
     }
 
-    if (is_native) {
-      const netShares = await web3.utils.toWei(value).toString();
-      const underlying_conversion = await GContractInstance.methods.calcCostFromUnderlyingCost(netShares, exchange_rate).call();
-      const result = await GContractInstance.methods.calcDepositSharesFromCost(underlying_conversion, total_reserve, total_supply, deposit_fee).call();
-      const {_netShares, _feeShares} = result;
-      this.setState({
-        real_fee: _feeShares,
-        total_native: _netShares,
-      });
-
-    } else {
-      // CTokens only have 8 decimals
-      const _cost = value * 1e8;
-      const result = await GContractInstance.methods.calcDepositSharesFromCost(_cost, total_reserve, total_supply, deposit_fee).call();
-      const {_netShares, _feeShares} = result;
-      this.setState({
-        real_fee: _feeShares,
-        total_base: _netShares,
-      })
+    // Calculate the total to mint
+    if (modal_type === 'mint') {
+      if (is_native) {
+        const netShares = (value * asset.underlying_decimals).toString()
+        const underlying_conversion = await GContractInstance.methods.calcCostFromUnderlyingCost(netShares, exchange_rate).call();
+        const result = await GContractInstance.methods.calcDepositSharesFromCost(underlying_conversion, total_reserve, total_supply, deposit_fee).call();
+        const {_netShares, _feeShares} = result;
+        this.setState({
+          real_fee: _feeShares,
+          total_native: _netShares,
+        });
+  
+      } else {
+        // CTokens only have 8 decimals
+        const _cost = value * 1e8;
+        const result = await GContractInstance.methods.calcDepositSharesFromCost(_cost, total_reserve, total_supply, deposit_fee).call();
+        const {_netShares, _feeShares} = result;
+        this.setState({
+          real_fee: _feeShares,
+          total_base: _netShares,
+        })
+      }
     }
+
   }, 250);
 
-  calculateBurningTotal = () => {
-    const {value} = this.state;
+  calculateBurningTotal = debounce(async (value) => {
+    const { web3, asset } = this.props;
+    const { modal_type, is_native, total_reserve, total_supply, exchange_rate, withdrawal_fee} = this.state;
+
   
-    const burning_ratio = this.calculateBurningFee();
-    return value / burning_ratio;
-  }
+    // Handle 0 value transactions
+    if (!value || value.length <= 0) {
+      this.setState({
+        real_fee: null,
+        total: null,
+      })
+    }
+
+    if (is_native) {
+      const netShares = (value * 1e8).toString()
+      const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+      const result = await GContractInstance.methods.calcWithdrawalCostFromShares(netShares, total_reserve, total_supply, withdrawal_fee).call();
+      const rate = await GContractInstance.methods.calcUnderlyingCostFromCost(result._cost, exchange_rate).call()
+      console.log(result)
+      const {_grossShares, _feeShares} = result;
+      this.setState({
+        real_fee: _feeShares,
+        total_native_redeem: rate,
+      });
+    } else {
+        const netShares = (value * 1e8).toString()
+        const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+        const result = await GContractInstance.methods.calcWithdrawalCostFromShares(netShares, total_reserve, total_supply, withdrawal_fee).call();
+        const {_cost, _feeShares} = result;
+        this.setState({
+          real_fee: _feeShares,
+          total_base_redeem: _cost,
+        });
+    }
+
+  }, 250)
 
   toggleNativeSelector = () => {
     this.setState({is_native: !this.state.is_native})
@@ -485,21 +531,31 @@ class ActionModal extends React.Component {
 
   showBalance = (is_native) => {
       const {asset} = this.props;
-      const { underlying_balance, asset_balance } = this.state;
-      if (!underlying_balance || !asset_balance) return '-';
-      if (is_native) {
-        return (underlying_balance / asset.underlying_decimals).toFixed(2);
-      } else {
-        return (asset_balance / 1e8).toFixed(2);
+      const { underlying_balance, asset_balance, g_balance, modal_type } = this.state;
+      if (!underlying_balance || !asset_balance || !g_balance ) return '-';
+
+      if (modal_type === 'mint') {
+        if (is_native) {
+          return (underlying_balance / asset.underlying_decimals).toFixed(2);
+        } else {
+          return (asset_balance / 1e8).toFixed(2);
+        }
       }
+
+      if (modal_type === 'redeem') {
+        return Math.round((g_balance / 1e8) * 10000) / 10000;
+      }
+
+      
   }
 
   setMax = () => {
-    const {modal_type, is_native, underlying_balance, asset_balance} = this.state;
+    const { asset } = this.props;
+    const {modal_type, is_native, underlying_balance, asset_balance, g_balance} = this.state;
     
     if (modal_type === 'mint') {
       if (is_native) {
-        const value_native = underlying_balance / 1e18;
+        const value_native = underlying_balance / asset.underlying_decimals;
         this.setState({value_native});
         this.handleInputChange(value_native)
       } else {
@@ -507,6 +563,12 @@ class ActionModal extends React.Component {
         this.setState({value_base});
         this.handleInputChange(value_base)
       }
+    }
+
+    if (modal_type === 'redeem') {
+      const value_redeem = g_balance / 1e8;
+      this.setState({value_redeem});
+      this.handleInputChange(value_redeem)
     }
   }
 
@@ -540,10 +602,40 @@ class ActionModal extends React.Component {
       })
     }
   }
+
+
+  handleRedeem = async () => {
+    const {
+      asset, web3, address,
+      redeemGTokenToCToken,
+      redeemGTokenToUnderlying,
+    } = this.props;
+
+    const { is_native, total_native_redeem, total_base_redeem } = this.state;
+    
+    // Handle depending the asset
+    if (is_native) {
+
+      const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+      redeemGTokenToUnderlying({
+        GContractInstance, 
+        _grossShares: total_native_redeem, 
+        address
+      })
+
+    } else {
+      const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+      redeemGTokenToCToken({
+        GContractInstance, 
+        _grossShares: total_base_redeem, 
+        address
+      })
+    }
+  }
   
   render () {
     const {type, asset} = this.props;
-    const {show, modal_type, value_base, value_native, is_native, total_supply, total_reserve, deposit_fee, total_base, total_native, exchange_rate } = this.state;
+    const {show, modal_type, value_base, value_native, is_native, total_supply, total_reserve, deposit_fee, total_base, total_native, value_redeem, total_native_redeem, total_base_redeem } = this.state;
     return (
       <div
         onClick={(e) => {
@@ -604,7 +696,7 @@ class ActionModal extends React.Component {
                 <BalanceLabel>BALANCE: {this.showBalance(is_native)}</BalanceLabel>
                 <InputRow>
                   <AmountInput>
-                    {is_native ? (
+                    {modal_type === 'mint' && is_native && (
                       <StyledInput
                         value={value_native}
                         placeholder="0.0"
@@ -614,7 +706,8 @@ class ActionModal extends React.Component {
                           this.handleInputChange(e.target.value)
                         }}
                       />
-                    ) : (
+                    )} 
+                    {modal_type === 'mint' && !is_native && (
                       <StyledInput
                         value={value_base}
                         placeholder="0.0"
@@ -625,6 +718,17 @@ class ActionModal extends React.Component {
                         }}
                       />
                     )}
+                    {modal_type === 'redeem' && (
+                      <StyledInput
+                        value={value_redeem}
+                        placeholder="0.0"
+                        type="number"
+                        onClick={e => e.stopPropagation()}
+                        onChange={e => {
+                          this.handleInputChange(e.target.value)
+                        }}
+                      />
+                    )} 
                     
                   </AmountInput>
                   <MaxButton
@@ -727,7 +831,9 @@ class ActionModal extends React.Component {
               <SummaryColumn align="flex-end">
                 {modal_type === 'mint'&& is_native && <PrimaryLabel>{total_native ? this.parseNumber(total_native, 1e8) : '-'} {asset.g_asset}</PrimaryLabel>}
                 {modal_type === 'mint'&& !is_native && <PrimaryLabel>{total_base ? this.parseNumber(total_base, 1e8) : '-'} {asset.g_asset}</PrimaryLabel>}
-                {modal_type === 'redeem' && <PrimaryLabel>{Math.round(this.calculateBurningTotal() * 100) / 100} {is_native ? asset.native : asset.base_asset}</PrimaryLabel>}
+                {modal_type === 'redeem'&& is_native && <PrimaryLabel>{total_native_redeem ? this.parseNumber(total_native_redeem, 1e18) : '-'} {asset.native}</PrimaryLabel>}
+                {modal_type === 'redeem'&& !is_native && <PrimaryLabel>{total_base_redeem ? this.parseNumber(total_base_redeem, 1e8) : '-'} {asset.base_asset}</PrimaryLabel>}
+                 
               </SummaryColumn>
             </SummaryRow>
             <SummaryRow justify="center" flex="2">
@@ -740,7 +846,10 @@ class ActionModal extends React.Component {
                   </ActionConfirmButton>
                 )}
                 {modal_type === 'redeem' &&  (
-                  <ActionConfirmButton modal_type={modal_type}>
+                  <ActionConfirmButton 
+                    modal_type={modal_type}
+                    onClick={() => this.handleRedeem()}
+                  >
                     CONFIRM REDEEM
                   </ActionConfirmButton>
                 )}
