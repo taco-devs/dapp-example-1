@@ -352,6 +352,7 @@ class ActionModal extends React.Component {
 
   state = {
     show: false,
+    isLoading: false,
     modal_type: 'mint',
     value_base: '',
     value_native: '',
@@ -396,11 +397,11 @@ class ActionModal extends React.Component {
      const underlying_balance = await UnderlyingContractInstance.methods.balanceOf(address).call(); 
      const asset_balance = await BaseContractInstance.methods.balanceOf(address).call(); 
 
-     this.setState({total_supply, deposit_fee, withdrawal_fee, exchange_rate, total_reserve, underlying_balance, asset_balance, g_balance});
+     this.setState({total_supply, deposit_fee, withdrawal_fee, exchange_rate, total_reserve, underlying_balance, asset_balance, g_balance, isLoading: false});
   }
 
   toggleModal = (modal_type) => {
-    this.setState({show: !this.state.show});
+    this.setState({show: !this.state.show, isLoading: true});
     this.fetchBalance();
 
     if (modal_type) {
@@ -637,7 +638,7 @@ class ActionModal extends React.Component {
   
   render () {
     const {type, asset} = this.props;
-    const {show, modal_type, value_base, value_native, is_native, total_supply, total_reserve, deposit_fee, total_base, total_native, value_redeem, total_native_redeem, total_base_redeem } = this.state;
+    const {show, isLoading, modal_type, value_base, value_native, is_native, total_supply, total_reserve, deposit_fee, total_base, total_native, value_redeem, total_native_redeem, total_base_redeem } = this.state;
     return (
       <div
         onClick={(e) => {
@@ -701,6 +702,7 @@ class ActionModal extends React.Component {
                     {modal_type === 'mint' && is_native && (
                       <StyledInput
                         value={value_native}
+                        disabled={isLoading}
                         placeholder="0.0"
                         type="number"
                         onClick={e => e.stopPropagation()}
@@ -713,6 +715,7 @@ class ActionModal extends React.Component {
                       <StyledInput
                         value={value_base}
                         placeholder="0.0"
+                        disabled={isLoading}
                         type="number"
                         onClick={e => e.stopPropagation()}
                         onChange={e => {
@@ -724,6 +727,7 @@ class ActionModal extends React.Component {
                       <StyledInput
                         value={value_redeem}
                         placeholder="0.0"
+                        disabled={isLoading}
                         type="number"
                         onClick={e => e.stopPropagation()}
                         onChange={e => {
