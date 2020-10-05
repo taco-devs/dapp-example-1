@@ -75,6 +75,7 @@ function* redeemGTokenToCTokenSaga(params) {
 
     // Call Web3 to Confirm this transaction
     const result = yield call([WithdrawMethod, WithdrawMethod.send], {from: address});
+    console.log(result);
 
   } catch (error) {
     const jsonError = yield error.response ? error.response.json() : error;

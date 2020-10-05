@@ -367,6 +367,7 @@ class ActionModal extends React.Component {
     total_native: null,
     total_base: null,
     total_native_redeem: null,
+    total_native_cost_redeem: null,
     total_base_redeem: null,
     underlying_conversion: null,
   }
@@ -496,14 +497,14 @@ class ActionModal extends React.Component {
     }
 
     if (is_native) {
-      const netShares = (value * 1e8).toString()
+      const netShares = (value * 1e8).toString();
       const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
       const result = await GContractInstance.methods.calcWithdrawalCostFromShares(netShares, total_reserve, total_supply, withdrawal_fee).call();
-      const rate = await GContractInstance.methods.calcUnderlyingCostFromCost(result._cost, exchange_rate).call()
-      console.log(result)
-      const {_grossShares, _feeShares} = result;
+      const rate = await GContractInstance.methods.calcUnderlyingCostFromCost(result._cost, exchange_rate).call();
+      const {_cost, _feeShares} = result;
       this.setState({
         real_fee: _feeShares,
+        total_native_cost_redeem: netShares,
         total_native_redeem: rate,
       });
     } else {
@@ -513,6 +514,7 @@ class ActionModal extends React.Component {
         const {_cost, _feeShares} = result;
         this.setState({
           real_fee: _feeShares,
+          total_base_cost_redeem: netShares,
           total_base_redeem: _cost,
         });
     }
@@ -611,7 +613,7 @@ class ActionModal extends React.Component {
       redeemGTokenToUnderlying,
     } = this.props;
 
-    const { is_native, total_native_redeem, total_base_redeem } = this.state;
+    const { is_native, total_native_cost_redeem, total_base_cost_redeem } = this.state;
     
     // Handle depending the asset
     if (is_native) {
@@ -619,7 +621,7 @@ class ActionModal extends React.Component {
       const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
       redeemGTokenToUnderlying({
         GContractInstance, 
-        _grossShares: total_native_redeem, 
+        _grossShares: total_native_cost_redeem, 
         address
       })
 
@@ -627,7 +629,7 @@ class ActionModal extends React.Component {
       const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
       redeemGTokenToCToken({
         GContractInstance, 
-        _grossShares: total_base_redeem, 
+        _grossShares: total_base_cost_redeem, 
         address
       })
     }
