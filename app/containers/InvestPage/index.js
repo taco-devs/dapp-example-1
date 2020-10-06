@@ -14,16 +14,18 @@ import { compose } from 'redux';
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
 import { makeSelectPagination, makeSelectSearch } from './selectors';
-import { makeSelectCurrrentNetwork } from '../App/selectors';
+import { makeSelectCurrrentNetwork, makeSelectCurrrentSwap } from '../App/selectors';
 import { makeSelectBalances } from '../GrowthStats/selectors';
 import {isMobile} from 'react-device-detect';
 import reducer from './reducer';
 import saga from './saga';
 import messages from './messages';
 import styled from 'styled-components';
+import ConfirmationModal from 'components/ConfirmationModal';
 import {AssetList, InvestHeader} from './components';
 import NetworkData from 'contracts';
 import { changePage, searchAssets, mintGTokenFromCToken, mintGTokenFromUnderlying, redeemGTokenToCToken, redeemGTokenToUnderlying } from './actions';
+import { addCurrentSwap, dismissSwap } from '../App/actions';
 
 const Invest = styled.div`
   display: flex;
@@ -54,22 +56,24 @@ class InvestPage extends React.Component {
     const Network = network ? NetworkData[network] : NetworkData['eth'];
     const assets = this.assetKeys(Network);
     return (
-      <Invest isMobile={isMobile}>
-        <InvestHeader 
-          {...this.props} 
-          isMobile={isMobile}
-          assets={assets}
-        />
-        <InvestContainer>
-          <AssetList 
-            {...this.props}
+      <React.Fragment>
+        <Invest isMobile={isMobile}>
+          <InvestHeader 
+            {...this.props} 
             isMobile={isMobile}
             assets={assets}
-            Network={Network}
           />
-        </InvestContainer>
-      </Invest>
-    
+          <InvestContainer>
+            <AssetList 
+              {...this.props}
+              isMobile={isMobile}
+              assets={assets}
+              Network={Network}
+            />
+          </InvestContainer>
+        </Invest>
+        <ConfirmationModal {...this.props} />
+      </React.Fragment>
     );
   }
   
@@ -84,7 +88,10 @@ const withReducer = injectReducer({ key: 'investPage', reducer });
 const withSaga = injectSaga({ key: 'investSaga', saga });
 
 const mapStateToProps = createStructuredSelector({
+  // App
   network: makeSelectCurrrentNetwork(),
+  currentSwap: makeSelectCurrrentSwap(),
+  // Invest
   balances: makeSelectBalances(),
   pagination: makeSelectPagination(),
   search: makeSelectSearch(),
@@ -92,6 +99,10 @@ const mapStateToProps = createStructuredSelector({
 
 function mapDispatchToProps(dispatch) {
   return {
+    // App
+    addCurrentSwap: (swap) => dispatch(addCurrentSwap(swap)),
+    dismissSwap: () => dispatch(dismissSwap()),
+    // Invest
     changePage: (pagination) => dispatch(changePage(pagination)),
     searchAssets: (search) => dispatch(searchAssets(search)),
     mintGTokenFromCToken: (payload) => dispatch(mintGTokenFromCToken(payload)),

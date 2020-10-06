@@ -15,6 +15,13 @@ const makeSelectCurrrentNetwork = () =>
     globalState => globalState.get('network'),
   );
 
+const makeSelectCurrrentSwap = () =>
+  createSelector(
+    selectGlobal,
+    globalState => globalState.get('currentSwap'),
+  );
+
 export {
-  makeSelectCurrrentNetwork
+  makeSelectCurrrentNetwork, 
+  makeSelectCurrrentSwap
 };

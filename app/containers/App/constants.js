@@ -14,3 +14,5 @@ export const LOAD_REPOS_SUCCESS = 'boilerplate/App/LOAD_REPOS_SUCCESS';
 export const LOAD_REPOS_ERROR = 'boilerplate/App/LOAD_REPOS_ERROR';
 
 export const SETUP_NETWORK = 'boilerplate/App/SETUP_NETWORK';
+export const ADD_CURRENT_SWAP = 'boilerplate/App/ADD_CURRENT_SWAP';
+export const DISMISS_SWAP = 'boilerplate/App/DISMISS_SWAP';

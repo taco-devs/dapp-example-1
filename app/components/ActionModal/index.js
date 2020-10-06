@@ -582,17 +582,42 @@ class ActionModal extends React.Component {
       mintGTokenFromUnderlying,
     } = this.props;
 
-    const { is_native, value_base, value_native } = this.state;
+    const { is_native, value_base, value_native, total_native } = this.state;
     
     // Handle depending the asset
     if (is_native) {
 
       const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
       const _cost = (value_native * 1e18).toString();
+      console.log({
+        GContractInstance, 
+        _cost, 
+        address,
+        asset: {
+          from: asset.native,
+          to: asset.g_asset,
+          sending: _cost,
+          receiving: total_native,
+          fromDecimals: asset.underlying_decimals,
+          toDecimals: 1e8,
+        },
+        toggle: this.toggleModal
+      })
       mintGTokenFromUnderlying({
         GContractInstance, 
         _cost, 
-        address
+        address,
+        asset: {
+          from: asset.native,
+          to: asset.g_asset,
+          sending: _cost,
+          receiving: total_native,
+          fromDecimals: asset.underlying_decimals,
+          toDecimals: 1e8,
+          fromImage: asset.native_img_url,
+          toImage: asset.img_url,
+        },
+        toggle: this.toggleModal
       })
 
     } else {

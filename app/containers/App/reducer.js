@@ -8,10 +8,11 @@
  */
 
 import { fromJS } from 'immutable';
-import { SETUP_NETWORK } from './constants';
+import { SETUP_NETWORK, ADD_CURRENT_SWAP, DISMISS_SWAP } from './constants';
 
 export const initialState = fromJS({
-  network: 'eth'
+  network: 'eth',
+  currentSwap: null,
 });
 
 
@@ -19,6 +20,10 @@ function appReducer(state = initialState, action) {
   switch (action.type) {
     case SETUP_NETWORK: 
       return state.set('network', action.network);
+    case ADD_CURRENT_SWAP: 
+      return state.set('currentSwap', action.swap);
+    case DISMISS_SWAP: 
+      return state.set('currentSwap', null);
     default:
       return state;
   }

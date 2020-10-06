@@ -15,7 +15,7 @@
  *    }
  */
 
-import { LOAD_REPOS, LOAD_REPOS_SUCCESS, LOAD_REPOS_ERROR, SETUP_NETWORK } from './constants';
+import { LOAD_REPOS, LOAD_REPOS_SUCCESS, LOAD_REPOS_ERROR, SETUP_NETWORK, ADD_CURRENT_SWAP, DISMISS_SWAP } from './constants';
 
 /**
  * Load the repositories, this action starts the request saga
@@ -62,5 +62,18 @@ export function setupNetwork(network) {
   return {
     type: SETUP_NETWORK,
     network,
+  };
+}
+
+export function addCurrentSwap(swap) {
+  return {
+    type: ADD_CURRENT_SWAP,
+    swap,
+  };
+}
+
+export function dismissSwap() {
+  return {
+    type: DISMISS_SWAP,
   };
 }

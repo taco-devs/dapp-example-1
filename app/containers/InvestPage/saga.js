@@ -11,6 +11,10 @@ import {
   mintGTokenFromUnderlyingSuccess, mintGTokenFromUnderlyingError
 } from './actions';
 
+import {
+  addCurrentSwap, dismissSwap
+} from '../App/actions'
+
 const deposit = (ContractInstance, _cost) => {
   return ContractInstance.methods.deposit(_cost);
 }
@@ -48,18 +52,44 @@ function* mintGTokenFromCTokenSaga(params) {
 
 
 function* mintGTokenFromUnderlyingSaga(params) {
+
+  const {payload} = params;
+  const {GContractInstance, _cost, address, asset, toggle} = payload;
+
   try { 
 
-    const {payload} = params;
-    const {GContractInstance, _cost, address} = payload;
     const DepositMethod = deposit_underlying(GContractInstance, _cost);
-    console.log(payload)
+
+    // Close the current modal
+    yield toggle();
+
+    // Call the confirmation modal
+    yield put(addCurrentSwap({
+      status: 'loading',
+      type: 'mint',
+      from: asset.from,
+      to: asset.to,
+      sending: asset.sending,
+      receiving: asset.receiving,
+      fromDecimals: asset.fromDecimals,
+      toDecimals: asset.toDecimals,
+      fromImage: asset.fromImage,
+      toImage: asset.toImage
+    }));    
 
     // Call Web3 to Confirm this transaction
     const result = yield call([DepositMethod, DepositMethod.send], {from: address});
 
+    if (result) {
+      console.log(result);
+      yield put(dismissSwap());
+    }
+
   } catch (error) {
+
     const jsonError = yield error.response ? error.response.json() : error;
+    yield put(dismissSwap());
+    yield toggle();
     yield put(mintGTokenFromCTokenError(jsonError));
   }
 }
@@ -75,7 +105,6 @@ function* redeemGTokenToCTokenSaga(params) {
 
     // Call Web3 to Confirm this transaction
     const result = yield call([WithdrawMethod, WithdrawMethod.send], {from: address});
-    console.log(result);
 
   } catch (error) {
     const jsonError = yield error.response ? error.response.json() : error;
@@ -91,8 +120,6 @@ function* redeemGTokenToUnderlyingSaga(params) {
     const {GContractInstance, _grossShares, address} = payload;
     const WithdrawMethod = withdraw_underlying(GContractInstance, _grossShares);
 
-
-    console.log(_grossShares)
     // Call Web3 to Confirm this transaction
     const result = yield call([WithdrawMethod, WithdrawMethod.send], {from: address});
     
