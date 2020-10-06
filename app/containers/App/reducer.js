@@ -10,6 +10,20 @@
 import { fromJS } from 'immutable';
 import { SETUP_NETWORK, ADD_CURRENT_SWAP, DISMISS_SWAP } from './constants';
 
+const dummyswap = {
+  status: 'confirmed',
+  type: 'mint',
+  from: 'DAI',
+  to: 'gcDAI',
+  sending: 10,
+  receiving: 200,
+  fromDecimals: 1,
+  toDecimals: 1,
+  fromImage: 'https://s2.coinmarketcap.com/static/img/coins/64x64/5263.png',
+  toImage: 'https://s2.coinmarketcap.com/static/img/coins/64x64/4943.png',
+  hash: 'hdksf'
+}
+
 export const initialState = fromJS({
   network: 'eth',
   currentSwap: null,
@@ -19,7 +33,7 @@ export const initialState = fromJS({
 function appReducer(state = initialState, action) {
   switch (action.type) {
     case SETUP_NETWORK: 
-      return state.set('network', action.network);
+      return state.set('network', action.network)//.set('currentSwap', dummyswap);
     case ADD_CURRENT_SWAP: 
       return state.set('currentSwap', action.swap);
     case DISMISS_SWAP: 

@@ -589,20 +589,6 @@ class ActionModal extends React.Component {
 
       const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
       const _cost = (value_native * 1e18).toString();
-      console.log({
-        GContractInstance, 
-        _cost, 
-        address,
-        asset: {
-          from: asset.native,
-          to: asset.g_asset,
-          sending: _cost,
-          receiving: total_native,
-          fromDecimals: asset.underlying_decimals,
-          toDecimals: 1e8,
-        },
-        toggle: this.toggleModal
-      })
       mintGTokenFromUnderlying({
         GContractInstance, 
         _cost, 

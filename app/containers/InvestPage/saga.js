@@ -1,5 +1,6 @@
+import { channel } from 'redux-saga';
 import {
-  call, put, select, takeLatest, fork, all
+  call, put, select, takeLatest, fork, all, cancelled, take
 } from 'redux-saga/effects';
 
 import request from 'utils/request'
@@ -15,12 +16,65 @@ import {
   addCurrentSwap, dismissSwap
 } from '../App/actions'
 
+
+const connectionStatusChannel = channel();
+
 const deposit = (ContractInstance, _cost) => {
   return ContractInstance.methods.deposit(_cost);
 }
 
-const deposit_underlying = (ContractInstance, _cost) => {
-  return ContractInstance.methods.depositUnderlying(_cost);
+const deposit_underlying = (ContractInstance, _cost, address, asset, functions) => {
+  let stored_hash;
+  return ContractInstance.methods.depositUnderlying(_cost).send({ from: address})
+    .on("transactionHash", (hash) => {
+        stored_hash = hash;
+        connectionStatusChannel.put(
+          functions.addCurrentSwap({
+            status: 'receipt',
+            type: 'mint',
+            from: asset.from,
+            to: asset.to,
+            sending: asset.sending,
+            receiving: asset.receiving,
+            fromDecimals: asset.fromDecimals,
+            toDecimals: asset.toDecimals,
+            fromImage: asset.fromImage,
+            toImage: asset.toImage,
+            hash,
+            progress: false,
+          })
+        )
+    })
+    .on("receipt",  (tx) => {
+        // Send the confirmation receipt
+        connectionStatusChannel.put(
+          functions.addCurrentSwap({
+            status: 'confirmed',
+            type: 'mint',
+            from: asset.from,
+            to: asset.to,
+            sending: asset.sending,
+            receiving: asset.receiving,
+            fromDecimals: asset.fromDecimals,
+            toDecimals: asset.toDecimals,
+            fromImage: asset.fromImage,
+            toImage: asset.toImage,
+            hash: stored_hash,
+            progress: true,
+          })
+        )
+
+        // Timeout to autoclose the modal in 5s
+        setTimeout(() => {
+          connectionStatusChannel.put(functions.dismissSwap());
+        }, 5000)
+    })
+    .on("confirmation", (confirmation) => {
+      // connectionStatusChannel.put(functions.dismissSwap()); 
+    })
+    .on("error", async function () {
+        console.log("Error");
+    });
 }
 
 const withdraw = (ContractInstance, _cost) => {
@@ -57,9 +111,7 @@ function* mintGTokenFromUnderlyingSaga(params) {
   const {GContractInstance, _cost, address, asset, toggle} = payload;
 
   try { 
-
-    const DepositMethod = deposit_underlying(GContractInstance, _cost);
-
+  
     // Close the current modal
     yield toggle();
 
@@ -77,13 +129,19 @@ function* mintGTokenFromUnderlyingSaga(params) {
       toImage: asset.toImage
     }));    
 
+    
     // Call Web3 to Confirm this transaction
-    const result = yield call([DepositMethod, DepositMethod.send], {from: address});
-
-    if (result) {
-      console.log(result);
-      yield put(dismissSwap());
-    }
+    // const result = yield call([DepositMethod, DepositMethod.send], {from: address});
+    yield deposit_underlying(
+      GContractInstance, 
+      _cost, 
+      address, 
+      asset,
+      {
+        toggle,
+        addCurrentSwap,
+        dismissSwap
+      });
 
   } catch (error) {
 
@@ -148,11 +206,19 @@ function* redeemGTokenToUnderlyingRequest() {
   yield takeLatest(REDEEM_GTOKEN_TO_UNDERLYING, redeemGTokenToUnderlyingSaga);
 }
 
+function* watchDownloadFileChannel() {
+  while (true) {
+    const action = yield take(connectionStatusChannel)
+    yield put(action)
+  }
+}
+
 export default function* rootSaga() {
   yield all([
     fork(mintGTokenFromCTokenRequest),
     fork(mintGTokenFromUnderlyingRequest),
     fork(redeemGTokenToCTokenRequest),
     fork(redeemGTokenToUnderlyingRequest),
+    fork(watchDownloadFileChannel)
   ]);
 }
