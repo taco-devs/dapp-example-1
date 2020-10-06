@@ -401,7 +401,7 @@ class ActionModal extends React.Component {
   }
 
   toggleModal = (modal_type) => {
-    this.setState({show: !this.state.show, isLoading: true});
+    this.setState({show: !this.state.show, isLoading: true, is_native: true});
     this.fetchBalance();
 
     if (modal_type) {
@@ -582,7 +582,7 @@ class ActionModal extends React.Component {
       mintGTokenFromUnderlying,
     } = this.props;
 
-    const { is_native, value_base, value_native, total_native } = this.state;
+    const { is_native, value_base, value_native, total_native, total_base } = this.state;
     
     // Handle depending the asset
     if (is_native) {
@@ -609,10 +609,37 @@ class ActionModal extends React.Component {
     } else {
       const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
       const _cost = (value_base * 1e8).toString();
+      console.log({
+        GContractInstance, 
+        _cost, 
+        address,
+        asset: {
+          from: asset.base_asset ,
+          to: asset.g_asset,
+          sending: _cost,
+          receiving: total_base,
+          fromDecimals: 1e8,
+          toDecimals: 1e8,
+          fromImage: asset.native_img_url,
+          toImage: asset.img_url,
+        },
+        toggle: this.toggleModal
+      })
       mintGTokenFromCToken({
         GContractInstance, 
         _cost, 
-        address
+        address,
+        asset: {
+          from: asset.base_asset ,
+          to: asset.g_asset,
+          sending: _cost,
+          receiving: total_base,
+          fromDecimals: 1e8,
+          toDecimals: 1e8,
+          fromImage: asset.native_img_url,
+          toImage: asset.img_url,
+        },
+        toggle: this.toggleModal
       })
     }
   }
@@ -772,7 +799,7 @@ class ActionModal extends React.Component {
             onClick={e => e.stopPropagation()}
           >
             <SwitchBox modal_type={modal_type} onClick={e => e.stopPropagation()}>
-              <input type="checkbox" />
+              <input type="checkbox" value={is_native} />
               <SwitchSlider className="slider" modal_type={modal_type} onClick={() => this.toggleNativeSelector()}>
                 <SwitchLabel is_native={is_native} modal_type={modal_type}>
                   <p>NATIVE</p>

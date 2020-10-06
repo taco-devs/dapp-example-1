@@ -192,7 +192,6 @@ class ConfirmationModal extends React.Component {
 
   render() {
     const {currentSwap} = this.props;
-    console.log(currentSwap);
     return (
       <Modal
             isOpen={currentSwap}

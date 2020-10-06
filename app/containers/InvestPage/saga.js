@@ -19,8 +19,58 @@ import {
 
 const connectionStatusChannel = channel();
 
-const deposit = (ContractInstance, _cost) => {
-  return ContractInstance.methods.deposit(_cost);
+const deposit = (ContractInstance, _cost, address, asset, functions) => {
+  let stored_hash;
+  return ContractInstance.methods.deposit(_cost).send({ from: address})
+    .on("transactionHash", (hash) => {
+        stored_hash = hash;
+        connectionStatusChannel.put(
+          functions.addCurrentSwap({
+            status: 'receipt',
+            type: 'mint',
+            from: asset.from,
+            to: asset.to,
+            sending: asset.sending,
+            receiving: asset.receiving,
+            fromDecimals: asset.fromDecimals,
+            toDecimals: asset.toDecimals,
+            fromImage: asset.fromImage,
+            toImage: asset.toImage,
+            hash,
+            progress: false,
+          })
+        )
+    })
+    .on("receipt",  (tx) => {
+        // Send the confirmation receipt
+        connectionStatusChannel.put(
+          functions.addCurrentSwap({
+            status: 'confirmed',
+            type: 'mint',
+            from: asset.from,
+            to: asset.to,
+            sending: asset.sending,
+            receiving: asset.receiving,
+            fromDecimals: asset.fromDecimals,
+            toDecimals: asset.toDecimals,
+            fromImage: asset.fromImage,
+            toImage: asset.toImage,
+            hash: stored_hash,
+            progress: true,
+          })
+        )
+
+        // Timeout to autoclose the modal in 5s
+        setTimeout(() => {
+          connectionStatusChannel.put(functions.dismissSwap());
+        }, 5000)
+    })
+    .on("confirmation", (confirmation) => {
+      // connectionStatusChannel.put(functions.dismissSwap()); 
+    })
+    .on("error", async function () {
+        console.log("Error");
+    });
 }
 
 const deposit_underlying = (ContractInstance, _cost, address, asset, functions) => {
@@ -86,20 +136,47 @@ const withdraw_underlying = (ContractInstance, _cost) => {
 }
 
 function* mintGTokenFromCTokenSaga(params) {
-
+  const {payload} = params;
+  const {GContractInstance, _cost, address, asset, toggle} = payload;
 
   try { 
+  
+    // Close the current modal
+    yield toggle();
 
-    const {payload} = params;
-    const {GContractInstance, _cost, address} = payload;
+    // Call the confirmation modal
+    yield put(addCurrentSwap({
+      status: 'loading',
+      type: 'mint',
+      from: asset.from,
+      to: asset.to,
+      sending: asset.sending,
+      receiving: asset.receiving,
+      fromDecimals: asset.fromDecimals,
+      toDecimals: asset.toDecimals,
+      fromImage: asset.fromImage,
+      toImage: asset.toImage
+    }));    
+
     
-    const DepositMethod = deposit(GContractInstance, _cost);
-
     // Call Web3 to Confirm this transaction
-    const result = yield call([DepositMethod, DepositMethod.send], {from: address});
+    // const result = yield call([DepositMethod, DepositMethod.send], {from: address});
+    yield deposit(
+      GContractInstance, 
+      _cost, 
+      address, 
+      asset,
+      {
+        toggle,
+        addCurrentSwap,
+        dismissSwap
+      });
 
   } catch (error) {
+    console.log(error);
     const jsonError = yield error.response ? error.response.json() : error;
+    yield put(dismissSwap());
+    yield toggle();
     yield put(mintGTokenFromCTokenError(jsonError));
   }
 }
@@ -144,7 +221,7 @@ function* mintGTokenFromUnderlyingSaga(params) {
       });
 
   } catch (error) {
-
+    console.log(error);
     const jsonError = yield error.response ? error.response.json() : error;
     yield put(dismissSwap());
     yield toggle();
@@ -160,6 +237,7 @@ function* redeemGTokenToCTokenSaga(params) {
     const {GContractInstance, _grossShares, address} = payload;
     
     const WithdrawMethod = withdraw(GContractInstance, _grossShares);
+    
 
     // Call Web3 to Confirm this transaction
     const result = yield call([WithdrawMethod, WithdrawMethod.send], {from: address});
