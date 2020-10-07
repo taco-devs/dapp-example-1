@@ -57,6 +57,12 @@ const NavbarTab = styled.div`
   }
 `
 
+const NavbarColumn = styled.div`
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  justify-content: ${props => props.justify || 'flex-start'};
+`
 
 
 const StyledMessage = styled.div`
@@ -94,50 +100,55 @@ class Navbar extends React.Component {
       <NavbarContainer
         isMobile={isMobile}
       >
-        <StyledLink to="/">
-          <NavbarTab 
-            active={active === '/'}
-            onClick={() => this.selectActive('/')}
-          >
-            <BiLineChart />
-            <StyledMessage>
-              <FormattedMessage {...messages.invest} />
-            </StyledMessage>
-          </NavbarTab>
-        </StyledLink>
-        <StyledLink to="/vote">
-          <NavbarTab
-            active={active === '/vote'}
-            onClick={() => this.selectActive('/vote')}
-          >
-            <FaVoteYea />
-            <StyledMessage>
-              <FormattedMessage {...messages.vote} />
-            </StyledMessage>
-          </NavbarTab>
-        </StyledLink>
-        <StyledLink to="/transactions">
-          <NavbarTab
-            active={active === '/transactions'}
-            onClick={() => this.selectActive('/transactions')}
-          >
-            <BiTransfer />
-            <StyledMessage>
-              <FormattedMessage {...messages.transactions} />
-            </StyledMessage>
-          </NavbarTab>
-        </StyledLink>
-        <StyledLink to="/balance">
-          <NavbarTab
-            active={active === '/balance'}
-            onClick={() => this.selectActive('/balance')}
-          >
-            <MdAccountBalanceWallet />
-            <StyledMessage>
-              <FormattedMessage {...messages.balance} />
-            </StyledMessage>
-          </NavbarTab>
-        </StyledLink>
+        <NavbarColumn>
+          <StyledLink to="/">
+            <NavbarTab 
+              active={active === '/'}
+              onClick={() => this.selectActive('/')}
+            >
+              <BiLineChart />
+              <StyledMessage>
+                <FormattedMessage {...messages.invest} />
+              </StyledMessage>
+            </NavbarTab>
+          </StyledLink>
+        </NavbarColumn>
+        <NavbarColumn justify="flex-end">
+          {/* <StyledLink to="/vote">
+            <NavbarTab
+              active={active === '/vote'}
+              onClick={() => this.selectActive('/vote')}
+            >
+              <FaVoteYea />
+              <StyledMessage>
+                <FormattedMessage {...messages.vote} />
+              </StyledMessage>
+            </NavbarTab>
+          </StyledLink> */}
+          <StyledLink to="/transactions">
+            <NavbarTab
+              active={active === '/transactions'}
+              onClick={() => this.selectActive('/transactions')}
+            >
+              <BiTransfer />
+              <StyledMessage>
+                <FormattedMessage {...messages.transactions} />
+              </StyledMessage>
+            </NavbarTab>
+          </StyledLink>
+          <StyledLink to="/balance">
+            <NavbarTab
+              active={active === '/balance'}
+              onClick={() => this.selectActive('/balance')}
+            >
+              <MdAccountBalanceWallet />
+              <StyledMessage>
+                <FormattedMessage {...messages.balance} />
+              </StyledMessage>
+            </NavbarTab>
+          </StyledLink>
+        </NavbarColumn>
+
 
       </NavbarContainer>
     );

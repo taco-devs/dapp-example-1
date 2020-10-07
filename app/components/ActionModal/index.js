@@ -570,14 +570,16 @@ class ActionModal extends React.Component {
 
   setMax = () => {
     const { asset } = this.props;
-    const {modal_type, is_native, underlying_balance, asset_balance, g_balance} = this.state;
+    const {modal_type, is_native, underlying_balance, asset_balance, g_balance, deposit_fee} = this.state;
     
     if (modal_type === 'mint') {
       if (is_native) {
-        const value_native = underlying_balance / asset.underlying_decimals;
+        if ((Number(underlying_balance) / asset.underlying_decimals) < 0.01) return;
+        const value_native = (underlying_balance / asset.underlying_decimals);
         this.setState({value_native});
         this.handleInputChange(value_native)
       } else {
+        if ((Number(asset_balance) / 1e8) < 0.01) return;
         const value_base = asset_balance / 1e8;
         this.setState({value_base});
         this.handleInputChange(value_base)
@@ -585,6 +587,7 @@ class ActionModal extends React.Component {
     }
 
     if (modal_type === 'redeem') {
+      if ((Number(g_balance) / 1e8) < 0.01) return;
       const value_redeem = g_balance / 1e8;
       this.setState({value_redeem});
       this.handleInputChange(value_redeem)
@@ -716,16 +719,16 @@ class ActionModal extends React.Component {
       // Validate against native balance
       if (is_native) {
         if (!value_native || Number(value_native) <= 0) return true;
-        return  Number(value_native * asset.underlying_decimals) >= Number(underlying_balance);
+        return  Number(value_native * asset.underlying_decimals) > Number(underlying_balance);
       } else {
         if (!value_base || Number(value_base) <= 0) return true;
-        return Number(value_base * 1e8) >= Number(asset_balance);
+        return Number(value_base * 1e8) > Number(asset_balance);
       }
     }
 
     if (modal_type === 'redeem') {
       if (!value_redeem) return true;
-      return Number(value_redeem * 1e8) >= Number(g_balance);
+      return Number(value_redeem * 1e8) > Number(g_balance);
     }
     return true;
   }
@@ -754,6 +757,31 @@ class ActionModal extends React.Component {
     } else {
       this.setState({asset_allowance: total_supply});
     }
+  }
+
+  // Calculate correct fee
+  calculateFee = () => {
+    const { asset } = this.props;
+    const {is_native, modal_type, deposit_fee, withdrawal_fee, value_native, value_base, value_redeem } = this.state;
+
+    if (!deposit_fee || !withdrawal_fee) return 0;
+
+    // Validate when input a mint function
+    if (modal_type === 'mint') {
+      // Validate against native balance
+      if (is_native) {
+        if (!value_native || Number(value_native) <= 0) return true;
+        return  Number(value_native * asset.underlying_decimals) * (deposit_fee / asset.underlying_decimals);
+      } else {
+        if (!value_base || Number(value_base) <= 0) return true;
+        return Number(value_base * 1e18) * (deposit_fee / asset.underlying_decimals);
+      }
+    }
+
+    /* if (modal_type === 'redeem') {
+      if (!value_redeem) return true;
+      return Number(value_redeem * 1e8) > Number(g_balance);
+    } */
   }
 
   render () {
@@ -930,7 +958,7 @@ class ActionModal extends React.Component {
                 </SummaryRow>
               </SummaryColumn>
               <SummaryColumn align="flex-end">
-                {modal_type === 'mint' && <PrimaryLabel> {this.parseNumber(deposit_fee, 1e18)} {asset.native}  ({this.parseNumber(deposit_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}
+                {modal_type === 'mint' && <PrimaryLabel> {this.parseNumber(this.calculateFee(), 1e18)} {asset.native}  ({this.parseNumber(deposit_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}
                 {modal_type === 'redeem' && <PrimaryLabel> {Math.round(this.calculateBurningFee() * 100) / 100} {asset.native}  ({(asset.burning_fee * 100).toFixed(2)}%)</PrimaryLabel>}   
               </SummaryColumn>
             </SummaryRow>
