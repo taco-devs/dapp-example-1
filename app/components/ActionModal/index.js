@@ -372,6 +372,8 @@ class ActionModal extends React.Component {
     total_native_cost_redeem: null,
     total_base_redeem: null,
     underlying_conversion: null,
+    underlying_allowance: null,
+    asset_allowance: null,
   }
 
   componentDidMount = () => {
@@ -697,20 +699,14 @@ class ActionModal extends React.Component {
       underlying_balance, asset_balance, g_balance
     } = this.state;
 
-/*     console.log({
-      modal_type, is_native,
-      value_base, value_native, value_redeem,
-      underlying_balance, asset_balance
-    }) */
-
     // Validate when input a mint function
     if (modal_type === 'mint') {
       // Validate against native balance
       if (is_native) {
-        if (!value_native) return true;
+        if (!value_native || Number(value_native) <= 0) return true;
         return  Number(value_native * asset.underlying_decimals) >= Number(underlying_balance);
       } else {
-        if (!value_base) return true;
+        if (!value_base || Number(value_base) <= 0) return true;
         return Number(value_base * 1e8) >= Number(asset_balance);
       }
     }
@@ -719,8 +715,23 @@ class ActionModal extends React.Component {
       if (!value_redeem) return true;
       return Number(value_redeem * 1e8) >= Number(g_balance);
     }
-
     return true;
+  }
+
+  // Check for allowance 
+  hasEnoughAllowance = () => {
+    const {asset} = this.props;
+    const {value_native, value_base, underlying_allowance, asset_allowance, is_native} = this.state;
+
+    // Only apppliable on Mint
+    if (is_native) {
+      if (!value_native || !underlying_allowance) return true;
+      return Number(value_native * asset.underlying_decimals) <= Number(underlying_allowance);
+    } else {
+      if (!value_base || !asset_allowance) return true;
+      return Number(value_base * 1e8) <= Number(asset_allowance);
+    }
+
   }
 
   render () {
@@ -901,19 +912,6 @@ class ActionModal extends React.Component {
                 {modal_type === 'redeem' && <PrimaryLabel> {Math.round(this.calculateBurningFee() * 100) / 100} {asset.native}  ({(asset.burning_fee * 100).toFixed(2)}%)</PrimaryLabel>}   
               </SummaryColumn>
             </SummaryRow>
-            {/* is_native && (
-              <SummaryRow>
-                <SummaryColumn>
-                  <SummaryRow>
-                    <PrimaryLabel margin="0 5px 0 0">SWAP RATE</PrimaryLabel>
-                    <BsInfoCircleFill style={{color: '#BEBEBE' }} />
-                  </SummaryRow>
-                </SummaryColumn>
-                <SummaryColumn align="flex-end">
-                  <PrimaryLabel>{exchange_rate ? `${this.parseNumber(exchange_rate, 1e8)} ${asset.base_asset} = 1 ${asset.native}` : '-'}</PrimaryLabel>
-                </SummaryColumn>
-              </SummaryRow>
-            ) */}
             <SummaryRow>
               <SummaryColumn>
                 <SummaryRow>
@@ -931,13 +929,19 @@ class ActionModal extends React.Component {
             </SummaryRow>
             <SummaryRow justify="center" flex="2">
                 {modal_type === 'mint' &&  (
-                  <ActionConfirmButton
-                    modal_type={modal_type}
-                    onClick={() => this.handleDeposit()}
-                    disabled={this.isDisabled()}
-                  >
-                    {this.isDisabled() ? 'NOT ENOUGH BALANCE' : 'CONFIRM MINT'}
-                  </ActionConfirmButton>
+                  <React.Fragment>
+                    {this.hasEnoughAllowance() ? (
+                      <ActionConfirmButton
+                        modal_type={modal_type}
+                        onClick={() => this.handleDeposit()}
+                        disabled={this.isDisabled()}
+                      >
+                        {this.isDisabled() ? 'NOT ENOUGH BALANCE' : 'CONFIRM MINT'}
+                      </ActionConfirmButton>
+                    ) : (
+                      <div>Not Enough allowance</div>
+                    )}
+                  </React.Fragment>
                 )}
                 {modal_type === 'redeem' &&  (
                   <ActionConfirmButton 
