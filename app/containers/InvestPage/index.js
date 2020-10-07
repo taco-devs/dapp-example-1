@@ -14,7 +14,7 @@ import { compose } from 'redux';
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
 import { makeSelectPagination, makeSelectSearch } from './selectors';
-import { makeSelectCurrrentNetwork, makeSelectCurrrentSwap } from '../App/selectors';
+import { makeSelectCurrrentNetwork, makeSelectCurrrentSwap, makeSelectCurrrentApproval } from '../App/selectors';
 import { makeSelectBalances } from '../GrowthStats/selectors';
 import {isMobile} from 'react-device-detect';
 import reducer from './reducer';
@@ -24,8 +24,8 @@ import styled from 'styled-components';
 import ConfirmationModal from 'components/ConfirmationModal';
 import {AssetList, InvestHeader} from './components';
 import NetworkData from 'contracts';
-import { changePage, searchAssets, mintGTokenFromCToken, mintGTokenFromUnderlying, redeemGTokenToCToken, redeemGTokenToUnderlying } from './actions';
-import { addCurrentSwap, dismissSwap } from '../App/actions';
+import { changePage, searchAssets, mintGTokenFromCToken, mintGTokenFromUnderlying, redeemGTokenToCToken, redeemGTokenToUnderlying, approveToken } from './actions';
+import { addCurrentSwap, dismissSwap, addCurrentApproval, dismissApproval } from '../App/actions';
 
 const Invest = styled.div`
   display: flex;
@@ -91,6 +91,7 @@ const mapStateToProps = createStructuredSelector({
   // App
   network: makeSelectCurrrentNetwork(),
   currentSwap: makeSelectCurrrentSwap(),
+  currentApproval: makeSelectCurrrentApproval(),
   // Invest
   balances: makeSelectBalances(),
   pagination: makeSelectPagination(),
@@ -102,13 +103,16 @@ function mapDispatchToProps(dispatch) {
     // App
     addCurrentSwap: (swap) => dispatch(addCurrentSwap(swap)),
     dismissSwap: () => dispatch(dismissSwap()),
+    addCurrentApproval: (approval) => dispatch(addCurrentApproval(approval)),
+    dismissApproval: () => dispatch(dismissApproval()),
     // Invest
     changePage: (pagination) => dispatch(changePage(pagination)),
     searchAssets: (search) => dispatch(searchAssets(search)),
     mintGTokenFromCToken: (payload) => dispatch(mintGTokenFromCToken(payload)),
     mintGTokenFromUnderlying: (payload) => dispatch(mintGTokenFromUnderlying(payload)),
     redeemGTokenToCToken: (payload) => dispatch(redeemGTokenToCToken(payload)),
-    redeemGTokenToUnderlying: (payload) => dispatch(redeemGTokenToUnderlying(payload))
+    redeemGTokenToUnderlying: (payload) => dispatch(redeemGTokenToUnderlying(payload)),
+    approveToken: (payload) => dispatch(approveToken(payload)),
   };
 }
 

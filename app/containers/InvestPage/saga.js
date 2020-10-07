@@ -6,14 +6,16 @@ import {
 import request from 'utils/request'
 import NetworkData from 'contracts';
 
-import { MINT_GTOKEN_FROM_CTOKEN, MINT_GTOKEN_FROM_UNDERLYING, REDEEM_GTOKEN_TO_CTOKEN, REDEEM_GTOKEN_TO_UNDERLYING } from './constants'
+import { APPROVE_TOKEN, MINT_GTOKEN_FROM_CTOKEN, MINT_GTOKEN_FROM_UNDERLYING, REDEEM_GTOKEN_TO_CTOKEN, REDEEM_GTOKEN_TO_UNDERLYING } from './constants'
 import { 
   mintGTokenFromCTokenSuccess, mintGTokenFromCTokenError,
-  mintGTokenFromUnderlyingSuccess, mintGTokenFromUnderlyingError
+  mintGTokenFromUnderlyingSuccess, mintGTokenFromUnderlyingError,
+  approveTokenSuccess, approveTokenError
 } from './actions';
 
 import {
-  addCurrentSwap, dismissSwap
+  addCurrentSwap, dismissSwap,
+  addCurrentApproval, dismissApproval
 } from '../App/actions'
 
 
@@ -235,6 +237,34 @@ const withdraw_underlying = (ContractInstance, _cost, address, asset, functions)
     });
 }
 
+// Approve the user to send tokens
+const approve = (Contract, asset, total_supply, address, functions) => {
+  let stored_hash;
+  return Contract.methods.approve(asset.gtoken_address, total_supply).send({ from: address })
+    .on("transactionHash", (hash) => {
+        stored_hash = hash;
+        connectionStatusChannel.put(
+          functions.addCurrentApproval({
+            status: 'receipt',
+            hash,
+          })
+        )
+    })
+    .on("receipt",  (tx) => {
+        // Send the confirmation receipt
+        functions.updateApprovalBalance(total_supply);
+        connectionStatusChannel.put(
+          functions.dismissApproval()
+        ); 
+    })
+    .on("confirmation", (confirmation) => {
+      // connectionStatusChannel.put(functions.dismissApproval()); 
+    })
+    .on("error", async function () {
+        console.log("Error");
+    });
+}
+
 function* mintGTokenFromCTokenSaga(params) {
   const {payload} = params;
   const {GContractInstance, _cost, address, asset, toggle} = payload;
@@ -422,6 +452,32 @@ function* redeemGTokenToUnderlyingSaga(params) {
   }
 }
 
+function* approveTokenSaga(params) {
+  const {payload} = params;
+  const {Contract, asset, total_supply, address, updateApprovalBalance} = payload;
+
+  try { 
+
+    yield put(addCurrentApproval({status: 'loading'}))
+
+    yield approve(
+      Contract, 
+      asset, 
+      total_supply, 
+      address,
+      {
+        addCurrentApproval,
+        dismissApproval, 
+        updateApprovalBalance
+      });
+
+  } catch (error) {
+    const jsonError = yield error.response ? error.response.json() : error;
+    yield put(dismissApproval());
+    yield put(approveTokenError(jsonError));
+  }
+}
+
 function* mintGTokenFromCTokenRequest() {
   yield takeLatest(MINT_GTOKEN_FROM_CTOKEN, mintGTokenFromCTokenSaga);
 }
@@ -435,10 +491,14 @@ function* redeemGTokenToCTokenRequest() {
   yield takeLatest(REDEEM_GTOKEN_TO_CTOKEN, redeemGTokenToCTokenSaga);
 }
 
-
 function* redeemGTokenToUnderlyingRequest() {
   yield takeLatest(REDEEM_GTOKEN_TO_UNDERLYING, redeemGTokenToUnderlyingSaga);
 }
+
+function* approveTokenRequest() {
+  yield takeLatest(APPROVE_TOKEN, approveTokenSaga);
+}
+
 
 function* watchDownloadFileChannel() {
   while (true) {
@@ -453,6 +513,7 @@ export default function* rootSaga() {
     fork(mintGTokenFromUnderlyingRequest),
     fork(redeemGTokenToCTokenRequest),
     fork(redeemGTokenToUnderlyingRequest),
+    fork(approveTokenRequest),
     fork(watchDownloadFileChannel)
   ]);
 }

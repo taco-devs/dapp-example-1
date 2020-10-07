@@ -22,6 +22,10 @@ export const REDEEM_GTOKEN_TO_UNDERLYING = 'app/InvestPage/REDEEM_GTOKEN_TO_UNDE
 export const REDEEM_GTOKEN_TO_UNDERLYING_SUCCESS = 'app/InvestPage/REDEEM_GTOKEN_TO_UNDERLYING_SUCCESS';
 export const REDEEM_GTOKEN_TO_UNDERLYING_ERROR = 'app/InvestPage/REDEEM_GTOKEN_TO_UNDERLYING_ERROR';
 
+export const APPROVE_TOKEN = 'app/InvestPage/APPROVE_TOKEN';
+export const APPROVE_TOKEN_SUCCESS = 'app/InvestPage/APPROVE_TOKEN_SUCCESS';
+export const APPROVE_TOKEN_ERROR = 'app/InvestPage/APPROVE_TOKEN_ERROR';
+
 export const CHANGE_PAGE = 'app/InvestPage/CHANGE_PAGE';
 export const SEARCH = 'app/InvestPage/SEARCH';
 

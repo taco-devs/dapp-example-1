@@ -17,7 +17,7 @@ import {FaChevronDown} from 'react-icons/fa';
 import { HiSwitchHorizontal } from 'react-icons/hi';
 import { BsInfoCircleFill } from 'react-icons/bs';
 import { mintGTokenFromUnderlying } from '../../containers/InvestPage/actions';
-
+import ApproveContainer from 'components/ApproveContainer';
 
 
 const ActionButton = styled.div`
@@ -234,6 +234,13 @@ const ActionConfirmButton = styled.div`
   margin: 1em 0 0 0;
   width: 300px;
   color: white;
+  border-width: 3px;
+  border-style: solid;
+  border-color: ${props => {
+    if (props.disabled) return '#BEBEBE';
+    if (props.modal_type === 'mint') return '#00d395';
+    if (props.modal_type === 'redeem') return '#161d6b';
+  }};
   
   &:hover {
     opacity: 0.85;
@@ -739,6 +746,16 @@ class ActionModal extends React.Component {
 
   }
 
+  // Update the current balance on allowance 
+  updateApprovalBalance = (total_supply) => {
+    const {is_native} = this.state;
+    if (is_native) {
+      this.setState({underlying_allowance: total_supply});
+    } else {
+      this.setState({asset_allowance: total_supply});
+    }
+  }
+
   render () {
     const {type, asset} = this.props;
     const {show, isLoading, modal_type, value_base, value_native, is_native, total_supply, total_reserve, deposit_fee, total_base, total_native, value_redeem, total_native_redeem, total_base_redeem } = this.state;
@@ -944,7 +961,11 @@ class ActionModal extends React.Component {
                         {this.isDisabled() ? 'NOT ENOUGH BALANCE' : 'CONFIRM MINT'}
                       </ActionConfirmButton>
                     ) : (
-                      <div>Not Enough allowance</div>
+                      <ApproveContainer 
+                        {...this.props}
+                        {...this.state}
+                        updateApprovalBalance={this.updateApprovalBalance}
+                      />
                     )}
                   </React.Fragment>
                 )}
