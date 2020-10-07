@@ -82,6 +82,7 @@ const ModalHeaderOption = styled.div`
   flex: 1;
   background-color: ${props => props.active ? props.defaultColor : 'white'};
   color: ${props => props.active ? 'white' : props.defaultColor};
+  transition: background-color .4s ease;
 
   &:hover {
     cursor: pointer;
@@ -153,6 +154,7 @@ const MaxButton = styled.div`
   color: white;
   border-radius: 5px;
   flex: 1;
+  transition: background-color .4s ease;
   background-color: ${props => {
     if (props.modal_type === 'mint') return '#00d395';
     if (props.modal_type === 'redeem') return '#161d6b';
@@ -648,6 +650,9 @@ class ActionModal extends React.Component {
 
     const { is_native, value_redeem, total_native_cost_redeem, total_base_cost_redeem, total_native_redeem, total_base_redeem } = this.state;
     
+    // Validate Balance
+    if (this.isDisabled()) return;
+
     // Handle depending the asset
     if (is_native) {
 
