@@ -11,10 +11,10 @@ import { fromJS } from 'immutable';
 import { SETUP_NETWORK, ADD_CURRENT_SWAP, DISMISS_SWAP } from './constants';
 
 const dummyswap = {
-  status: 'confirmed',
-  type: 'mint',
-  from: 'DAI',
-  to: 'gcDAI',
+  status: 'loading',
+  modal_type: 'redeem',
+  from: 'gcDAI',
+  to: 'DAI',
   sending: 10,
   receiving: 200,
   fromDecimals: 1,

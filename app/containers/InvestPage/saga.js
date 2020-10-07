@@ -27,7 +27,7 @@ const deposit = (ContractInstance, _cost, address, asset, functions) => {
         connectionStatusChannel.put(
           functions.addCurrentSwap({
             status: 'receipt',
-            type: 'mint',
+            modal_type: 'mint',
             from: asset.from,
             to: asset.to,
             sending: asset.sending,
@@ -46,7 +46,7 @@ const deposit = (ContractInstance, _cost, address, asset, functions) => {
         connectionStatusChannel.put(
           functions.addCurrentSwap({
             status: 'confirmed',
-            type: 'mint',
+            modal_type: 'mint',
             from: asset.from,
             to: asset.to,
             sending: asset.sending,
@@ -81,7 +81,7 @@ const deposit_underlying = (ContractInstance, _cost, address, asset, functions) 
         connectionStatusChannel.put(
           functions.addCurrentSwap({
             status: 'receipt',
-            type: 'mint',
+            modal_type: 'mint',
             from: asset.from,
             to: asset.to,
             sending: asset.sending,
@@ -100,7 +100,7 @@ const deposit_underlying = (ContractInstance, _cost, address, asset, functions) 
         connectionStatusChannel.put(
           functions.addCurrentSwap({
             status: 'confirmed',
-            type: 'mint',
+            modal_type: 'mint',
             from: asset.from,
             to: asset.to,
             sending: asset.sending,
@@ -127,12 +127,112 @@ const deposit_underlying = (ContractInstance, _cost, address, asset, functions) 
     });
 }
 
-const withdraw = (ContractInstance, _cost) => {
-  return ContractInstance.methods.withdraw(_cost);
+const withdraw = (ContractInstance, _cost, address, asset, functions) => {
+  let stored_hash;
+  return ContractInstance.methods.withdraw(_cost).send({ from: address})
+    .on("transactionHash", (hash) => {
+        stored_hash = hash;
+        connectionStatusChannel.put(
+          functions.addCurrentSwap({
+            status: 'receipt',
+            modal_type: 'redeem',
+            from: asset.from,
+            to: asset.to,
+            sending: asset.sending,
+            receiving: asset.receiving,
+            fromDecimals: asset.fromDecimals,
+            toDecimals: asset.toDecimals,
+            fromImage: asset.fromImage,
+            toImage: asset.toImage,
+            hash,
+            progress: false,
+          })
+        )
+    })
+    .on("receipt",  (tx) => {
+        // Send the confirmation receipt
+        connectionStatusChannel.put(
+          functions.addCurrentSwap({
+            status: 'confirmed',
+            modal_type: 'redeem',
+            from: asset.from,
+            to: asset.to,
+            sending: asset.sending,
+            receiving: asset.receiving,
+            fromDecimals: asset.fromDecimals,
+            toDecimals: asset.toDecimals,
+            fromImage: asset.fromImage,
+            toImage: asset.toImage,
+            hash: stored_hash,
+            progress: true,
+          })
+        )
+
+        // Timeout to autoclose the modal in 5s
+        setTimeout(() => {
+          connectionStatusChannel.put(functions.dismissSwap());
+        }, 5000)
+    })
+    .on("confirmation", (confirmation) => {
+      // connectionStatusChannel.put(functions.dismissSwap()); 
+    })
+    .on("error", async function () {
+        console.log("Error");
+    });
 }
 
-const withdraw_underlying = (ContractInstance, _cost) => {
-  return ContractInstance.methods.withdrawUnderlying(_cost);
+const withdraw_underlying = (ContractInstance, _cost, address, asset, functions) => {
+  let stored_hash;
+  return ContractInstance.methods.withdrawUnderlying(_cost).send({ from: address})
+    .on("transactionHash", (hash) => {
+        stored_hash = hash;
+        connectionStatusChannel.put(
+          functions.addCurrentSwap({
+            status: 'receipt',
+            modal_type: 'redeem',
+            from: asset.from,
+            to: asset.to,
+            sending: asset.sending,
+            receiving: asset.receiving,
+            fromDecimals: asset.fromDecimals,
+            toDecimals: asset.toDecimals,
+            fromImage: asset.fromImage,
+            toImage: asset.toImage,
+            hash,
+            progress: false,
+          })
+        )
+    })
+    .on("receipt",  (tx) => {
+        // Send the confirmation receipt
+        connectionStatusChannel.put(
+          functions.addCurrentSwap({
+            status: 'confirmed',
+            modal_type: 'redeem',
+            from: asset.from,
+            to: asset.to,
+            sending: asset.sending,
+            receiving: asset.receiving,
+            fromDecimals: asset.fromDecimals,
+            toDecimals: asset.toDecimals,
+            fromImage: asset.fromImage,
+            toImage: asset.toImage,
+            hash: stored_hash,
+            progress: true,
+          })
+        )
+
+        // Timeout to autoclose the modal in 5s
+        setTimeout(() => {
+          connectionStatusChannel.put(functions.dismissSwap());
+        }, 5000)
+    })
+    .on("confirmation", (confirmation) => {
+      // connectionStatusChannel.put(functions.dismissSwap()); 
+    })
+    .on("error", async function () {
+        console.log("Error");
+    });
 }
 
 function* mintGTokenFromCTokenSaga(params) {
@@ -147,7 +247,7 @@ function* mintGTokenFromCTokenSaga(params) {
     // Call the confirmation modal
     yield put(addCurrentSwap({
       status: 'loading',
-      type: 'mint',
+      modal_type: 'mint',
       from: asset.from,
       to: asset.to,
       sending: asset.sending,
@@ -195,7 +295,7 @@ function* mintGTokenFromUnderlyingSaga(params) {
     // Call the confirmation modal
     yield put(addCurrentSwap({
       status: 'loading',
-      type: 'mint',
+      modal_type: 'mint',
       from: asset.from,
       to: asset.to,
       sending: asset.sending,
@@ -231,37 +331,93 @@ function* mintGTokenFromUnderlyingSaga(params) {
 
 function* redeemGTokenToCTokenSaga(params) {
 
+  const {payload} = params;
+  const {GContractInstance, _grossShares, address, asset, toggle} = payload;
   try { 
+  
+    // Close the current modal
+    yield toggle();
 
-    const {payload} = params;
-    const {GContractInstance, _grossShares, address} = payload;
-    
-    const WithdrawMethod = withdraw(GContractInstance, _grossShares);
-    
+    // Call the confirmation modal
+    yield put(addCurrentSwap({
+      status: 'loading',
+      modal_type: 'redeem',
+      from: asset.from,
+      to: asset.to,
+      sending: asset.sending,
+      receiving: asset.receiving,
+      fromDecimals: asset.fromDecimals,
+      toDecimals: asset.toDecimals,
+      fromImage: asset.fromImage,
+      toImage: asset.toImage
+    }));    
 
+    
     // Call Web3 to Confirm this transaction
-    const result = yield call([WithdrawMethod, WithdrawMethod.send], {from: address});
+    // const result = yield call([DepositMethod, DepositMethod.send], {from: address});
+    yield withdraw(
+      GContractInstance, 
+      _grossShares, 
+      address, 
+      asset,
+      {
+        toggle,
+        addCurrentSwap,
+        dismissSwap
+      });
 
   } catch (error) {
+    console.log(error);
     const jsonError = yield error.response ? error.response.json() : error;
+    yield put(dismissSwap());
+    yield toggle();
     yield put(mintGTokenFromCTokenError(jsonError));
   }
 }
 
 
 function* redeemGTokenToUnderlyingSaga(params) {
+  const {payload} = params;
+  const {GContractInstance, _grossShares, address, asset, toggle} = payload;
+
   try { 
+  
+    // Close the current modal
+    yield toggle();
 
-    const {payload} = params;
-    const {GContractInstance, _grossShares, address} = payload;
-    const WithdrawMethod = withdraw_underlying(GContractInstance, _grossShares);
+    // Call the confirmation modal
+    yield put(addCurrentSwap({
+      status: 'loading',
+      modal_type: 'redeem',
+      from: asset.from,
+      to: asset.to,
+      sending: asset.sending,
+      receiving: asset.receiving,
+      fromDecimals: asset.fromDecimals,
+      toDecimals: asset.toDecimals,
+      fromImage: asset.fromImage,
+      toImage: asset.toImage
+    }));    
 
-    // Call Web3 to Confirm this transaction
-    const result = yield call([WithdrawMethod, WithdrawMethod.send], {from: address});
     
+    // Call Web3 to Confirm this transaction
+    // const result = yield call([DepositMethod, DepositMethod.send], {from: address});
+    yield withdraw_underlying(
+      GContractInstance, 
+      _grossShares, 
+      address, 
+      asset,
+      {
+        toggle,
+        addCurrentSwap,
+        dismissSwap
+      });
 
   } catch (error) {
+    console.log(error);
     const jsonError = yield error.response ? error.response.json() : error;
+    yield put(dismissSwap());
+    yield toggle();
     yield put(mintGTokenFromCTokenError(jsonError));
   }
 }

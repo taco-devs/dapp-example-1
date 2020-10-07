@@ -72,7 +72,11 @@ const StyledText = styled.p`
   margin: 0 5px 0 5px;
   font-size: ${props => props.size || '1em'};
   letter-spacing: 1px;
-  color: ${props => props.color || 'white'};
+  color: ${props => {
+    if (props.modal_type === 'mint') return '#161d6b';
+    if (props.modal_type === 'redeem') return '#00d395';
+    return 'white';
+  }};
 `
 
 const StyledLogo = styled.img`
@@ -117,7 +121,10 @@ const StyledTransactionReceiptRow = styled.div`
 `
 
 const CustomLink = styled.a`
-    color: #161d6b;
+    color: ${props => {
+      if (props.modal_type === 'mint') return '#161d6b';
+      if (props.modal_type === 'redeem') return '#00d395';
+    }};
     text-decoration: none;
 
     &:hover {
@@ -133,7 +140,10 @@ const IconContainer = styled.div`
 const LoaderContainer = styled.div`
     display: flex;
     flex-direction: row;
-    background-color: #00d395;
+    background-color: ${props => {
+      if (props.modal_type === 'mint') return '#00d395';
+      if (props.modal_type === 'redeem') return '#161d6b';
+    }};
     height: 15px;
     width: 100%;
 `
@@ -141,7 +151,10 @@ const LoaderContainer = styled.div`
 const LoaderBar = styled.div`
     height: 15px;
     width: ${props => props.progress ? `450px` : 0};
-    background-color: #161d6b;
+    background-color: ${props => {
+      if (props.modal_type === 'mint') return '#161d6b';
+      if (props.modal_type === 'redeem') return '#00d395';
+    }};
     transition: width 5s ease;
 `
 
@@ -193,99 +206,111 @@ class ConfirmationModal extends React.Component {
   render() {
     const {currentSwap} = this.props;
     return (
-      <Modal
+      <React.Fragment>
+        {currentSwap && (
+          <Modal
             isOpen={currentSwap}
             style={customStyles}
             contentLabel="Confirmation"
-      >
-        <ConfirmationBody >
-          <HeaderSection>
-            {currentSwap && currentSwap.status === 'loading' && <h3>Waiting for Confirmation</h3>}
-            {currentSwap && currentSwap.status === 'receipt' && <h3>Transaction Submitted</h3>}
-            {currentSwap && currentSwap.status === 'confirmed' && <h3>Transaction Confirmed</h3>}
-          </HeaderSection>
-          <DataBody modal_type='mint'>
-            <DataBodyRow>
-              <DataBodyColumn>
-                <StyledTitle color="#161d6b">Minting</StyledTitle>
+          >
+            <ConfirmationBody >
+              <HeaderSection>
+                {currentSwap && currentSwap.status === 'loading' && <h3>Waiting for Confirmation</h3>}
+                {currentSwap && currentSwap.status === 'receipt' && <h3>Transaction Submitted</h3>}
+                {currentSwap && currentSwap.status === 'confirmed' && <h3>Transaction Confirmed</h3>}
+              </HeaderSection>
+              <DataBody modal_type={currentSwap.modal_type}>
+                <DataBodyRow>
+                  <DataBodyColumn>
+                    {currentSwap && currentSwap.modal_type === 'mint' && (
+                      <StyledTitle color="#161d6b">Minting</StyledTitle>
+                    )}
+                    {currentSwap && currentSwap.modal_type === 'redeem' && (
+                      <StyledTitle color="#00d395">Redeem</StyledTitle>
+                    )}
+                    
+                    {currentSwap && (
+                      <DataBodyRow shadow>
+                        <DataBodyColumn align="right">
+                            <StyledLogo src={currentSwap.fromImage}/>
+                        </DataBodyColumn>
+                        <DataBodyColumn flex="3" margin="0 1.5em 0 0">
+                          <StyledText size="1.2em" modal_type={currentSwap.modal_type}>{this.parseNumber(currentSwap.sending, currentSwap.fromDecimals)}</StyledText>
+                          <StyledText>{`${currentSwap.from}`}</StyledText>
+                        </DataBodyColumn>
+                        <DataBodyColumn flex="1" color={currentSwap.modal_type === 'mint' ? "#161d6b" : '#00d395'}>
+                          <FaArrowRight size="2em"/>
+                        </DataBodyColumn>
+                        <DataBodyColumn flex="3" margin="0 0 0 1.5em">
+                          <StyledText size="1.2em" modal_type={currentSwap.modal_type}>{this.parseNumber(currentSwap.receiving, currentSwap.toDecimals)}</StyledText>
+                          <StyledText>{currentSwap.to}</StyledText>
+                        </DataBodyColumn>
+                        <DataBodyColumn align="left">
+                          <StyledLogo src={currentSwap.toImage}/>
+                        </DataBodyColumn>
+                      </DataBodyRow>
+                    )}
+                  </DataBodyColumn>
+                </DataBodyRow>
+                <Divider />
+                <DataBodyRow flex="2">
+                  {currentSwap && currentSwap.status === 'loading' && (
+                    <BounceLoader 
+                      size={60}
+                    />
+                  )}
+                  {currentSwap && (currentSwap.status === 'receipt' || currentSwap.status === 'confirmed') && currentSwap.hash && (
+                    <StyledTransactionReceipt >
+                        <StyledTransactionReceiptColumn>
+                          <StyledTransactionReceiptRow>
+                            {currentSwap.status === 'receipt' && (
+                              <BounceLoader 
+                              size={25}
+                            />
+                            )}
+                            {currentSwap.status === 'confirmed' && (
+                              <IconContainer><TiTick size="2em"/></IconContainer>
+                            )}
+                          </StyledTransactionReceiptRow>
+                        </StyledTransactionReceiptColumn>
+                        <StyledTransactionReceiptColumn flex="3" align="flex-start">
+                          <StyledTransactionReceiptRow>Transaction ID</StyledTransactionReceiptRow>
+                          <StyledTransactionReceiptRow>
+                            <CustomLink
+                              href={this.getEtherscanLink(currentSwap.hash)}
+                              target='_blank'
+                              modal_type={currentSwap.modal_type}
+                            >
+                              {this.parseHash(currentSwap.hash)}
+                            </CustomLink>
+                          </StyledTransactionReceiptRow>
+                        </StyledTransactionReceiptColumn>
+                        <StyledTransactionReceiptColumn>
+                          <StyledTransactionReceiptRow flex="2">
+                            <StyledTransactionReceiptRow hoverable={true}>
+                              <CustomLink
+                                href={this.getEtherscanLink(currentSwap.hash)}
+                                target='_blank'
+                                modal_type={currentSwap.modal_type}
+                              >
+                                <MdOpenInNew size="2em"/>
+                              </CustomLink>
+                            </StyledTransactionReceiptRow>
+                          </StyledTransactionReceiptRow>
+                        </StyledTransactionReceiptColumn>
+                    </StyledTransactionReceipt>
+                  )}
+                </DataBodyRow>
+              </DataBody>
+              <LoaderContainer modal_type={currentSwap.modal_type}>
                 {currentSwap && (
-                  <DataBodyRow shadow>
-                    <DataBodyColumn align="right">
-                        <StyledLogo src={currentSwap.fromImage}/>
-                    </DataBodyColumn>
-                    <DataBodyColumn flex="3" margin="0 1.5em 0 0">
-                      <StyledText size="1.2em" color="#161d6b">{this.parseNumber(currentSwap.sending, currentSwap.fromDecimals)}</StyledText>
-                      <StyledText>{`${currentSwap.from}`}</StyledText>
-                    </DataBodyColumn>
-                    <DataBodyColumn flex="1" color="#161d6b">
-                      <FaArrowRight size="2em"/>
-                    </DataBodyColumn>
-                    <DataBodyColumn flex="3" margin="0 0 0 1.5em">
-                      <StyledText size="1.2em" color="#161d6b">{this.parseNumber(currentSwap.receiving, currentSwap.toDecimals)}</StyledText>
-                      <StyledText>{currentSwap.to}</StyledText>
-                    </DataBodyColumn>
-                    <DataBodyColumn align="left">
-                      <StyledLogo src={currentSwap.toImage}/>
-                    </DataBodyColumn>
-                  </DataBodyRow>
+                  <LoaderBar modal_type={currentSwap.modal_type} progress={currentSwap.progress} />
                 )}
-              </DataBodyColumn>
-            </DataBodyRow>
-            <Divider />
-            <DataBodyRow flex="2">
-              {currentSwap && currentSwap.status === 'loading' && (
-                <BounceLoader 
-                  size={60}
-                />
-              )}
-              {currentSwap && (currentSwap.status === 'receipt' || currentSwap.status === 'confirmed') && currentSwap.hash && (
-                <StyledTransactionReceipt>
-                    <StyledTransactionReceiptColumn>
-                      <StyledTransactionReceiptRow>
-                        {currentSwap.status === 'receipt' && (
-                          <BounceLoader 
-                          size={25}
-                        />
-                        )}
-                        {currentSwap.status === 'confirmed' && (
-                          <IconContainer><TiTick size="2em"/></IconContainer>
-                        )}
-                      </StyledTransactionReceiptRow>
-                    </StyledTransactionReceiptColumn>
-                    <StyledTransactionReceiptColumn flex="3" align="flex-start">
-                      <StyledTransactionReceiptRow>Transaction ID</StyledTransactionReceiptRow>
-                      <StyledTransactionReceiptRow>
-                        <CustomLink
-                          href={this.getEtherscanLink(currentSwap.hash)}
-                          target='_blank'
-                        >
-                          {this.parseHash(currentSwap.hash)}
-                        </CustomLink>
-                      </StyledTransactionReceiptRow>
-                    </StyledTransactionReceiptColumn>
-                    <StyledTransactionReceiptColumn>
-                      <StyledTransactionReceiptRow flex="2">
-                        <StyledTransactionReceiptRow hoverable={true}>
-                          <CustomLink
-                            href={this.getEtherscanLink(currentSwap.hash)}
-                            target='_blank'
-                          >
-                            <MdOpenInNew size="2em"/>
-                          </CustomLink>
-                        </StyledTransactionReceiptRow>
-                      </StyledTransactionReceiptRow>
-                    </StyledTransactionReceiptColumn>
-                </StyledTransactionReceipt>
-              )}
-            </DataBodyRow>
-          </DataBody>
-          <LoaderContainer>
-            {currentSwap && (
-              <LoaderBar progress={currentSwap.progress} />
-            )}
-          </LoaderContainer>
-        </ConfirmationBody>
-      </Modal>
+              </LoaderContainer>
+            </ConfirmationBody>
+          </Modal>
+        )}
+      </React.Fragment>
     );
   }
   

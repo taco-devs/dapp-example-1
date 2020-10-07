@@ -609,22 +609,6 @@ class ActionModal extends React.Component {
     } else {
       const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
       const _cost = (value_base * 1e8).toString();
-      console.log({
-        GContractInstance, 
-        _cost, 
-        address,
-        asset: {
-          from: asset.base_asset ,
-          to: asset.g_asset,
-          sending: _cost,
-          receiving: total_base,
-          fromDecimals: 1e8,
-          toDecimals: 1e8,
-          fromImage: asset.native_img_url,
-          toImage: asset.img_url,
-        },
-        toggle: this.toggleModal
-      })
       mintGTokenFromCToken({
         GContractInstance, 
         _cost, 
@@ -652,7 +636,7 @@ class ActionModal extends React.Component {
       redeemGTokenToUnderlying,
     } = this.props;
 
-    const { is_native, total_native_cost_redeem, total_base_cost_redeem } = this.state;
+    const { is_native, value_redeem, total_native_cost_redeem, total_base_cost_redeem, total_native_redeem, total_base_redeem } = this.state;
     
     // Handle depending the asset
     if (is_native) {
@@ -660,16 +644,38 @@ class ActionModal extends React.Component {
       const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
       redeemGTokenToUnderlying({
         GContractInstance, 
-        _grossShares: total_native_cost_redeem, 
-        address
+        _grossShares: total_native_cost_redeem,
+        address,
+        asset: {
+          from: asset.g_asset,
+          to: asset.native,
+          sending: total_native_cost_redeem,
+          receiving: total_native_redeem,
+          fromDecimals: 1e8,
+          toDecimals: 1e18,
+          fromImage: asset.img_url,
+          toImage: asset.native_img_url,
+        },
+        toggle: this.toggleModal
       })
 
     } else {
       const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
       redeemGTokenToCToken({
         GContractInstance, 
-        _grossShares: total_base_cost_redeem, 
-        address
+        _grossShares: total_base_cost_redeem,
+        address,
+        asset: {
+          from: asset.g_asset,
+          to: asset.base_asset,
+          sending: total_base_cost_redeem,
+          receiving: total_base_redeem,
+          fromDecimals: 1e8,
+          toDecimals: 1e8,
+          fromImage: asset.img_url,
+          toImage: asset.native_img_url,
+        },
+        toggle: this.toggleModal
       })
     }
   }
