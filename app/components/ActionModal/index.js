@@ -224,6 +224,7 @@ const ActionConfirmButton = styled.div`
   justify-content: center;
   border-radius: 5px;
   background-color: ${props => {
+    if (props.disabled) return '#BEBEBE';
     if (props.modal_type === 'mint') return '#00d395';
     if (props.modal_type === 'redeem') return '#161d6b';
   }};
@@ -234,7 +235,7 @@ const ActionConfirmButton = styled.div`
   
   &:hover {
     opacity: 0.85;
-    cursor: pointer;
+    cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   }
 `
 
@@ -397,7 +398,11 @@ class ActionModal extends React.Component {
      const underlying_balance = await UnderlyingContractInstance.methods.balanceOf(address).call(); 
      const asset_balance = await BaseContractInstance.methods.balanceOf(address).call(); 
 
-     this.setState({total_supply, deposit_fee, withdrawal_fee, exchange_rate, total_reserve, underlying_balance, asset_balance, g_balance, isLoading: false});
+     // Allowance of the underlying asset
+     const underlying_allowance = await UnderlyingContractInstance.methods.allowance(address, asset.gtoken_address).call();
+     const asset_allowance = await BaseContractInstance.methods.allowance(address, asset.gtoken_address).call();
+
+     this.setState({total_supply, deposit_fee, withdrawal_fee, exchange_rate, total_reserve, underlying_balance, asset_balance, g_balance, isLoading: false, underlying_allowance, asset_allowance});
   }
 
   toggleModal = (modal_type) => {
@@ -583,6 +588,9 @@ class ActionModal extends React.Component {
     } = this.props;
 
     const { is_native, value_base, value_native, total_native, total_base } = this.state;
+
+    // Avoid clicks when the user is not allowed to make an action
+    if (this.isDisabled()) return;
     
     // Handle depending the asset
     if (is_native) {
@@ -680,6 +688,41 @@ class ActionModal extends React.Component {
     }
   }
   
+  // Check if a button should be disabled
+  isDisabled = () => {
+    const { asset } = this.props;
+    const {
+      modal_type, is_native,
+      value_base, value_native, value_redeem,
+      underlying_balance, asset_balance, g_balance
+    } = this.state;
+
+/*     console.log({
+      modal_type, is_native,
+      value_base, value_native, value_redeem,
+      underlying_balance, asset_balance
+    }) */
+
+    // Validate when input a mint function
+    if (modal_type === 'mint') {
+      // Validate against native balance
+      if (is_native) {
+        if (!value_native) return true;
+        return  Number(value_native * asset.underlying_decimals) >= Number(underlying_balance);
+      } else {
+        if (!value_base) return true;
+        return Number(value_base * 1e8) >= Number(asset_balance);
+      }
+    }
+
+    if (modal_type === 'redeem') {
+      if (!value_redeem) return true;
+      return Number(value_redeem * 1e8) >= Number(g_balance);
+    }
+
+    return true;
+  }
+
   render () {
     const {type, asset} = this.props;
     const {show, isLoading, modal_type, value_base, value_native, is_native, total_supply, total_reserve, deposit_fee, total_base, total_native, value_redeem, total_native_redeem, total_base_redeem } = this.state;
@@ -891,16 +934,18 @@ class ActionModal extends React.Component {
                   <ActionConfirmButton
                     modal_type={modal_type}
                     onClick={() => this.handleDeposit()}
+                    disabled={this.isDisabled()}
                   >
-                    CONFIRM MINT
+                    {this.isDisabled() ? 'NOT ENOUGH BALANCE' : 'CONFIRM MINT'}
                   </ActionConfirmButton>
                 )}
                 {modal_type === 'redeem' &&  (
                   <ActionConfirmButton 
                     modal_type={modal_type}
                     onClick={() => this.handleRedeem()}
+                    disabled={this.isDisabled()}
                   >
-                    CONFIRM REDEEM
+                    {this.isDisabled() ? 'NOT ENOUGH BALANCE' : 'CONFIRM REDEEM'}
                   </ActionConfirmButton>
                 )}
             </SummaryRow>
