@@ -46,7 +46,7 @@ export default class BalanceList extends Component {
 
 
     showAvailableBalances = (currentOpenExtension) => {
-        const {assets, pagination, Network, search} = this.props;
+        const {assets, pagination, Network, search, balances} = this.props;
         if (!assets || !Network) return;
         // const assets_per_page = 10;
         // const slice_start = pagination * assets_per_page;
@@ -60,14 +60,28 @@ export default class BalanceList extends Component {
                 })
                 .slice(slice_start, slice_end);  */
 
-        const filtered_asset = assets.filter(asset => Network.available_assets[asset].balance);
+        // Get the assets that have balances greater than 0
+        const filtered_asset = balances
+            .filter(asset => Number(asset.balance) > 0 && asset.name !== 'GRO');
         
-        return filtered_asset.map((asset_key) => (
+
+        // Construct the new balance list
+        const assets_with_balances = 
+                filtered_asset
+                    .map((asset) => {
+                        console.log(Network.available_assets)
+                        return {
+                            ...Network.available_assets[asset.name],
+                            ...asset
+                        }
+                    });
+                    
+        return assets_with_balances.map((asset) => (
             <BalanceCard  
                 {...this.props} 
-                asset_key={asset_key}
+                asset_key={asset.name}
                 currentOpenExtension={currentOpenExtension}
-                asset={Network.available_assets[asset_key]} 
+                asset={asset} 
                 toggleExtension={this.toggleExtension}
             />
             )

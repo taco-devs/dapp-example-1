@@ -51,8 +51,8 @@ class BalancePage extends React.Component {
   }
 
   render () {
-    const {network} = this.props;
-    const Network = network ? NetworkData[network] : NetworkData['eth'];
+    const {network_id} = this.props;
+    const Network = network_id ? NetworkData[network_id] : NetworkData['eth'];
     const assets = this.assetKeys(Network);
     return (
       <Balance>

@@ -74,6 +74,11 @@ export default class BalanceCard extends Component {
         toggleExtension(asset_key);
     }
 
+    parseNumber = (number, decimals) => {
+        const float_number = number / decimals;
+        return Math.round(float_number * 10000) / 10000;
+    }
+
     render() {
         const {asset, data, isMobile, asset_key, currentOpenExtension} = this.props;
         /* const {isMobileDrawerOpen} = this.state; */
@@ -135,15 +140,15 @@ export default class BalanceCard extends Component {
                                 <PrimaryLabel>{asset.g_asset}</PrimaryLabel>
                             </CardColumn>
                             <CardColumn>
-                                <PrimaryLabel>{asset.balance && asset.balance.toLocaleString('En-en')}</PrimaryLabel>
+                                <PrimaryLabel>{asset.balance && this.parseNumber(asset.balance, 1e8).toLocaleString('En-en')}</PrimaryLabel>
                             </CardColumn>
                             <CardColumn>
                                 <PrimaryLabel>${asset.price_usd} USD</PrimaryLabel>
                                 <SecondaryLabel>{asset.g_price} {asset.base_asset}</SecondaryLabel>
                             </CardColumn>
                             <CardColumn>
-                                <PrimaryLabel>${(Math.round(asset.price_usd * asset.balance * 100) / 100).toLocaleString('En-en')} USD</PrimaryLabel>
-                                <SecondaryLabel>{(Math.round(asset.g_price * asset.balance * 100) / 100).toLocaleString('En-en')} {asset_key}</SecondaryLabel>
+                                <PrimaryLabel>${(this.parseNumber(asset.balance, 1e8) * asset.price_usd).toLocaleString('En-en')} USD</PrimaryLabel>
+                                <SecondaryLabel>{(this.parseNumber(asset.balance, 1e8) * asset.g_price).toLocaleString('En-en')} {asset.base}</SecondaryLabel>
                             </CardColumn>
                             <CardColumn 
                                 direction="row"
