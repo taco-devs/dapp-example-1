@@ -198,6 +198,7 @@ const assets = {
         },
         available_assets: {
             gcDAI: {
+                pair_address: "0x9896bd979f9da57857322cc15e154222c4658a5a",
                 base_address: '0xf0d0eb522cfa50b716b3b1604c4f0fa6f04376ad',
                 gtoken_address: '0xD4c84Fc7d3EA365A2824A8C908f93136e625bCeA',
                 underlying_address: '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
@@ -223,6 +224,7 @@ const assets = {
                 burning_fee: 0.01,
             },
             gcUSDC: {
+                pair_address: "0x9896bd979f9da57857322cc15e154222c4658a5a",
                 base_address: '0x4a92E71227D294F041BD82dd8f78591B75140d63',
                 gtoken_address: '0xEf8cCAd850357B8D1b09a755Bd2f17183AEAfd06',
                 underlying_address: '0xb7a4f3e9097c08da09517b5ab877f7a917224ede',
@@ -248,6 +250,7 @@ const assets = {
                 burning_fee: 0.01,
             },
             gcUSDT: {
+                pair_address: "0x9896bd979f9da57857322cc15e154222c4658a5a",
                 base_address: '0xf0d0eb522cfa50b716b3b1604c4f0fa6f04376ad',
                 gtoken_address: '0x8e24ec37256BA942153062bB29b36d36369Bd4cb',
                 underlying_address: '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',

@@ -79,6 +79,26 @@ export default class BalanceCard extends Component {
         return Math.round(float_number * 10000) / 10000;
     }
 
+    gTokenToBase = (asset) => {
+        if (asset.liquidation_price) {
+            return Math.round(asset.liquidation_price._cost / asset.balance * 1000) / 1000;
+        } else {
+            return '-';
+        }
+    }
+
+    gTokenToUsd = (asset) => {
+        const {eth_price} = this.props;
+        if (asset.liquidation_price) {
+            const base_conversion = this.gTokenToBase(asset);
+            const usd_to_token = eth_price / asset.base_price_eth;
+            const gcMarketPrice = Math.round(usd_to_token * base_conversion * 1000) / 1000;
+            return gcMarketPrice;
+        } else {
+            return '-';
+        }
+    }
+
     render() {
         const {asset, data, isMobile, asset_key, currentOpenExtension} = this.props;
         /* const {isMobileDrawerOpen} = this.state; */
@@ -143,12 +163,12 @@ export default class BalanceCard extends Component {
                                 <PrimaryLabel>{asset.balance && this.parseNumber(asset.balance, 1e8).toLocaleString('En-en')}</PrimaryLabel>
                             </CardColumn>
                             <CardColumn>
-                                <PrimaryLabel>${asset.price_usd} USD</PrimaryLabel>
-                                <SecondaryLabel>{asset.g_price} {asset.base_asset}</SecondaryLabel>
+                                <PrimaryLabel>${this.gTokenToUsd(asset)} USD</PrimaryLabel>
+                                <SecondaryLabel>{this.gTokenToBase(asset)} {asset.base_asset}</SecondaryLabel>
                             </CardColumn>
                             <CardColumn>
-                                <PrimaryLabel>${(this.parseNumber(asset.balance, 1e8) * asset.price_usd).toLocaleString('En-en')} USD</PrimaryLabel>
-                                <SecondaryLabel>{(this.parseNumber(asset.balance, 1e8) * asset.g_price).toLocaleString('En-en')} {asset.base}</SecondaryLabel>
+                                <PrimaryLabel>${(this.parseNumber(asset.balance, 1e8) * this.gTokenToUsd(asset)).toLocaleString('En-en')} USD</PrimaryLabel>
+                                <SecondaryLabel>{(this.parseNumber(asset.balance, 1e8) * this.gTokenToBase(asset)).toLocaleString('En-en')} {asset.base}</SecondaryLabel>
                             </CardColumn>
                             <CardColumn 
                                 direction="row"

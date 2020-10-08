@@ -47,7 +47,7 @@ export default class BalanceList extends Component {
 
     showAvailableBalances = (currentOpenExtension) => {
         const {assets, pagination, Network, search, balances} = this.props;
-        if (!assets || !Network) return;
+        if (!assets || !Network || !balances) return;
         // const assets_per_page = 10;
         // const slice_start = pagination * assets_per_page;
         // const slice_end = (pagination + 1) * assets_per_page;
@@ -64,12 +64,12 @@ export default class BalanceList extends Component {
         const filtered_asset = balances
             .filter(asset => Number(asset.balance) > 0 && asset.name !== 'GRO');
         
+        if (!filtered_asset) return;
 
         // Construct the new balance list
         const assets_with_balances = 
                 filtered_asset
                     .map((asset) => {
-                        console.log(Network.available_assets)
                         return {
                             ...Network.available_assets[asset.name],
                             ...asset
