@@ -615,6 +615,7 @@ class ActionModal extends React.Component {
         GContractInstance, 
         _cost, 
         address,
+        web3,
         asset: {
           from: asset.native,
           to: asset.g_asset,
@@ -635,6 +636,7 @@ class ActionModal extends React.Component {
         GContractInstance, 
         _cost, 
         address,
+        web3,
         asset: {
           from: asset.base_asset ,
           to: asset.g_asset,
@@ -671,6 +673,7 @@ class ActionModal extends React.Component {
         GContractInstance, 
         _grossShares: total_native_cost_redeem,
         address,
+        web3,
         asset: {
           from: asset.g_asset,
           to: asset.native,
@@ -690,6 +693,7 @@ class ActionModal extends React.Component {
         GContractInstance, 
         _grossShares: total_base_cost_redeem,
         address,
+        web3,
         asset: {
           from: asset.g_asset,
           to: asset.base_asset,

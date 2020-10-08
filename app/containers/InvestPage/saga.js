@@ -18,10 +18,14 @@ import {
   addCurrentApproval, dismissApproval
 } from '../App/actions'
 
+import {
+  getBalances
+} from '../GrowthStats/actions'
+
 
 const connectionStatusChannel = channel();
 
-const deposit = (ContractInstance, _cost, address, asset, functions) => {
+const deposit = (ContractInstance, _cost, address, asset, web3, functions) => {
   let stored_hash;
   return ContractInstance.methods.deposit(_cost).send({ from: address})
     .on("transactionHash", (hash) => {
@@ -65,6 +69,7 @@ const deposit = (ContractInstance, _cost, address, asset, functions) => {
         // Timeout to autoclose the modal in 5s
         setTimeout(() => {
           connectionStatusChannel.put(functions.dismissSwap());
+          connectionStatusChannel.put(functions.getBalances(address, web3));
         }, 5000)
     })
     .on("confirmation", (confirmation) => {
@@ -75,7 +80,7 @@ const deposit = (ContractInstance, _cost, address, asset, functions) => {
     });
 }
 
-const deposit_underlying = (ContractInstance, _cost, address, asset, functions) => {
+const deposit_underlying = (ContractInstance, _cost, address, asset, web3, functions) => {
   let stored_hash;
   return ContractInstance.methods.depositUnderlying(_cost).send({ from: address})
     .on("transactionHash", (hash) => {
@@ -119,6 +124,7 @@ const deposit_underlying = (ContractInstance, _cost, address, asset, functions) 
         // Timeout to autoclose the modal in 5s
         setTimeout(() => {
           connectionStatusChannel.put(functions.dismissSwap());
+          connectionStatusChannel.put(functions.getBalances(address, web3));
         }, 5000)
     })
     .on("confirmation", (confirmation) => {
@@ -129,7 +135,7 @@ const deposit_underlying = (ContractInstance, _cost, address, asset, functions) 
     });
 }
 
-const withdraw = (ContractInstance, _cost, address, asset, functions) => {
+const withdraw = (ContractInstance, _cost, address, asset, web3, functions) => {
   let stored_hash;
   return ContractInstance.methods.withdraw(_cost).send({ from: address})
     .on("transactionHash", (hash) => {
@@ -173,6 +179,7 @@ const withdraw = (ContractInstance, _cost, address, asset, functions) => {
         // Timeout to autoclose the modal in 5s
         setTimeout(() => {
           connectionStatusChannel.put(functions.dismissSwap());
+          connectionStatusChannel.put(functions.getBalances(address, web3));
         }, 5000)
     })
     .on("confirmation", (confirmation) => {
@@ -183,7 +190,7 @@ const withdraw = (ContractInstance, _cost, address, asset, functions) => {
     });
 }
 
-const withdraw_underlying = (ContractInstance, _cost, address, asset, functions) => {
+const withdraw_underlying = (ContractInstance, _cost, address, asset, web3, functions) => {
   let stored_hash;
   return ContractInstance.methods.withdrawUnderlying(_cost).send({ from: address})
     .on("transactionHash", (hash) => {
@@ -227,6 +234,7 @@ const withdraw_underlying = (ContractInstance, _cost, address, asset, functions)
         // Timeout to autoclose the modal in 5s
         setTimeout(() => {
           connectionStatusChannel.put(functions.dismissSwap());
+          connectionStatusChannel.put(functions.getBalances(address, web3));
         }, 5000)
     })
     .on("confirmation", (confirmation) => {
@@ -267,7 +275,7 @@ const approve = (Contract, asset, total_supply, address, functions) => {
 
 function* mintGTokenFromCTokenSaga(params) {
   const {payload} = params;
-  const {GContractInstance, _cost, address, asset, toggle} = payload;
+  const {GContractInstance, _cost, address, asset, toggle, web3} = payload;
 
   try { 
   
@@ -296,10 +304,12 @@ function* mintGTokenFromCTokenSaga(params) {
       _cost, 
       address, 
       asset,
+      web3,
       {
         toggle,
         addCurrentSwap,
-        dismissSwap
+        dismissSwap,
+        getBalances,
       });
 
   } catch (error) {
@@ -315,7 +325,7 @@ function* mintGTokenFromCTokenSaga(params) {
 function* mintGTokenFromUnderlyingSaga(params) {
 
   const {payload} = params;
-  const {GContractInstance, _cost, address, asset, toggle} = payload;
+  const {GContractInstance, _cost, address, web3, asset, toggle} = payload;
 
   try { 
   
@@ -344,10 +354,12 @@ function* mintGTokenFromUnderlyingSaga(params) {
       _cost, 
       address, 
       asset,
+      web3,
       {
         toggle,
         addCurrentSwap,
-        dismissSwap
+        dismissSwap,
+        getBalances
       });
 
   } catch (error) {
@@ -362,7 +374,7 @@ function* mintGTokenFromUnderlyingSaga(params) {
 function* redeemGTokenToCTokenSaga(params) {
 
   const {payload} = params;
-  const {GContractInstance, _grossShares, address, asset, toggle} = payload;
+  const {GContractInstance, _grossShares, address, asset, toggle, web3} = payload;
   try { 
   
     // Close the current modal
@@ -390,10 +402,12 @@ function* redeemGTokenToCTokenSaga(params) {
       _grossShares, 
       address, 
       asset,
+      web3,
       {
         toggle,
         addCurrentSwap,
-        dismissSwap
+        dismissSwap,
+        getBalances,
       });
 
   } catch (error) {
@@ -408,7 +422,7 @@ function* redeemGTokenToCTokenSaga(params) {
 
 function* redeemGTokenToUnderlyingSaga(params) {
   const {payload} = params;
-  const {GContractInstance, _grossShares, address, asset, toggle} = payload;
+  const {GContractInstance, _grossShares, address, asset,  web3, toggle} = payload;
 
   try { 
   
@@ -437,10 +451,12 @@ function* redeemGTokenToUnderlyingSaga(params) {
       _grossShares, 
       address, 
       asset,
+      web3,
       {
         toggle,
         addCurrentSwap,
-        dismissSwap
+        dismissSwap,
+        getBalances
       });
 
   } catch (error) {
