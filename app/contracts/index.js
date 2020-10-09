@@ -231,7 +231,7 @@ const assets = {
                 base_abi: CToken,
                 gtoken_abi: GCToken,
                 underlying_abi: USDC,
-                underlying_decimals: 1e6,
+                underlying_decimals: 1e18,
                 base_decimals: 1e8,
                 native: 'USDC',
                 base_asset: 'cUSDC',

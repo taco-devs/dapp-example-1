@@ -63,8 +63,38 @@ const StatLabel = styled.h3`
 `
 
 class WalletDashboard extends React.Component {
+
+  calculatePortfolio = () => {
+    const { balances, eth_price } = this.props;
+
+    if (!balances) return;
+    if (balances.length < 1) return;
+    
+    console.log(balances);
+
+    // Calculate price by eth
+    const total_eth = 
+        balances
+          .reduce((acc, curr) => {
+             // If not available balance
+             if (Number(curr.balance) <= 0 ) return acc; 
+             // If it GRO
+             if (curr.name === 'GRO') {
+               return acc + Number(curr.balance / 1e18) / Number(curr.price_eth) * eth_price; 
+             } 
+             if (curr.base_price_eth && curr.liquidation_price ) {
+                return acc + Number(curr.liquidation_price._cost / 1e8) * (eth_price / Number(curr.base_price_eth));
+             }
+             return acc;
+          }, 0);
+        
+    return total_eth.toLocaleString('en-En');
+  }
+
+
   render () {
     const {address, isMobileSized} = this.props;
+    this.calculatePortfolio();
     return (
       <WalletContainer isMobileSized={isMobileSized} >
         <WalletDashboardHeader>
@@ -74,7 +104,7 @@ class WalletDashboard extends React.Component {
         <WalletDashboardStats>
           <InfoRow>
             {address ? (
-              <StatLabel>$3,233.25</StatLabel>
+              <StatLabel>${this.calculatePortfolio()}</StatLabel>
             ) : (
               <StatLabel>-</StatLabel>
             )}            
