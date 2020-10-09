@@ -128,7 +128,6 @@ class App extends React.Component {
   // Load Contracts
   loadContracts = async (web3, network_id) => {
 
-  
     // Get the correct network
     this.props.setupNetwork(network_id);
     const Network = NetworkData[network_id];
@@ -159,7 +158,7 @@ class App extends React.Component {
 
     const network_id = NetworkChainIds[networkId];
 
-    await this.loadContracts(web3, network_id);
+    await this.loadContracts(web3, network_id, chainId);
 
     console.log(networkId),
 

@@ -70,8 +70,6 @@ class WalletDashboard extends React.Component {
     if (!balances) return '-';
     if (balances.length < 1) return;
     
-    console.log(balances);
-
     // Calculate price by eth
     const total_eth = 
         balances
