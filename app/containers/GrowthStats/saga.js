@@ -90,7 +90,10 @@ const fetch_balances = async (available_assets, web3, address) => {
 const get_pairs = ( Network ) => {
   const { available_assets } = Network;
   const assets_keys = Object.keys(available_assets);
-  const asset_pairs = assets_keys.map((asset_key) => Network.available_assets[asset_key].pair_address);
+  const asset_pairs = 
+    assets_keys
+      .filter((asset_key) => Network.available_assets[asset_key].pair_address)
+      .map((asset_key) => Network.available_assets[asset_key].pair_address);
   const QUERY = PAIR_QUERIES([...base_pairs, ...asset_pairs]);
   return QUERY;
 }

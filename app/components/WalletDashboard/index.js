@@ -67,7 +67,7 @@ class WalletDashboard extends React.Component {
   calculatePortfolio = () => {
     const { balances, eth_price } = this.props;
 
-    if (!balances) return;
+    if (!balances) return '-';
     if (balances.length < 1) return;
     
     console.log(balances);
