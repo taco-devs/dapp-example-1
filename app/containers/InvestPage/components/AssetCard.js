@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import ActionModal from 'components/ActionModal';
 import ActionDrawer from 'components/ActionDrawer';
 import AssetExtension from './AssetExtension';
+import Loader from 'react-loader-spinner';
 
 const Card = styled.div`
     display: flex;
@@ -63,6 +64,33 @@ export default class AssetCard extends Component {
 
     state = {
         isMobileDrawerOpen: false,
+        total_supply: null, 
+        deposit_fee: null, 
+        withdrawal_fee: null,
+        total_reserve: null,
+    }
+
+    componentDidMount = () => {
+        this.fetchSupply();
+    }
+
+    fetchSupply = async () => {
+
+        const { asset, web3, address } = this.props;
+
+        const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+
+         const total_supply = await GContractInstance.methods.totalSupply().call();
+         const deposit_fee = await GContractInstance.methods.depositFee().call();
+         const withdrawal_fee = await GContractInstance.methods.withdrawalFee().call();
+         const total_reserve = await GContractInstance.methods.totalReserve().call(); 
+    
+         this.setState({
+             total_supply, 
+             deposit_fee, 
+             withdrawal_fee,
+             total_reserve,
+        });
     }
 
     toggleMobileDrawer = () => {
@@ -74,9 +102,25 @@ export default class AssetCard extends Component {
         toggleExtension(asset_key);
     }
 
+    calculateMarketCap = (asset, balances, total_supply) => {
+        const {ethPrice} = this.props;
+        
+        if (!balances || !total_supply) return '-';
+        console.log(balances, total_supply);
+
+        const asset_data = balances.find(balance => balance.name === asset.g_asset);
+        if (!asset_data) return '-';
+
+        const market_cap = (total_supply / 1e8) / Number(asset_data.base_price_eth) * ethPrice;
+
+        if (!market_cap) return 'N/A'
+
+        return `$${market_cap.toLocaleString('en-En')}`;
+    }
+
     render() {
-        const {asset, data, isMobile, asset_key, currentOpenExtension} = this.props;
-        const {isMobileDrawerOpen} = this.state;
+        const {asset, data, balances, isMobile, asset_key, currentOpenExtension} = this.props;
+        const {isMobileDrawerOpen, total_supply} = this.state;
         return (
             <React.Fragment>
                 {isMobile ? (
@@ -106,7 +150,7 @@ export default class AssetCard extends Component {
                                     direction="column"
                                 >
                                     <PrimaryLabel>{asset.tvl}</PrimaryLabel>
-                                    <SecondaryLabel>{asset.total_supply.toLocaleString('En-en')} {asset.g_asset}</SecondaryLabel>
+                                    <SecondaryLabel>{total_supply ? total_supply.toLocaleString('En-en') : '-'} {asset.g_asset}</SecondaryLabel>
                                 </CardColumn>
                                 <CardColumn 
                                     direction="column"
@@ -140,8 +184,8 @@ export default class AssetCard extends Component {
                             <CardColumn 
                                 direction="column"
                             >
-                                <PrimaryLabel>{asset.tvl}</PrimaryLabel>
-                                <SecondaryLabel>{asset.total_supply.toLocaleString('En-en')} {asset.g_asset}</SecondaryLabel>
+                                <PrimaryLabel>{this.calculateMarketCap(asset, balances, total_supply)}</PrimaryLabel>
+                                <SecondaryLabel>{total_supply ? Math.round(total_supply / 1e8).toLocaleString('En-en') : '-'} {asset.g_asset}</SecondaryLabel>
                             </CardColumn>
                             <CardColumn 
                                 direction="column"

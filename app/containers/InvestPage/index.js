@@ -15,7 +15,7 @@ import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
 import { makeSelectPagination, makeSelectSearch } from './selectors';
 import { makeSelectCurrrentNetwork, makeSelectCurrrentSwap, makeSelectCurrrentApproval } from '../App/selectors';
-import { makeSelectBalances } from '../GrowthStats/selectors';
+import { makeSelectBalances, makeSelectEthPrice } from '../GrowthStats/selectors';
 import {isMobile} from 'react-device-detect';
 import reducer from './reducer';
 import saga from './saga';
@@ -26,6 +26,7 @@ import {AssetList, InvestHeader} from './components';
 import NetworkData from 'contracts';
 import { changePage, searchAssets, mintGTokenFromCToken, mintGTokenFromUnderlying, redeemGTokenToCToken, redeemGTokenToUnderlying, approveToken } from './actions';
 import { addCurrentSwap, dismissSwap, addCurrentApproval, dismissApproval } from '../App/actions';
+import Loader from 'react-loader-spinner';
 
 const Invest = styled.div`
   display: flex;
@@ -41,6 +42,12 @@ const InvestContainer = styled.div`
   background-color: rgba(0, 0, 0, .15);
   border-radius: 5px;
   margin: 0.5em 0 0;
+  align-items: center;
+  justify-content: center;
+`
+
+const LoaderContainer = styled.div`
+  margin: 1em 0 1em 0;
 `
 
 class InvestPage extends React.Component {
@@ -52,7 +59,7 @@ class InvestPage extends React.Component {
   }
 
   render () {
-    const {network} = this.props;
+    const {network, web3, balances} = this.props;
     const Network = network ? NetworkData[network] : NetworkData['eth'];
     const assets = this.assetKeys(Network);
     return (
@@ -64,12 +71,25 @@ class InvestPage extends React.Component {
             assets={assets}
           />
           <InvestContainer>
-            <AssetList 
-              {...this.props}
-              isMobile={isMobile}
-              assets={assets}
-              Network={Network}
-            />
+            {web3 && balances ? (
+              <AssetList 
+                {...this.props}
+                isMobile={isMobile}
+                assets={assets}
+                Network={Network}
+              />
+            ) : (
+              <LoaderContainer>
+                <Loader
+                  type="TailSpin"
+                  color='#00d395'
+                  height={120}
+                  width={120}
+                />
+              </LoaderContainer>
+              
+            )}
+            
           </InvestContainer>
         </Invest>
         <ConfirmationModal {...this.props} />
@@ -93,9 +113,11 @@ const mapStateToProps = createStructuredSelector({
   currentSwap: makeSelectCurrrentSwap(),
   currentApproval: makeSelectCurrrentApproval(),
   // Invest
-  balances: makeSelectBalances(),
   pagination: makeSelectPagination(),
   search: makeSelectSearch(),
+  // Stats
+  balances: makeSelectBalances(),
+  ethPrice: makeSelectEthPrice()
 });
 
 function mapDispatchToProps(dispatch) {
