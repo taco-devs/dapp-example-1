@@ -18,6 +18,7 @@ import { HiSwitchHorizontal } from 'react-icons/hi';
 import { BsInfoCircleFill } from 'react-icons/bs';
 import { mintGTokenFromUnderlying } from '../../containers/InvestPage/actions';
 import ApproveContainer from 'components/ApproveContainer';
+import Loader from 'react-loader-spinner';
 
 
 const ActionButton = styled.div`
@@ -336,7 +337,7 @@ const BalanceRow = styled.div`
   display: flex;
   flex-direction: row;
   width: 100%;
-  justify-content: space-between;
+  justify-content: flex-start;
 `
 
 const customStyles = {
@@ -551,7 +552,14 @@ class ActionModal extends React.Component {
   showBalance = (is_native) => {
       const {asset} = this.props;
       const { underlying_balance, asset_balance, g_balance, modal_type } = this.state;
-      if (!underlying_balance || !asset_balance || !g_balance ) return '-';
+      if (!underlying_balance || !asset_balance || !g_balance ) return (
+        <Loader
+          type="TailSpin"
+          color={is_native ? '#00d395' : '#161d6b'}
+          height={20}
+          width={20}
+        />
+      );
 
       if (modal_type === 'mint') {
         if (is_native) {
@@ -848,7 +856,10 @@ class ActionModal extends React.Component {
               <InputSectionColumn
                 flex="2"
               >
-                <BalanceLabel>BALANCE: {this.showBalance(is_native)}</BalanceLabel>
+                <BalanceRow>
+                  <BalanceLabel>BALANCE:</BalanceLabel>
+                  <BalanceLabel margin="0 10px 0 10px">{this.showBalance(is_native)}</BalanceLabel>
+                </BalanceRow>
                 <InputRow>
                   <AmountInput>
                     {modal_type === 'mint' && is_native && (

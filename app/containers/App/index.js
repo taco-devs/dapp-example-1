@@ -42,6 +42,7 @@ import GlobalStyle from '../../global-styles';
 
 // Import contracts
 import GrowToken from 'contracts/GrowToken.json';
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css"
 
 
 const AppWrapper = styled.div`
