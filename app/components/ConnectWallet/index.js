@@ -130,7 +130,7 @@ const ListItem = styled.li`
   
   &:hover {
     ${props => props.hoverable && 'cursor: pointer;' }
-    color: ${props => props.mainnet ? '#00d395' : '#161d6b'};
+    color: ${props => props.mainnet ? '#161d6b' : '#00d395'};
   }
 `;
 
