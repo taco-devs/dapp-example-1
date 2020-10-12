@@ -7,6 +7,7 @@ import {FaChevronDown} from 'react-icons/fa';
 import { HiSwitchHorizontal } from 'react-icons/hi';
 import { BsInfoCircleFill } from 'react-icons/bs';
 import { AiOutlineArrowLeft } from 'react-icons/ai';
+import Loader from 'react-loader-spinner';
 
 const Container = styled.div`
   display: flex;

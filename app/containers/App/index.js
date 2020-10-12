@@ -161,8 +161,6 @@ class App extends React.Component {
 
     await this.loadContracts(web3, network_id, chainId);
 
-    console.log(networkId),
-
     await this.setState({
       web3,
       provider,

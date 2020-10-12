@@ -44,7 +44,7 @@ class Header extends React.Component {
     return (
       <StyledHeader>
           <StyledLogo 
-            src={require('../../images/full_logo.png')}
+            src={require('images/full_logo.png')}
             isMobile={isMobile}
           />
           {address && isMobile ? (  

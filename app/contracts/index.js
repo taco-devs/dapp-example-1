@@ -2,7 +2,7 @@ import GrowToken from './GrowToken.json';
 import GCToken from './GCToken.json';
 
 import { CToken } from './Interop';
-import { DAI, USDC } from './Underlying';
+import { DAI, USDC, USDT } from './Underlying';
 
 
 const assets = {
@@ -36,14 +36,15 @@ const assets = {
                 apy_7days: '0.58%',
                 img_url: 'https://s2.coinmarketcap.com/static/img/coins/64x64/5263.png',
                 native_img_url: 'https://s2.coinmarketcap.com/static/img/coins/64x64/4943.png',
+                gtoken_img_url: 'gctoken_dai.png',
                 minting_fee: 0.01,
                 burning_fee: 0.01,
             },
             gcUSDC: {
                 pair_address: "0x9896bd979f9da57857322cc15e154222c4658a5a",
-                base_address: '0x39aa39c021dfbae8fac545936693ac917d5e7563',
-                gtoken_address: '0x62703f7475F673F378304ecFe00afD6331De7930',
-                underlying_address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+                base_address: '0x39AA39c021dfbaE8faC545936693aC917d5E7563',
+                gtoken_address: '0xa37d9c78Fd0D07658Eab383202aD9B17F1C3266e',
+                underlying_address: '0xB7277a6e95992041568D9391D09d0122023778A2',
                 base_abi: CToken,
                 gtoken_abi: GCToken,
                 underlying_abi: USDC,
@@ -62,17 +63,18 @@ const assets = {
                 apy_7days: '0.58%',
                 img_url: 'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png',
                 native_img_url: 'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png',
+                gtoken_img_url: 'gctoken_usdc.png',
                 minting_fee: 0.01,
                 burning_fee: 0.01,
             },
             gcUSDT: {
                 pair_address: "0x9896bd979f9da57857322cc15e154222c4658a5a",
                 base_address: '0xf650c3d88d12db855b8bf7d11be6c55a4e07dcc9',
-                gtoken_address: '0x66cBa44AC1bcA9255A2493E3a755b5d250EaaB5C',
+                gtoken_address: '0x6B37B63bfEC270d38D99B49496a55175e2F25EBc',
                 underlying_address: '0xdac17f958d2ee523a2206206994597c13d831ec7',
                 base_abi: CToken,
                 gtoken_abi: GCToken,
-                underlying_abi: DAI,
+                underlying_abi: USDT,
                 underlying_decimals: 1e6,
                 base_decimals: 1e8,
                 native: 'USDT',
@@ -88,6 +90,7 @@ const assets = {
                 apy_7days: '0.58%',
                 img_url: 'https://s2.coinmarketcap.com/static/img/coins/64x64/5745.png',
                 native_img_url: 'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png',
+                gtoken_img_url: 'gctoken_usdt.png',
                 minting_fee: 0.01,
                 burning_fee: 0.01,
             },

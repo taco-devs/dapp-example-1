@@ -82,6 +82,7 @@ const deposit = (ContractInstance, _cost, address, asset, web3, functions) => {
 
 const deposit_underlying = (ContractInstance, _cost, address, asset, web3, functions) => {
   let stored_hash;
+  console.log({ContractInstance, _cost, address, asset})
   return ContractInstance.methods.depositUnderlying(_cost).send({ from: address})
     .on("transactionHash", (hash) => {
         stored_hash = hash;

@@ -398,6 +398,7 @@ class ActionModal extends React.Component {
     const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
     const UnderlyingContractInstance = await new web3.eth.Contract(asset.underlying_abi, asset.underlying_address);
     const BaseContractInstance = await new web3.eth.Contract(asset.base_abi, asset.base_address);
+
     
      const total_supply = await GContractInstance.methods.totalSupply().call();
      const deposit_fee = await GContractInstance.methods.depositFee().call();
@@ -409,7 +410,7 @@ class ActionModal extends React.Component {
      const g_balance = await GContractInstance.methods.balanceOf(address).call(); 
      const underlying_balance = await UnderlyingContractInstance.methods.balanceOf(address).call(); 
      const asset_balance = await BaseContractInstance.methods.balanceOf(address).call(); 
-
+    
      // Allowance of the underlying asset
      const underlying_allowance = await UnderlyingContractInstance.methods.allowance(address, asset.gtoken_address).call();
      const asset_allowance = await BaseContractInstance.methods.allowance(address, asset.gtoken_address).call();
@@ -618,7 +619,7 @@ class ActionModal extends React.Component {
     if (is_native) {
 
       const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
-      const _cost = (value_native * 1e18).toString();
+      const _cost = (value_native * asset.underlying_decimals).toString();
       mintGTokenFromUnderlying({
         GContractInstance, 
         _cost, 

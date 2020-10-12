@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import ActionModal from 'components/ActionModal';
 import ActionDrawer from 'components/ActionDrawer';
 import AssetExtension from './AssetExtension';
-import Loader from 'react-loader-spinner';
 
 const Card = styled.div`
     display: flex;
@@ -106,14 +105,15 @@ export default class AssetCard extends Component {
         const {ethPrice} = this.props;
         
         if (!balances || !total_supply) return '-';
-        console.log(balances, total_supply);
 
         const asset_data = balances.find(balance => balance.name === asset.g_asset);
-        if (!asset_data) return '-';
+        
+        if (!asset_data || asset_data.base_price_eth <= 0) return 'N/A'
 
-        const market_cap = (total_supply / 1e8) / Number(asset_data.base_price_eth) * ethPrice;
+        const market_cap = (Number(total_supply) / 1e8) / Number(asset_data.base_price_eth) * ethPrice;
 
         if (!market_cap) return 'N/A'
+
 
         return `$${market_cap.toLocaleString('en-En')}`;
     }
@@ -121,6 +121,7 @@ export default class AssetCard extends Component {
     render() {
         const {asset, data, balances, isMobile, asset_key, currentOpenExtension} = this.props;
         const {isMobileDrawerOpen, total_supply} = this.state;
+        console.log(asset.gtoken_img_url)
         return (
             <React.Fragment>
                 {isMobile ? (
@@ -143,7 +144,7 @@ export default class AssetCard extends Component {
                                     justify="flex-start"
                                     margin="0 0 0 1em"
                                 >
-                                    <AssetLogo src={asset.img_url} isMobile={isMobile} />
+                                    <AssetLogo src={require(asset.img_url)} isMobile={isMobile} />
                                     <PrimaryLabel>{asset.g_asset} {!isMobile && '/'} {asset.base_asset}</PrimaryLabel>
                                 </CardColumn>
                                 <CardColumn 
@@ -177,8 +178,10 @@ export default class AssetCard extends Component {
                                 align="center"
                                 justify="flex-start"
                                 margin="0 0 0 1em"
-                            >
-                                <AssetLogo src={asset.img_url} isMobile={isMobile} />
+                            >   
+                                {asset.gtoken_img_url && (
+                                    <AssetLogo src={require(`images/tokens/${asset.gtoken_img_url}`)} isMobile={isMobile} />
+                                )}
                                 <PrimaryLabel>{asset.g_asset} {!isMobile && '/'} {asset.base_asset}</PrimaryLabel>
                             </CardColumn>
                             <CardColumn 
