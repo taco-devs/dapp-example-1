@@ -398,24 +398,23 @@ class ActionModal extends React.Component {
     const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
     const UnderlyingContractInstance = await new web3.eth.Contract(asset.underlying_abi, asset.underlying_address);
     const BaseContractInstance = await new web3.eth.Contract(asset.base_abi, asset.base_address);
-
     
-     const total_supply = await GContractInstance.methods.totalSupply().call();
-     const deposit_fee = await GContractInstance.methods.depositFee().call();
-     const withdrawal_fee = await GContractInstance.methods.withdrawalFee().call();
-     const exchange_rate = await GContractInstance.methods.exchangeRate().call();
-     const total_reserve = await GContractInstance.methods.totalReserve().call(); 
+    const total_supply = await GContractInstance.methods.totalSupply().call();
+    const deposit_fee = await GContractInstance.methods.depositFee().call();
+    const withdrawal_fee = await GContractInstance.methods.withdrawalFee().call();
+    const exchange_rate = await GContractInstance.methods.exchangeRate().call();
+    const total_reserve = await GContractInstance.methods.totalReserve().call(); 
 
-     // Balance of the underlying asset
-     const g_balance = await GContractInstance.methods.balanceOf(address).call(); 
-     const underlying_balance = await UnderlyingContractInstance.methods.balanceOf(address).call(); 
-     const asset_balance = await BaseContractInstance.methods.balanceOf(address).call(); 
-    
-     // Allowance of the underlying asset
-     const underlying_allowance = await UnderlyingContractInstance.methods.allowance(address, asset.gtoken_address).call();
-     const asset_allowance = await BaseContractInstance.methods.allowance(address, asset.gtoken_address).call();
+    // Balance of the underlying asset
+    const g_balance = await GContractInstance.methods.balanceOf(address).call(); 
+    const underlying_balance = await UnderlyingContractInstance.methods.balanceOf(address).call(); 
+    const asset_balance = await BaseContractInstance.methods.balanceOf(address).call(); 
+  
+    // Allowance of the underlying asset
+    const underlying_allowance = await UnderlyingContractInstance.methods.allowance(address, asset.gtoken_address).call();
+    const asset_allowance = await BaseContractInstance.methods.allowance(address, asset.gtoken_address).call();
 
-     this.setState({total_supply, deposit_fee, withdrawal_fee, exchange_rate, total_reserve, underlying_balance, asset_balance, g_balance, isLoading: false, underlying_allowance, asset_allowance});
+    this.setState({total_supply, deposit_fee, withdrawal_fee, exchange_rate, total_reserve, underlying_balance, asset_balance, g_balance, isLoading: false, underlying_allowance, asset_allowance});
   }
 
   toggleModal = (modal_type) => {

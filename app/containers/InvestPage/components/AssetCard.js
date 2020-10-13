@@ -42,7 +42,7 @@ const CardColumn = styled.div`
 `
 
 const AssetLogo = styled.img`
-    width: ${props => props.isMobile ? '25px' : '40px'};
+    width: ${props => props.isMobile ? '25px' : '50px'};
     height: auto;
 `
 
@@ -107,12 +107,13 @@ export default class AssetCard extends Component {
         if (!balances || !total_supply) return '-';
 
         const asset_data = balances.find(balance => balance.name === asset.g_asset);
-        
+    
         if (!asset_data || asset_data.base_price_eth <= 0) return 'N/A'
 
         const market_cap = (Number(total_supply) / 1e8) / Number(asset_data.base_price_eth) * ethPrice;
 
-        if (!market_cap) return 'N/A'
+
+        if (!market_cap || market_cap <= 1) return 'N/A'
 
 
         return `$${market_cap.toLocaleString('en-En')}`;
@@ -121,7 +122,7 @@ export default class AssetCard extends Component {
     render() {
         const {asset, data, balances, isMobile, asset_key, currentOpenExtension} = this.props;
         const {isMobileDrawerOpen, total_supply} = this.state;
-        console.log(asset.gtoken_img_url)
+        console.log(total_supply / 1e8)
         return (
             <React.Fragment>
                 {isMobile ? (
@@ -188,7 +189,7 @@ export default class AssetCard extends Component {
                                 direction="column"
                             >
                                 <PrimaryLabel>{this.calculateMarketCap(asset, balances, total_supply)}</PrimaryLabel>
-                                <SecondaryLabel>{total_supply ? Math.round(total_supply / 1e8).toLocaleString('En-en') : '-'} {asset.g_asset}</SecondaryLabel>
+                                <SecondaryLabel>{total_supply && (total_supply / 1e8) >= 1 ? Math.round(total_supply / 1e8).toLocaleString('En-en') : '-'} {asset.g_asset}</SecondaryLabel>
                             </CardColumn>
                             <CardColumn 
                                 direction="column"

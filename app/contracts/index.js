@@ -1,7 +1,7 @@
 import GrowToken from './GrowToken.json';
 import GCToken from './GCToken.json';
 
-import { CToken } from './Interop';
+import { CToken, CUSDC } from './Interop';
 import { DAI, USDC, USDT } from './Underlying';
 
 
@@ -44,7 +44,7 @@ const assets = {
                 pair_address: "0x9896bd979f9da57857322cc15e154222c4658a5a",
                 base_address: '0x39AA39c021dfbaE8faC545936693aC917d5E7563',
                 gtoken_address: '0xa37d9c78Fd0D07658Eab383202aD9B17F1C3266e',
-                underlying_address: '0xB7277a6e95992041568D9391D09d0122023778A2',
+                underlying_address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
                 base_abi: CToken,
                 gtoken_abi: GCToken,
                 underlying_abi: USDC,

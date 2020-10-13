@@ -19,6 +19,7 @@ import { compose } from 'redux';
 import HomePage from 'containers/HomePage/Loadable';
 import FeaturePage from 'containers/FeaturePage/Loadable';
 import InvestPage from 'containers/InvestPage/Loadable';
+import TransactionsContainer from 'containers/TransactionsContainer/Loadable';
 import BalancePage from 'containers/BalancePage/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
 import GrowthStats from 'containers/GrowthStats/Loadable';
@@ -274,6 +275,15 @@ class App extends React.Component {
             path="/balance" 
             render={(props) => (
               <BalancePage 
+                {...props}
+                {...this.state}
+              />
+            )}
+          />
+          <Route 
+            path="/transactions" 
+            render={(props) => (
+              <TransactionsContainer 
                 {...props}
                 {...this.state}
               />
