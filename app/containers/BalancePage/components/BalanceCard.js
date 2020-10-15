@@ -174,6 +174,7 @@ export default class BalanceCard extends Component {
                                 direction="row"
                             >
                                 <ActionModal 
+                                    {...this.props}
                                     type="redeem"
                                     text="REDEEM"
                                     data={data}

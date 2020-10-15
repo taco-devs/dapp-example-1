@@ -122,7 +122,6 @@ export default class AssetCard extends Component {
     render() {
         const {asset, data, balances, isMobile, asset_key, currentOpenExtension} = this.props;
         const {isMobileDrawerOpen, total_supply} = this.state;
-        console.log(total_supply / 1e8)
         return (
             <React.Fragment>
                 {isMobile ? (

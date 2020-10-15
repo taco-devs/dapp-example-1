@@ -16,13 +16,16 @@ import injectReducer from 'utils/injectReducer';
 import { } from './selectors';
 import { BalanceList } from './components';
 import {isMobile} from 'react-device-detect';
+import ConfirmationModal from 'components/ConfirmationModal';
 import reducer from './reducer';
 import saga from './saga';
 import messages from './messages';
 import styled from 'styled-components';
 import NetworkData from 'contracts';
 import { makeSelectBalances, makeSelectEthPrice } from '../GrowthStats/selectors';
-import { makeSelectCurrrentNetwork } from '../App/selectors';
+import { makeSelectCurrrentNetwork, makeSelectCurrrentApproval, makeSelectCurrrentSwap } from '../App/selectors';
+import { addCurrentApproval, addCurrentSwap, dismissApproval, dismissSwap } from '../App/actions'
+import { mintGTokenFromCToken, mintGTokenFromUnderlying, redeemGTokenToCToken, redeemGTokenToUnderlying } from '../InvestPage/actions'
 
 
 const Balance = styled.div`
@@ -64,6 +67,7 @@ class BalancePage extends React.Component {
             Network={Network}
           />
         </BalanceContainer>
+        <ConfirmationModal {...this.props} />
       </Balance>
     );
   }
@@ -79,13 +83,26 @@ const withReducer = injectReducer({ key: 'balancePage', reducer });
 const withSaga = injectSaga({ key: 'balancePage', saga });
 
 const mapStateToProps = createStructuredSelector({
+  // App
   network_id: makeSelectCurrrentNetwork(),
+  currentSwap: makeSelectCurrrentSwap(),
+  currentApproval: makeSelectCurrrentApproval(),
   balances: makeSelectBalances(),
   eth_price: makeSelectEthPrice()
 });
 
 function mapDispatchToProps(dispatch) {
   return {
+    // App
+    addCurrentSwap: (swap) => dispatch(addCurrentSwap(swap)),
+    dismissSwap: () => dispatch(dismissSwap()),
+    addCurrentApproval: (approval) => dispatch(addCurrentApproval(approval)),
+    dismissApproval: () => dispatch(dismissApproval()),
+    // Invest
+    mintGTokenFromCToken: (payload) => dispatch(mintGTokenFromCToken(payload)),
+    mintGTokenFromUnderlying: (payload) => dispatch(mintGTokenFromUnderlying(payload)),
+    redeemGTokenToCToken: (payload) => dispatch(redeemGTokenToCToken(payload)),
+    redeemGTokenToUnderlying: (payload) => dispatch(redeemGTokenToUnderlying(payload)),
   };
 }
 

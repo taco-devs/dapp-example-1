@@ -6,8 +6,8 @@
 
 import React from 'react';
 import Modal from 'react-modal';
-// import PropTypes from 'prop-types';
-// import styled from 'styled-components';
+import PropTypes from 'prop-types';
+
 
 import { FormattedMessage } from 'react-intl';
 import debounce from 'lodash.debounce';
@@ -1030,6 +1030,12 @@ class ActionModal extends React.Component {
   
 }
 
-ActionModal.propTypes = {};
+ActionModal.propTypes = {
+  asset: PropTypes.object, 
+  web3: PropTypes.object, 
+  address: PropTypes.string.isRequired,
+  redeemGTokenToCToken: PropTypes.func.isRequired,
+  redeemGTokenToUnderlying: PropTypes.func.isRequired,
+};
 
 export default ActionModal;

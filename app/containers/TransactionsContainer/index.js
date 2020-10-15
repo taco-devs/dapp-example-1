@@ -19,12 +19,34 @@ import saga from './saga';
 import messages from './messages';
 import styled from 'styled-components';
 
+const TransactionsSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin: ${props => props.isMobile ? '0 0.5em 0 0.5em' : '0 1em 0 1em;'}
+`
+
+
+const Transactions = styled.div`
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, .15);
+  border-radius: 5px;
+  margin: 0.5em 0 0;
+  align-items: center;
+  justify-content: center;
+`
 
 class TransactionsContainer extends React.Component {
   render () {
     return (
       <React.Fragment>
-        <p>Transactions</p>
+        <TransactionsSection>
+          <Transactions>
+            <p>Transactions</p>
+          </Transactions>
+        </TransactionsSection>
       </React.Fragment>
     );
   }
