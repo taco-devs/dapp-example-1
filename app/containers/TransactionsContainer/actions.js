@@ -5,7 +5,8 @@
  */
 
 import { 
-    GET_TRANSACTIONS_REQUEST, GET_TRANSACTIONS_SUCCESS, GET_TRANSACTIONS_ERROR
+    GET_TRANSACTIONS_REQUEST, GET_TRANSACTIONS_SUCCESS, GET_TRANSACTIONS_ERROR,
+    CHANGE_PAGINATION,
  } from './constants';
 
 export function defaultAction() {
@@ -32,5 +33,12 @@ export function getTransactionsError(error) {
   return {
     type: GET_TRANSACTIONS_ERROR,
     error
+  }
+}
+
+export function changePage(pagination) {
+  return {
+    type: CHANGE_PAGINATION,
+    pagination
   }
 }

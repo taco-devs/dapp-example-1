@@ -8,6 +8,20 @@ const makeSelectTransactions = () =>
     }
   );
 
+const makeSelectPagination = () =>
+  createSelector(selectTransactions, transactionsState => {
+      return transactionsState.get('pagination')
+    }
+  );
+
+const makeSelectIsLoading = () =>
+  createSelector(selectTransactions, transactionsState => {
+      return transactionsState.get('isLoading')
+    }
+  );
+
 export { 
-  makeSelectTransactions
+  makeSelectTransactions,
+  makeSelectPagination,
+  makeSelectIsLoading,
 };

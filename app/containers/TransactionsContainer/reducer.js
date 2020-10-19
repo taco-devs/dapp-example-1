@@ -5,22 +5,29 @@
  */
 import { fromJS } from 'immutable';
 import { 
-  GET_TRANSACTIONS_REQUEST, GET_TRANSACTIONS_SUCCESS, GET_TRANSACTIONS_ERROR
+  GET_TRANSACTIONS_REQUEST, GET_TRANSACTIONS_SUCCESS, GET_TRANSACTIONS_ERROR,
+  CHANGE_PAGINATION
 } from './constants';
 
 export const initialState = fromJS({
-  transactions: null
+  isLoading: false,
+  transactions: null,
+  pagination: 0,
 });
 
 
 function transactionsReducer(state = initialState, action) {
   switch (action.type) {
     case GET_TRANSACTIONS_REQUEST: 
-      return state;
+      return state.set('isLoading', true);
     case GET_TRANSACTIONS_SUCCESS: 
-      return state.set('transactions', action.transactions);
+      return state
+        .set('isLoading', false)
+        .set('transactions', action.transactions);
     case GET_TRANSACTIONS_ERROR: 
       return state;
+    case CHANGE_PAGINATION: 
+      return state.set('pagination', action.pagination);
     default:
       return state;
   }

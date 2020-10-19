@@ -19,7 +19,7 @@ import reducer from './reducer';
 import saga from './saga';
 import messages from './messages';
 import StatsContainer from 'components/StatsContainer';
-import { getBalances } from './actions';
+import { getUserStats, getBalances } from './actions';
 import { makeSelectBalances, makeSelectEthPrice } from '../GrowthStats/selectors';
 
 import { makeSelectCurrrentNetwork } from '../App/selectors'
@@ -28,7 +28,8 @@ import { makeSelectCurrrentNetwork } from '../App/selectors'
 class GrowthStats extends React.Component {
 
   fetchBalances = () => {
-    const { getBalances, address, web3 } = this.props;
+    const { getUserStats, getBalances, address, web3 } = this.props;
+    getUserStats(address, web3);
     getBalances(address, web3);
   }
 
@@ -64,6 +65,7 @@ const mapStateToProps = createStructuredSelector({
 
 function mapDispatchToProps(dispatch) {
   return {
+    getUserStats: (addresss, web3) => dispatch(getUserStats(addresss, web3)),
     getBalances: (address, web3) => dispatch(getBalances(address, web3))
   };
 }

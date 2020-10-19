@@ -18,10 +18,13 @@ import reducer from './reducer';
 import saga from './saga';
 import messages from './messages';
 import styled from 'styled-components';
-import { getTransactions } from './actions';
-import { makeSelectTransactions } from './selectors';
-import { TransactionsList } from './components';
+import { getTransactions, changePage } from './actions';
+import { makeSelectTransactions, makeSelectPagination, makeSelectIsLoading } from './selectors';
+import { TransactionsList, TransactionsHeader } from './components';
+import { makeSelectUser } from '../GrowthStats/selectors';
 import NetworkData from 'contracts';
+import Loader from 'react-loader-spinner';
+
  
 const TransactionsSection = styled.div`
   display: flex;
@@ -39,6 +42,10 @@ const Transactions = styled.div`
   margin: 0.5em 0 0;
   align-items: center;
   justify-content: center;
+`
+
+const LoaderContainer = styled.div`
+  margin: 1em 0 1em 0;
 `
 
 class TransactionsContainer extends React.Component {
@@ -60,7 +67,7 @@ class TransactionsContainer extends React.Component {
   }
 
   render () {
-    const { transactions, network_id } = this.props;
+    const { transactions, network_id, isLoading } = this.props;
     const Network = network_id ? NetworkData[network_id] : NetworkData['eth'];
     const assets = this.assetKeys(Network);
     if (!transactions) {
@@ -69,12 +76,28 @@ class TransactionsContainer extends React.Component {
     return (
       <React.Fragment>
         <TransactionsSection>
+          <TransactionsHeader 
+            {...this.props}
+            fetchTransactions={this.fetchTransactions}
+          />
           <Transactions>
-              <TransactionsList 
-                {...this.props}
-                Network={Network}
-                assets={assets}
-              />
+              {transactions && !isLoading ? (
+                <TransactionsList 
+                  {...this.props}
+                  Network={Network}
+                  assets={assets}
+                />
+              ) : (
+                <LoaderContainer>
+                  <Loader
+                    type="TailSpin"
+                    color='#00d395'
+                    height={120}
+                    width={120}
+                  />
+                </LoaderContainer>
+              )}
+              
           </Transactions>
         </TransactionsSection>
       </React.Fragment>
@@ -92,12 +115,16 @@ const withReducer = injectReducer({ key: 'transactions', reducer });
 const withSaga = injectSaga({ key: 'transactionsSaga', saga });
 
 const mapStateToProps = createStructuredSelector({
-  transactions: makeSelectTransactions()
+  user: makeSelectUser(),
+  transactions: makeSelectTransactions(),
+  pagination: makeSelectPagination(),
+  isLoading: makeSelectIsLoading(),
 });
 
 function mapDispatchToProps(dispatch) {
   return {
     getTransactions: (payload) => dispatch(getTransactions(payload)),
+    changePage: (pagination) => dispatch(changePage(pagination))
   };
 }
 

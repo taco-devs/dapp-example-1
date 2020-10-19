@@ -5,8 +5,9 @@ import {
 import request from 'utils/request'
 import NetworkData from 'contracts';
 
-import { GET_BALANCES_REQUEST } from './constants'
+import { GET_BALANCES_REQUEST, GET_USER_STATS_REQUEST } from './constants'
 import { 
+  getUserStatsSuccess, getUserStatsError,
   getBalancesSuccess, getBalancesError,
   getEthPrice
 } from './actions';
@@ -17,6 +18,22 @@ const base_pairs = [
   "0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852", // ETH/USD
   "0x208bd5dc470eba21571ddb439801a614ed346376", // GRO/ETH 
 ]
+
+const USER_STATS = (address) => {
+  return `
+    {
+      users (
+        where: {
+          address: "${address}"
+        }
+      ){
+        id
+        address
+        transactions
+      }
+    }
+  `
+}
 
 const PAIR_QUERIES = (all_pairs) =>  {
   return `
@@ -33,6 +50,9 @@ const PAIR_QUERIES = (all_pairs) =>  {
       }
     }
 `
+
+
+
 }
 const balanceChecker = (ContractInstance, address) => {
   return ContractInstance.methods.balanceOf(address);
@@ -122,6 +142,39 @@ const get_prices = async (asset_balances, data, web3) => {
 
 }
 
+function* getUserStatsSaga(params) {
+
+  const {address, web3} = params;
+
+  try { 
+
+    // Get the correct pairs to fetch price
+    const query = USER_STATS(address);
+
+    // Fetch Pairs price
+    const query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi-kovan';
+    const options = {
+      method: 'POST',
+      body: JSON.stringify({ query })
+    };
+
+    const response = yield call(request, query_url, options);
+
+    if ( response && response.data) {
+      const {users} = response.data;
+      const user = users[0];
+
+      if (user) {
+        yield put(getUserStatsSuccess(user));
+      }
+    }
+    
+  } catch (error) {
+    const jsonError = yield error.response ? error.response.json() : error;
+    yield put(getBalancesError(jsonError));
+  }
+}
+
 function* getBalancesSaga(params) {
 
   const {address, web3} = params;
@@ -181,12 +234,17 @@ function* getBalancesSaga(params) {
   }
 }
 
+function* getUserStatsRequest() {
+  yield takeLatest(GET_USER_STATS_REQUEST, getUserStatsSaga);
+}
+
 function* getBalancesRequest() {
   yield takeLatest(GET_BALANCES_REQUEST, getBalancesSaga);
 }
 
 export default function* rootSaga() {
   yield all([
+    fork(getUserStatsRequest),
     fork(getBalancesRequest),
   ]);
 }

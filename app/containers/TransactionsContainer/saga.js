@@ -7,12 +7,14 @@ import { getTransactionsSuccess, getTransactionsError } from './actions';
 import request from 'utils/request'
 import NetworkData from 'contracts';
 import { makeSelectCurrrentNetwork } from '../App/selectors';
+import { makeSelectPagination } from './selectors';
 
-const get_query = (address) =>  {
+const get_query = (address, pagination) =>  {
   return `
     {
       transactions(
         first: 10,
+        skip: ${pagination * 10},
         orderBy: block, 
         orderDirection: desc, 
         where: {
@@ -39,12 +41,13 @@ function* getTransactionsSaga(params) {
 
     // Get network
     const network = yield select(makeSelectCurrrentNetwork());
+    const pagination = yield select(makeSelectPagination());
     const Network = NetworkData[network];
 
     if (Network) {
 
       // Get the correct pairs to fetch price
-      const query = get_query(address);
+      const query = get_query(address, pagination);
 
       // Fetch Pairs price
       const query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi-kovan';
