@@ -78,6 +78,38 @@ const TransactionLogo = styled.img`
     width: auto;
 `
 
+const MoreButton = styled.a`
+    font-size: 0.85em;
+    text-decoration: none;
+    text-align: center;
+    min-width: 120px;
+    margin: 0 0.5em 0 0.5em ;
+    padding: 0.5em 0 0.5em 0;
+    border-radius: 5px;
+    border-color: ${props => {
+        if (props.action === 'redeem') return '#161d6b';
+        if (props.action === 'mint') return '#00d395';
+    }};
+    border-width: 3px;
+    border-style: solid;
+
+    background-color:${props => {
+        if (props.action === 'redeem') return '#161d6b';
+        if (props.action === 'mint') return '#00d395';
+    }};
+    color: white;
+    
+    &:hover {
+        cursor: pointer;
+
+        background-color: white;
+        color: ${props => {
+            if (props.action === 'redeem') return '#161d6b';
+            if (props.action === 'mint') return '#00d395';
+        }};
+    }
+`
+
 export default class BalanceCard extends Component {
 
     state = {
@@ -104,6 +136,7 @@ export default class BalanceCard extends Component {
     parseAmount = (amount, decimals) => {
         return Math.round(amount / decimals * 1000) / 1000;
     }
+
 
     render() {
         const {transaction, Network, isMobile, asset_key, currentOpenExtension} = this.props;
@@ -199,13 +232,13 @@ export default class BalanceCard extends Component {
                                         </TransactionContainerColumn>
                                         {transaction.type === 'base' && (
                                             <TransactionContainerColumn>
-                                                <PrimaryLabel>- {transaction.sent / asset.base_decimals}</PrimaryLabel>
+                                                <PrimaryLabel>- {this.parseAmount(transaction.sent, asset.base_decimals)}</PrimaryLabel>
                                                 <SecondaryLabel>{asset.base_asset}</SecondaryLabel>
                                             </TransactionContainerColumn>
                                         )}
                                         {transaction.type === 'underlying' && (
                                             <TransactionContainerColumn>
-                                                <PrimaryLabel>- {transaction.sent / asset.underlying_decimals}</PrimaryLabel>
+                                                <PrimaryLabel>- {this.parseAmount(transaction.sent, asset.underlying_decimals)}</PrimaryLabel>
                                                 <SecondaryLabel>{asset.native}</SecondaryLabel>
                                             </TransactionContainerColumn>
                                         )}
@@ -255,13 +288,14 @@ export default class BalanceCard extends Component {
                             <CardColumn 
                                 direction="row"
                             >
-                                {/* <ActionModal 
-                                    {...this.props}
-                                    type="redeem"
-                                    text="REDEEM"
-                                    data={data}
-                                    asset={asset}
-                                /> */}
+                                <MoreButton
+                                    action={transaction.action}
+                                    href={`https://kovan.etherscan.io/tx/${transaction.id}`}
+                                    target="_blank"
+                                >
+                                    {transaction.action === 'mint' && 'VIEW MINT'}
+                                    {transaction.action === 'redeem' && 'VIEW REDEEM'}
+                                </MoreButton>
                             </CardColumn>
                         </CardRow>
                     </Card>
