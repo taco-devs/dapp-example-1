@@ -8,7 +8,6 @@ const makeSelectTransactions = () =>
     }
   );
 
-
 export { 
   makeSelectTransactions
 };

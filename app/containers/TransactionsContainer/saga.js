@@ -1,6 +1,76 @@
-// import { take, call, put, select } from 'redux-saga/effects';
+import {
+  call, put, select, takeLatest, fork, all
+} from 'redux-saga/effects';
 
-// Individual exports for testing
-export default function* transactionsContainerSaga() {
-  // See example in containers/HomePage/saga.js
+import { GET_TRANSACTIONS_REQUEST } from './constants';
+import { getTransactionsSuccess, getTransactionsError } from './actions';
+import request from 'utils/request'
+import NetworkData from 'contracts';
+import { makeSelectCurrrentNetwork } from '../App/selectors';
+
+const get_query = (address) =>  {
+  return `
+    {
+      transactions(
+        orderBy: block, 
+        orderDirection: desc, 
+        where: {
+          from: "${address}"
+        }
+      ) {
+        id
+        from
+        action
+        type
+        sent
+        received
+        block
+      }
+    }
+`
+}
+
+function* getTransactionsSaga(params) {
+
+  const {address} = params;
+
+  try { 
+
+    // Get network
+    const network = yield select(makeSelectCurrrentNetwork());
+    const Network = NetworkData[network];
+
+    if (Network) {
+
+        // Get the correct pairs to fetch price
+        const query = get_query(address);
+
+        // Fetch Pairs price
+        const query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi-kovan';
+        const options = {
+          method: 'POST',
+          body: JSON.stringify({ query })
+        };
+
+        const response = yield call(request, query_url, options);
+        const { data } = response;
+        
+        console.log(response);
+
+    }
+
+  } catch (error) {
+    const jsonError = yield error.response ? error.response.json() : error;
+    yield put(getBalancesError(jsonError));
+  }
+}
+
+function* getTransactionsRequest() {
+  yield takeLatest(GET_TRANSACTIONS_REQUEST, getTransactionsSaga);
+}
+
+export default function* rootSaga() {
+  yield all([
+    fork(getTransactionsRequest),
+  ]);
 }

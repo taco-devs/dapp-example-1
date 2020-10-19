@@ -18,13 +18,14 @@ import reducer from './reducer';
 import saga from './saga';
 import messages from './messages';
 import styled from 'styled-components';
-
+import { getTransactions } from './actions';
+import { makeSelectTransactions } from './selectors';
+ 
 const TransactionsSection = styled.div`
   display: flex;
   flex-direction: column;
   margin: ${props => props.isMobile ? '0 0.5em 0 0.5em' : '0 1em 0 1em;'}
 `
-
 
 const Transactions = styled.div`
   display: flex;
@@ -39,7 +40,21 @@ const Transactions = styled.div`
 `
 
 class TransactionsContainer extends React.Component {
+
+  componentDidMount = () => {
+    this.fetchTransactions();
+  }
+
+  fetchTransactions = () => {
+    const {getTransactions, address} = this.props;
+    getTransactions({address});
+  }
+
   render () {
+    const { transactions } = this.props;
+    if (!transactions) {
+      this.fetchTransactions();
+    }
     return (
       <React.Fragment>
         <TransactionsSection>
@@ -62,10 +77,12 @@ const withReducer = injectReducer({ key: 'transactions', reducer });
 const withSaga = injectSaga({ key: 'transactionsSaga', saga });
 
 const mapStateToProps = createStructuredSelector({
+  transactions: makeSelectTransactions()
 });
 
 function mapDispatchToProps(dispatch) {
   return {
+    getTransactions: (payload) => dispatch(getTransactions(payload)),
   };
 }
 

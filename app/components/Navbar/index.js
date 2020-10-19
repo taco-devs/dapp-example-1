@@ -101,7 +101,9 @@ class Navbar extends React.Component {
         isMobile={isMobile}
       >
         <NavbarColumn>
-          <StyledLink to="/">
+          <StyledLink to="/"
+            onClick={() => this.selectActive('/')}
+          >
             <NavbarTab 
               active={active === '/'}
               onClick={() => this.selectActive('/')}
@@ -125,7 +127,9 @@ class Navbar extends React.Component {
               </StyledMessage>
             </NavbarTab>
           </StyledLink> */}
-          <StyledLink to="/transactions">
+          <StyledLink to="/transactions" 
+            onClick={() => this.selectActive('/transactions')}
+          >
             <NavbarTab
               active={active === '/transactions'}
               onClick={() => this.selectActive('/transactions')}
@@ -136,7 +140,9 @@ class Navbar extends React.Component {
               </StyledMessage>
             </NavbarTab>
           </StyledLink>
-          <StyledLink to="/balance">
+          <StyledLink to="/balance"
+            onClick={() => this.selectActive('/balance')}
+          >
             <NavbarTab
               active={active === '/balance'}
               onClick={() => this.selectActive('/balance')}
