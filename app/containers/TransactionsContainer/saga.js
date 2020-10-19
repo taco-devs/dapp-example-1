@@ -12,6 +12,7 @@ const get_query = (address) =>  {
   return `
     {
       transactions(
+        first: 10,
         orderBy: block, 
         orderDirection: desc, 
         where: {
@@ -42,26 +43,28 @@ function* getTransactionsSaga(params) {
 
     if (Network) {
 
-        // Get the correct pairs to fetch price
-        const query = get_query(address);
+      // Get the correct pairs to fetch price
+      const query = get_query(address);
 
-        // Fetch Pairs price
-        const query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi-kovan';
-        const options = {
-          method: 'POST',
-          body: JSON.stringify({ query })
-        };
+      // Fetch Pairs price
+      const query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi-kovan';
+      const options = {
+        method: 'POST',
+        body: JSON.stringify({ query })
+      };
 
-        const response = yield call(request, query_url, options);
-        const { data } = response;
-        
-        console.log(response);
+      const response = yield call(request, query_url, options);
 
+      if (response && response.data) {
+        const { transactions } = response.data;
+        yield put(getTransactionsSuccess(transactions));
+      }
     }
 
   } catch (error) {
+    console.log(error);
     const jsonError = yield error.response ? error.response.json() : error;
-    yield put(getBalancesError(jsonError));
+    yield put(getTransactionsError(jsonError));
   }
 }
 

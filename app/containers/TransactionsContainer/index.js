@@ -20,6 +20,8 @@ import messages from './messages';
 import styled from 'styled-components';
 import { getTransactions } from './actions';
 import { makeSelectTransactions } from './selectors';
+import { TransactionsList } from './components';
+import NetworkData from 'contracts';
  
 const TransactionsSection = styled.div`
   display: flex;
@@ -50,8 +52,17 @@ class TransactionsContainer extends React.Component {
     getTransactions({address});
   }
 
+
+  /* Parse the assets */
+  assetKeys = (Network) => {
+    if (!Network || !Network.available_assets) return [];
+    return Object.keys(Network.available_assets);
+  }
+
   render () {
-    const { transactions } = this.props;
+    const { transactions, network_id } = this.props;
+    const Network = network_id ? NetworkData[network_id] : NetworkData['eth'];
+    const assets = this.assetKeys(Network);
     if (!transactions) {
       this.fetchTransactions();
     }
@@ -59,7 +70,11 @@ class TransactionsContainer extends React.Component {
       <React.Fragment>
         <TransactionsSection>
           <Transactions>
-            <p>Transactions</p>
+              <TransactionsList 
+                {...this.props}
+                Network={Network}
+                assets={assets}
+              />
           </Transactions>
         </TransactionsSection>
       </React.Fragment>
