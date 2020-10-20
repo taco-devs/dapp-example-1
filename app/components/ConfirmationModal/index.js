@@ -232,7 +232,12 @@ class ConfirmationModal extends React.Component {
                     {currentSwap && (
                       <DataBodyRow shadow>
                         <DataBodyColumn align="right">
-                            <StyledLogo src={currentSwap.fromImage}/>
+                          {currentSwap && currentSwap.modal_type === 'redeem' && (
+                            <StyledLogo src={require(`images/tokens/${currentSwap.fromImage}`)}/>
+                          )}
+                          {currentSwap && currentSwap.modal_type === 'mint' && (
+                            <StyledLogo src={currentSwap.toImage}/>
+                          )}
                         </DataBodyColumn>
                         <DataBodyColumn flex="3" margin="0 1.5em 0 0">
                           <StyledText size="1.2em" modal_type={currentSwap.modal_type}>{this.parseNumber(currentSwap.sending, currentSwap.fromDecimals)}</StyledText>
@@ -246,7 +251,13 @@ class ConfirmationModal extends React.Component {
                           <StyledText>{currentSwap.to}</StyledText>
                         </DataBodyColumn>
                         <DataBodyColumn align="left">
-                          <StyledLogo src={currentSwap.toImage}/>
+                          {currentSwap && currentSwap.modal_type === 'mint' && (
+                            <StyledLogo src={require(`images/tokens/${currentSwap.toImage}`)}/>
+                          )}
+                          {currentSwap && currentSwap.modal_type === 'redeem' && (
+                            <StyledLogo src={currentSwap.toImage}/>
+                          )}
+                          
                         </DataBodyColumn>
                       </DataBodyRow>
                     )}

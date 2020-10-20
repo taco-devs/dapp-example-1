@@ -632,7 +632,7 @@ class ActionModal extends React.Component {
           fromDecimals: asset.underlying_decimals,
           toDecimals: 1e8,
           fromImage: asset.native_img_url,
-          toImage: asset.img_url,
+          toImage: asset.gtoken_img_url,
         },
         toggle: this.toggleModal
       })
@@ -652,8 +652,8 @@ class ActionModal extends React.Component {
           receiving: total_base,
           fromDecimals: 1e8,
           toDecimals: 1e8,
-          fromImage: asset.native_img_url,
-          toImage: asset.img_url,
+          fromImage: asset.img_url,
+          toImage: asset.gtoken_img_url,
         },
         toggle: this.toggleModal
       })
@@ -689,7 +689,7 @@ class ActionModal extends React.Component {
           receiving: total_native_redeem,
           fromDecimals: 1e8,
           toDecimals: 1e18,
-          fromImage: asset.img_url,
+          fromImage: asset.gtoken_img_url,
           toImage: asset.native_img_url,
         },
         toggle: this.toggleModal
@@ -709,7 +709,7 @@ class ActionModal extends React.Component {
           receiving: total_base_redeem,
           fromDecimals: 1e8,
           toDecimals: 1e8,
-          fromImage: asset.img_url,
+          fromImage: asset.gtoken_img_url,
           toImage: asset.native_img_url,
         },
         toggle: this.toggleModal

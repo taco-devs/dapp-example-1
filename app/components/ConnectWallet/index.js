@@ -266,7 +266,7 @@ class ConnectWallet extends React.Component {
                     </div>
                     <NetworkLabel mainnet={network_id === 'eth'}>Connected ( {this.connectedNetwork()} )</NetworkLabel>
                   </ListItem>
-                  <ListItem hoverable>
+                  <ListItem hoverable onClick={this.handleToggleModal}>
                     <HiSwitchHorizontal />
                     <DropdownLabel>Switch Wallet Provider</DropdownLabel>
                   </ListItem>
