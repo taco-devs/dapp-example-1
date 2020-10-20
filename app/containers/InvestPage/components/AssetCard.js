@@ -219,6 +219,7 @@ export default class AssetCard extends Component {
                         {currentOpenExtension === asset_key && ( 
                             <AssetExtension 
                                 {...this.props}
+                                {...this.state}
                                 asset={asset}
                             />
                         )}

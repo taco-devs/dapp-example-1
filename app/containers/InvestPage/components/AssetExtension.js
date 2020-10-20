@@ -73,7 +73,7 @@ const ExtensionRow = styled.div`
     flex-direction: row;
     align-items: center;
     width: 100%;
-    justify-items: ${props => props.justify || 'space-between'};
+    justify-content: ${props => props.justify || 'space-between'};
     margin: ${props => props.margin || '0'};
 `
 
@@ -138,8 +138,10 @@ const CustomTooltip = ({ active, payload, label, base, g_asset }) => {
 
 export default class AssetExtension extends Component {
 
-    jsDate = (date) => {
-        return date * 1000;
+    parseAddress = (address) => {
+        const front_tail = address.substring(0,5);
+        const end_tail = address.substring(address.length - 5, address.length);
+        return `${front_tail}...${end_tail}`; 
     }
 
     formatData = () => {
@@ -190,7 +192,7 @@ export default class AssetExtension extends Component {
     }
 
     render() {
-        const {asset, isLoadingChart} = this.props;
+        const {asset, isLoadingChart, total_supply, total_reserve, deposit_fee, withdrawal_fee} = this.props;
         const data= this.formatData();
         return (
             <ExtensionContainer>
@@ -248,21 +250,25 @@ export default class AssetExtension extends Component {
                 >
                     <ExtensionColumn align="flex-start">
                         <StatLabel>TOTAL SUPPLY</StatLabel>
-                        <Stat>{asset.total_supply.toLocaleString('En-en')} {asset.g_asset}</Stat>
+                        <Stat>{(total_supply / 1e8).toLocaleString('En-en')} {asset.g_asset}</Stat>
                     </ExtensionColumn>
                     <ExtensionColumn>
                         <StatLabel>TOKENS LOCKED</StatLabel>
-                        <Stat>{asset.base_total_supply.toLocaleString('En-en')} {asset.base_asset}</Stat>
+                        <Stat>{(total_reserve / asset.base_decimals).toLocaleString('En-en')} {asset.base_asset}</Stat>
                     </ExtensionColumn>
                     <ExtensionColumn>
                         <StatLabel>MINTING FEE</StatLabel>
-                        <Stat>{(asset.minting_fee * 100).toFixed(2)}% (0.01 {asset.base_asset})</Stat>
+                        <Stat>{((deposit_fee / 1e18) * 100).toFixed(2)}%</Stat>
+                    </ExtensionColumn>
+                    <ExtensionColumn>
+                        <StatLabel>WITHDRAW FEE</StatLabel>
+                        <Stat>{((withdrawal_fee / 1e18) * 100).toFixed(2)}%</Stat>
                     </ExtensionColumn>
                     <ExtensionColumn align="flex-end">
                         <StatLabel>TOKEN ADDRESS</StatLabel>
-                        <ExtensionRow>
-                            <Stat>0X4DDC...89FH</Stat>
-                            <IconContainer>
+                        <ExtensionRow justify="flex-end">
+                            <Stat>{this.parseAddress(asset.gtoken_address)}</Stat>
+                            <IconContainer href={`https://kovan.etherscan.io/token/${asset.gtoken_address}`} target="_blank">
                                 <MdOpenInNew size="1.25em" style={{ margin: '0 5px 0 10px'}}/>
                             </IconContainer>
                         </ExtensionRow>
