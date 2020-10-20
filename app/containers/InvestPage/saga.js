@@ -6,11 +6,12 @@ import {
 import request from 'utils/request'
 import NetworkData from 'contracts';
 
-import { APPROVE_TOKEN, MINT_GTOKEN_FROM_CTOKEN, MINT_GTOKEN_FROM_UNDERLYING, REDEEM_GTOKEN_TO_CTOKEN, REDEEM_GTOKEN_TO_UNDERLYING } from './constants'
+import { APPROVE_TOKEN, GET_TOKEN_STATS_REQUEST, MINT_GTOKEN_FROM_CTOKEN, MINT_GTOKEN_FROM_UNDERLYING, REDEEM_GTOKEN_TO_CTOKEN, REDEEM_GTOKEN_TO_UNDERLYING } from './constants'
 import { 
   mintGTokenFromCTokenSuccess, mintGTokenFromCTokenError,
   mintGTokenFromUnderlyingSuccess, mintGTokenFromUnderlyingError,
-  approveTokenSuccess, approveTokenError
+  approveTokenSuccess, approveTokenError,
+  getTokenStatsSuccess, getTokenStatsError
 } from './actions';
 
 import {
@@ -494,6 +495,50 @@ function* approveTokenSaga(params) {
   }
 }
 
+
+function* getTokenStatsSaga(params) {
+  const {payload} = params;
+  const {token} = payload;
+
+  const query = `
+    {
+      tokenDailyDatas {
+        id
+        date
+        mintTotalSent
+        mintTotalReceived
+        redeemTotalSent
+        redeemTotalReceived
+        txCount
+      }
+    }
+  `
+
+  try { 
+
+      // Fetch Pairs price
+      const query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi-kovan';
+      const options = {
+        method: 'POST',
+        body: JSON.stringify({ query })
+      };
+
+      const response = yield call(request, query_url, options);
+
+      if ( response && response.data) {
+        const {tokenDailyDatas} = response.data;
+
+        if (tokenDailyDatas) {
+          yield put(getTokenStatsSuccess(tokenDailyDatas));
+        }
+      }
+  } catch (error) {
+    const jsonError = yield error.response ? error.response.json() : error;
+    // yield put(dismissApproval());
+    // yield put(approveTokenError(jsonError));
+  }
+}
+
 function* mintGTokenFromCTokenRequest() {
   yield takeLatest(MINT_GTOKEN_FROM_CTOKEN, mintGTokenFromCTokenSaga);
 }
@@ -515,6 +560,10 @@ function* approveTokenRequest() {
   yield takeLatest(APPROVE_TOKEN, approveTokenSaga);
 }
 
+function* getTokenStatsRequest() {
+  yield takeLatest(GET_TOKEN_STATS_REQUEST, getTokenStatsSaga);
+}
+
 
 function* watchDownloadFileChannel() {
   while (true) {
@@ -530,6 +579,7 @@ export default function* rootSaga() {
     fork(redeemGTokenToCTokenRequest),
     fork(redeemGTokenToUnderlyingRequest),
     fork(approveTokenRequest),
+    fork(getTokenStatsRequest),
     fork(watchDownloadFileChannel)
   ]);
 }

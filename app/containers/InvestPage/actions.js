@@ -8,7 +8,8 @@ import {
   DEFAULT_ACTION, CHANGE_PAGE, SEARCH,
   MINT_GTOKEN_FROM_CTOKEN, MINT_GTOKEN_FROM_CTOKEN_SUCCESS, MINT_GTOKEN_FROM_CTOKEN_ERROR, 
   MINT_GTOKEN_FROM_UNDERLYING, MINT_GTOKEN_FROM_UNDERLYING_SUCCESS, MINT_GTOKEN_FROM_UNDERLYING_ERROR, REDEEM_GTOKEN_TO_CTOKEN, REDEEM_GTOKEN_TO_UNDERLYING,
-  APPROVE_TOKEN, APPROVE_TOKEN_SUCCESS, APPROVE_TOKEN_ERROR
+  APPROVE_TOKEN, APPROVE_TOKEN_SUCCESS, APPROVE_TOKEN_ERROR,
+  GET_TOKEN_STATS_REQUEST, GET_TOKEN_STATS_SUCCESS, GET_TOKEN_STATS_ERROR
 } from './constants';
 
 export function defaultAction() {
@@ -115,6 +116,28 @@ export function redeemGTokenToUnderlyingSuccess(success) {
 export function redeemGTokenToUnderlyingError(error) {
   return {
     type: REDEEM_GTOKEN_TO_UNDERLYING_ERROR,
+    error
+  }
+}
+
+// GET TOKEN STATS REQUEST
+export function getTokenStats(payload) {
+  return {
+    type: GET_TOKEN_STATS_REQUEST,
+    payload
+  }
+}
+
+export function getTokenStatsSuccess(tokenData) {
+  return {
+    type: GET_TOKEN_STATS_SUCCESS,
+    tokenData
+  }
+}
+
+export function getTokenStatsError(error) {
+  return {
+    type: GET_TOKEN_STATS_ERROR,
     error
   }
 }

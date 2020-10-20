@@ -14,8 +14,22 @@ const makeSelectSearch = () =>
     }
   );
 
+const makeSelectIsLoadingChart = () =>
+  createSelector(selectInvestPage, investState => {
+      return investState.get('isLoadingChart')
+    }
+  );
+
+const makeSelectTokenData = () =>
+  createSelector(selectInvestPage, investState => {
+      return investState.get('tokenData')
+    }
+  );
+
 
 export { 
   makeSelectPagination,
-  makeSelectSearch
+  makeSelectSearch,
+  makeSelectIsLoadingChart,
+  makeSelectTokenData
 };

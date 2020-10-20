@@ -13,7 +13,7 @@ import { compose } from 'redux';
 
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
-import { makeSelectPagination, makeSelectSearch } from './selectors';
+import { makeSelectPagination, makeSelectSearch, makeSelectTokenData, makeSelectIsLoadingChart } from './selectors';
 import { makeSelectCurrrentNetwork, makeSelectCurrrentSwap, makeSelectCurrrentApproval } from '../App/selectors';
 import { makeSelectBalances, makeSelectEthPrice } from '../GrowthStats/selectors';
 import {isMobile} from 'react-device-detect';
@@ -24,7 +24,7 @@ import styled from 'styled-components';
 import ConfirmationModal from 'components/ConfirmationModal';
 import {AssetList, InvestHeader} from './components';
 import NetworkData from 'contracts';
-import { changePage, searchAssets, mintGTokenFromCToken, mintGTokenFromUnderlying, redeemGTokenToCToken, redeemGTokenToUnderlying, approveToken } from './actions';
+import { changePage, searchAssets, mintGTokenFromCToken, mintGTokenFromUnderlying, redeemGTokenToCToken, redeemGTokenToUnderlying, approveToken, getTokenStats } from './actions';
 import { addCurrentSwap, dismissSwap, addCurrentApproval, dismissApproval } from '../App/actions';
 import Loader from 'react-loader-spinner';
 
@@ -115,6 +115,8 @@ const mapStateToProps = createStructuredSelector({
   // Invest
   pagination: makeSelectPagination(),
   search: makeSelectSearch(),
+  isLoadingChart: makeSelectIsLoadingChart(),
+  tokenData: makeSelectTokenData(),
   // Stats
   balances: makeSelectBalances(),
   ethPrice: makeSelectEthPrice()
@@ -135,6 +137,7 @@ function mapDispatchToProps(dispatch) {
     redeemGTokenToCToken: (payload) => dispatch(redeemGTokenToCToken(payload)),
     redeemGTokenToUnderlying: (payload) => dispatch(redeemGTokenToUnderlying(payload)),
     approveToken: (payload) => dispatch(approveToken(payload)),
+    getTokenStats: (payload) => dispatch(getTokenStats(payload))
   };
 }
 

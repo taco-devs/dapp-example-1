@@ -4,6 +4,8 @@ import {
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
   } from 'recharts';
 import { MdOpenInNew } from 'react-icons/md';
+import Loader from 'react-loader-spinner';
+import moment from 'moment';
   
 const data = [
     {
@@ -70,6 +72,7 @@ const ExtensionRow = styled.div`
     display: flex;
     flex-direction: row;
     align-items: center;
+    width: 100%;
     justify-items: ${props => props.justify || 'space-between'};
     margin: ${props => props.margin || '0'};
 `
@@ -112,12 +115,20 @@ const IconContainer = styled.a`
     }
 `
 
+const LoaderContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+    margin: 1em 0 1em 0;
+`
+
 const CustomTooltip = ({ active, payload, label, base, g_asset }) => {
     if (active) {
         return (
             <StyledTooltip>
                 <p>{`${label}`}</p>
-                <p>(G) Rate: {`${payload[0].value.toLocaleString('En-en')} ${base}`}</p>
+                <p>(G) Rate: {`${payload[0].value} ${base}`}</p>
             </StyledTooltip>
         );
     }
@@ -126,8 +137,61 @@ const CustomTooltip = ({ active, payload, label, base, g_asset }) => {
 };
 
 export default class AssetExtension extends Component {
+
+    jsDate = (date) => {
+        return date * 1000;
+    }
+
+    formatData = () => {
+        const {tokenData} = this.props;
+        if (!tokenData) return;
+
+        // Calculate 31 days before
+        const seconds_in_day = 86400;
+        const FIRST_DAY = tokenData[tokenData.length - 1].date - (seconds_in_day * 30);
+
+        // Chart Array
+        let chart_data = new Array(30);
+        let current_days = 0;
+
+        for (let day of chart_data) {
+            const today_timestamp = FIRST_DAY + (seconds_in_day * current_days) + 1;
+            const tomorrow_timestamp = today_timestamp + seconds_in_day + 1;
+            const day_data = tokenData.find(curr_day => curr_day.date >= today_timestamp && curr_day.date < tomorrow_timestamp );
+
+            let x_axis_label;
+            let y_value;
+
+            
+
+            if (day_data) {
+                x_axis_label = moment(day_data.date * 1000).format('MMM DD');
+
+                if (day_data.mintTotalReceived > 0 && day_data.mintTotalSent > 0) {
+                    y_value = Math.round(day_data.mintTotalSent / day_data.mintTotalReceived * 10000) / 10000;
+                } else {
+                    y_value = chart_data[current_days - 1].y_value;
+                }
+            } else {
+                x_axis_label = moment(today_timestamp * 1000).format('MMM DD');
+                if (current_days > 0) {
+                    y_value = chart_data[current_days - 1].y_value;
+                } else {
+                    y_value = 0;
+                }
+            }
+
+            chart_data[current_days] = {x_axis_label, y_value};
+            current_days++;
+        }
+
+        return chart_data;
+
+    }
+
     render() {
-        const {asset} = this.props;
+        const {asset, isLoadingChart} = this.props;
+        const data= this.formatData();
         return (
             <ExtensionContainer>
                 <Divider />
@@ -136,34 +200,47 @@ export default class AssetExtension extends Component {
                         <p>{asset.g_asset} PERFORMANCE</p>
                     </ExtensionColumn>
                     <ExtensionColumn align="flex-end">
-                        <p>1 {asset.g_asset} = {data[data.length - 1].uv} {asset.base_asset}</p>
+                        {data && (
+                            <p>1 {asset.g_asset} = {data[data.length - 1].y_value} {asset.base_asset}</p>
+                        )}
                     </ExtensionColumn>
                 </ExtensionRow>
                 <ExtensionRow justify="center">
-                    <div style={{ width: '100%', height: 200}}>
-                        <ResponsiveContainer>
-                            <AreaChart
-                                    height={180}
-                                    data={data}
-                                    margin={{
-                                        top: 10, right: 0, left: 0, bottom: 0,
-                                    }}
-                            >
-                                {/* <CartesianGrid strokeDasharray="3 3" /> */}
-                                <XAxis 
-                                    dataKey="name"
-                                    tickLine={false}
-                                    interval={2}
-                                    padding={{left: 30, right: 30}}
-                                    tickMargin={5}
+                    {isLoadingChart ? (
+                        <LoaderContainer>
+                            <Loader
+                            type="TailSpin"
+                            color='#00d395'
+                            height={120}
+                            width={120}
+                            />
+                        </LoaderContainer>
+                    ) : (
+                        <div style={{ width: '100%', height: 200}}>
+                            <ResponsiveContainer>
+                                <AreaChart
+                                        height={180}
+                                        data={data}
+                                        margin={{
+                                            top: 10, right: 0, left: 0, bottom: 0,
+                                        }}
+                                >
+                                    {/* <CartesianGrid strokeDasharray="3 3" /> */}
+                                    <XAxis 
+                                        dataKey="x_axis_label"
+                                        tickLine={false}
+                                        interval={2}
+                                        padding={{left: 30, right: 30}}
+                                        tickMargin={5}
 
-                                />
-                                {/* <YAxis /> */}
-                                <Tooltip content={<CustomTooltip base={asset.base_asset} g_asset={asset.g_asset} />}/>
-                                <Area type="monotone" dataKey="uv" stroke="#161d6b" fill="#00d395" />
-                            </AreaChart>
-                        </ResponsiveContainer>
-                    </div>
+                                    />
+                                    <YAxis allowDataOverflow type="number" domain={[data[data.length -1].y_value * 0.95, 'dataMax']} hide />
+                                    <Tooltip content={<CustomTooltip base={asset.base_asset} g_asset={asset.g_asset} />}/>
+                                    <Area type="monotone" dataKey="y_value" stroke="#161d6b" fill="#00d395" />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        </div>
+                    )}
                 </ExtensionRow>
                 <Divider />
                 <ExtensionRow

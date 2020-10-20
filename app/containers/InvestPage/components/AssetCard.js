@@ -218,6 +218,7 @@ export default class AssetCard extends Component {
                         <CardRow>
                         {currentOpenExtension === asset_key && ( 
                             <AssetExtension 
+                                {...this.props}
                                 asset={asset}
                             />
                         )}
