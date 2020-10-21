@@ -61,6 +61,32 @@ const SecondaryLabel = styled.p`
     text-align: center;
 `
 
+const ActionButton = styled.a`
+    text-decoration: none;
+    font-size: 0.85em;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    min-width: 100px;
+    margin: 0 0.5em 0 0.5em;
+    padding: 0.5em 1em 0.5em 1em;
+    border-radius: 5px;
+    background-color: #00d395;
+    border-color: #00d395;
+    border-width: 3px;
+    border-style: solid;
+    color: white;
+
+    &:hover {
+        cursor: pointer;
+        background-color: white;
+        color: #00d395;
+        border-color: #00d395;
+        border-width: 3px;
+        border-style: solid;
+    }
+`
+
 export default class GroBalanceCard extends Component {
 
     state = {
@@ -172,7 +198,12 @@ export default class GroBalanceCard extends Component {
                             <CardColumn 
                                 direction="row"
                             >
-                                
+                                <ActionButton
+                                    href="https://mooniswap.info/pair/0x5a0124b5f8af341d9c1f0faab194b438c8d27468"
+                                    target="_blank"
+                                >
+                                    GET GRO
+                                </ActionButton>
                             </CardColumn>
                         </CardRow>
                     </Card>
