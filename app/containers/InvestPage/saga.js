@@ -499,10 +499,25 @@ function* approveTokenSaga(params) {
 function* getTokenStatsSaga(params) {
   const {payload} = params;
   const {token} = payload;
+  
+  const where = `
+    where: {
+      token: "0x6620a56bfc69c0694c15495c3d311c2f8eec0261"
+    }
+  `
+  
+  const parsed_where = `
+    where: {
+      token: "${token.toLowerCase()}"
+    }
+  `
 
   const query = `
     {
-      tokenDailyDatas {
+      tokenDailyDatas (
+          ${parsed_where}
+        )
+      {
         id
         date
         mintTotalSent
@@ -510,6 +525,9 @@ function* getTokenStatsSaga(params) {
         redeemTotalSent
         redeemTotalReceived
         txCount
+        token {
+          id
+        }
       }
     }
   `

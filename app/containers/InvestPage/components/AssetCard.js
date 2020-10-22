@@ -96,9 +96,9 @@ export default class AssetCard extends Component {
         this.setState({isMobileDrawerOpen: !this.state.isMobileDrawerOpen});
     }
 
-    handleToggleExtension = (asset_key) => {
-        const {toggleExtension} = this.props;
-        toggleExtension(asset_key);
+    handleToggleExtension = () => {
+        const {toggleExtension, asset} = this.props;
+        toggleExtension(asset);
     }
 
     calculateMarketCap = (asset, balances, total_supply) => {

@@ -20,7 +20,9 @@ export const initialState = fromJS({
 function investReducer(state = initialState, action) {
   switch (action.type) {
     case GET_TOKEN_STATS_REQUEST:
-      return state.set('isLoadingChart', true);
+      return state
+        .set('tokenData', null)
+        .set('isLoadingChart', true);
     case GET_TOKEN_STATS_SUCCESS:
       return state
         .set('isLoadingChart', false)

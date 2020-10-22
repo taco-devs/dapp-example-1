@@ -146,7 +146,8 @@ export default class AssetExtension extends Component {
 
     formatData = () => {
         const {tokenData} = this.props;
-        if (!tokenData) return;
+        if (!tokenData) return [];
+        if (tokenData.length < 1) return [];
 
         // Calculate 31 days before
         const seconds_in_day = 86400;
@@ -202,13 +203,13 @@ export default class AssetExtension extends Component {
                         <p>{asset.g_asset} PERFORMANCE</p>
                     </ExtensionColumn>
                     <ExtensionColumn align="flex-end">
-                        {data && (
+                        {data && data.length > 0 && (
                             <p>1 {asset.g_asset} = {data[data.length - 1].y_value} {asset.base_asset}</p>
                         )}
                     </ExtensionColumn>
                 </ExtensionRow>
                 <ExtensionRow justify="center">
-                    {isLoadingChart ? (
+                    {isLoadingChart && (
                         <LoaderContainer>
                             <Loader
                             type="TailSpin"
@@ -217,7 +218,8 @@ export default class AssetExtension extends Component {
                             width={120}
                             />
                         </LoaderContainer>
-                    ) : (
+                    )} 
+                    {data && data.length > 0 && (
                         <div style={{ width: '100%', height: 200}}>
                             <ResponsiveContainer>
                                 <AreaChart

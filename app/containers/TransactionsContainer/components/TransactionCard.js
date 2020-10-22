@@ -146,7 +146,6 @@ export default class BalanceCard extends Component {
         }
 
         // Hardcoded until implemented on the graph
-        console.log(transaction)
         const asset = this.getAsset(transaction.token.symbol);
 
         return (
