@@ -146,8 +146,8 @@ export default class BalanceCard extends Component {
         }
 
         // Hardcoded until implemented on the graph
-        const token_name = 'gcDAI'
-        const asset = this.getAsset(token_name);
+        console.log(transaction)
+        const asset = this.getAsset(transaction.token.symbol);
 
         return (
             <React.Fragment>

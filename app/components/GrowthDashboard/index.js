@@ -128,7 +128,7 @@ class GrowthDashboard extends React.Component {
               value: '$1,237,766.23'
             }}
           />
-          <FormattedMessage {...messages.more} />
+          {/* <FormattedMessage {...messages.more} /> */}
         </GrowthDashboardHeader>
         <GrowthDashboardStats>
           <div style={{ width: '100%', height: isMobile ? '180px' : '100%' }}>

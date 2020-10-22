@@ -107,7 +107,7 @@ const assets = {
             gcDAI: {
                 pair_address: "0x9896bd979f9da57857322cc15e154222c4658a5a",
                 base_address: '0xf0d0eb522cfa50b716b3b1604c4f0fa6f04376ad',
-                gtoken_address: '0xD4c84Fc7d3EA365A2824A8C908f93136e625bCeA',
+                gtoken_address: '0x6620A56BfC69C0694c15495c3d311C2F8EeC0261',
                 underlying_address: '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
                 base_abi: CToken,
                 gtoken_abi: GCToken,
@@ -134,12 +134,12 @@ const assets = {
             gcUSDC: {
                 pair_address: "0x9896bd979f9da57857322cc15e154222c4658a5a",
                 base_address: '0x4a92E71227D294F041BD82dd8f78591B75140d63',
-                gtoken_address: '0xEf8cCAd850357B8D1b09a755Bd2f17183AEAfd06',
+                gtoken_address: '0x151ac053B6EEEB604c957f2E1F69F797834DB39b',
                 underlying_address: '0xb7a4f3e9097c08da09517b5ab877f7a917224ede',
                 base_abi: CToken,
                 gtoken_abi: GCToken,
                 underlying_abi: USDC,
-                underlying_decimals: 1e18,
+                underlying_decimals: 1e6,
                 base_decimals: 1e8,
                 native: 'USDC',
                 base_asset: 'cUSDC',

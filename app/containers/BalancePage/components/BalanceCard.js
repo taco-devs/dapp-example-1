@@ -81,7 +81,7 @@ export default class BalanceCard extends Component {
 
     gTokenToBase = (asset) => {
         if (asset.liquidation_price) {
-            return Math.round(asset.liquidation_price._cost / asset.balance * 1000) / 1000;
+            return Math.round(asset.liquidation_price._cost / Number(asset.balance) * 1000) / 1000;
         } else {
             return '-';
         }

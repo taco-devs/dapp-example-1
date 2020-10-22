@@ -97,7 +97,7 @@ class WalletDashboard extends React.Component {
       <WalletContainer isMobileSized={isMobileSized} >
         <WalletDashboardHeader>
           <FormattedMessage {...messages.balance} />
-          <FormattedMessage {...messages.more} />
+          {/* <FormattedMessage {...messages.more} /> */}
         </WalletDashboardHeader>
         <WalletDashboardStats>
           <InfoRow>

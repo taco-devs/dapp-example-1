@@ -28,6 +28,11 @@ const get_query = (address, pagination) =>  {
         sent
         received
         block
+        token {
+          id
+          name
+          symbol
+        }
       }
     }
 `
