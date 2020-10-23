@@ -36,6 +36,7 @@ const USER_STATS = (address) => {
 }
 
 const BALANCES = (address) => {
+  if (!address) return '';
   return `
     {
       userBalances (
@@ -196,6 +197,7 @@ function* getBalancesSaga(params) {
 
   const {address, web3} = params;
 
+
   try { 
 
     // Get network
@@ -204,9 +206,10 @@ function* getBalancesSaga(params) {
 
     if (Network) {
 
+
         // Get the correct pairs to fetch price
         const PAIRS = get_pairs(Network);
-        const balances_query = BALANCES(address);
+        const balances_query = BALANCES(address);        
 
         // Get the balances
         // const growth_query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi-kovan';
@@ -215,6 +218,7 @@ function* getBalancesSaga(params) {
           method: 'POST',
           body: JSON.stringify({ query: balances_query })
         };
+      
 
         const balances_response = yield call(request, growth_query_url, balances_options);
 

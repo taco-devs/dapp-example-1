@@ -74,7 +74,7 @@ class BalancePage extends React.Component {
 
   handleGetBalances = () => {
     const {web3, address, getBalances} = this.props;
-    getBalances(web3, address);
+    getBalances(address, web3);
   }
 
   render () {

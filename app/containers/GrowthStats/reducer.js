@@ -14,7 +14,7 @@ export const initialState = fromJS({
   user: null,
   balances: null,
   eth_price: null,
-  isLoadingBalances: null,
+  isLoadingBalances: false,
   balancesError: null,
 });
 

@@ -39,7 +39,6 @@ export function getUserStatsError(error) {
 }
 
 export function getBalances(address, web3) {
-  console.log('getting balances')
   return {
     type: GET_BALANCES_REQUEST,
     address,
