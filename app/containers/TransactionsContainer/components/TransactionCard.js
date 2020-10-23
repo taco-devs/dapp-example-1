@@ -110,7 +110,7 @@ const MoreButton = styled.a`
     }
 `
 
-export default class BalanceCard extends Component {
+export default class TransactionCard extends Component {
 
     state = {
         isMobileDrawerOpen: false,
@@ -120,7 +120,6 @@ export default class BalanceCard extends Component {
     getTransactionDate = async () => {
         const {transaction, web3} = this.props;
         if (!transaction || !web3) return;
-
         const date = await web3.eth.getBlock(transaction.block);
         const { timestamp } = date;
         this.setState({timestamp});
@@ -142,7 +141,7 @@ export default class BalanceCard extends Component {
         const {transaction, Network, isMobile, asset_key, currentOpenExtension} = this.props;
         const { timestamp } = this.state;
         if (!timestamp) {
-            this.getTransactionDate()
+            this.getTransactionDate();
         }
 
         // Hardcoded until implemented on the graph
@@ -212,7 +211,7 @@ export default class BalanceCard extends Component {
                                 justify="center"
                                 margin="0 0 0 2em"
                             >
-                                { transaction.action === 'redeem' && (
+                                { asset && transaction.action === 'redeem' && (
                                     <TransactionContainer>
                                         <TransactionContainerColumn>
                                             <TransactionLogo src={require(`images/tokens/${asset.gtoken_img_url}`)}/>
@@ -223,7 +222,7 @@ export default class BalanceCard extends Component {
                                         </TransactionContainerColumn>
                                     </TransactionContainer>
                                 )}
-                                { transaction.action === 'mint' && (
+                                { asset && transaction.action === 'mint' && (
                                     <TransactionContainer>
                                         <TransactionContainerColumn>
                                             {transaction.type === 'base' && <TransactionLogo src={asset.img_url} />}
@@ -251,7 +250,7 @@ export default class BalanceCard extends Component {
                                 justify="center"
                                 margin="0 0 0 2em"
                             >
-                                { transaction.action === 'mint' && (
+                                { asset && transaction.action === 'mint' && (
                                     <TransactionContainer>
                                         <TransactionContainerColumn>
                                             <TransactionLogo src={require(`images/tokens/${asset.gtoken_img_url}`)}/>
@@ -262,7 +261,7 @@ export default class BalanceCard extends Component {
                                         </TransactionContainerColumn>
                                     </TransactionContainer>
                                 )}
-                                { transaction.action === 'redeem' && (
+                                { asset && transaction.action === 'redeem' && (
                                     <TransactionContainer>
                                         <TransactionContainerColumn>
                                             {transaction.type === 'base' && <TransactionLogo src={asset.img_url} />}
@@ -289,7 +288,7 @@ export default class BalanceCard extends Component {
                             >
                                 <MoreButton
                                     action={transaction.action}
-                                    href={`https://kovan.etherscan.io/tx/${transaction.id}`}
+                                    href={`https://etherscan.io/tx/${transaction.id}`}
                                     target="_blank"
                                 >
                                     {transaction.action === 'mint' && 'VIEW MINT'}

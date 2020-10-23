@@ -111,7 +111,7 @@ class WalletDashboard extends React.Component {
           <WalletDashboardDivider />
           <InfoRow>
             {address ? (
-              <StatLabel>1,235%</StatLabel>
+              <StatLabel>- %</StatLabel>
             ) : (
               <StatLabel>-</StatLabel>
             )}   

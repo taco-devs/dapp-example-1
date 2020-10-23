@@ -70,7 +70,7 @@ export default class AssetCard extends Component {
     }
 
     componentDidMount = () => {
-        this.fetchSupply();
+        // this.fetchSupply();
     }
 
     fetchSupply = async () => {
@@ -122,6 +122,8 @@ export default class AssetCard extends Component {
     render() {
         const {asset, data, balances, isMobile, asset_key, currentOpenExtension} = this.props;
         const {isMobileDrawerOpen, total_supply} = this.state;
+
+        
         return (
             <React.Fragment>
                 {isMobile ? (
@@ -156,8 +158,8 @@ export default class AssetCard extends Component {
                                 <CardColumn 
                                     direction="column"
                                 >
-                                    <PrimaryLabel>{asset.apy_avg} AVG</PrimaryLabel>
-                                    <SecondaryLabel>{asset.apy_7days} 7D</SecondaryLabel>
+                                    <PrimaryLabel>{asset.apy_avg}- AVG</PrimaryLabel>
+                                    <SecondaryLabel>{asset.apy_7days}- 7D</SecondaryLabel>
                                 </CardColumn>
                             </CardRow>
                             
@@ -193,8 +195,8 @@ export default class AssetCard extends Component {
                             <CardColumn 
                                 direction="column"
                             >
-                                <PrimaryLabel>{asset.apy_avg} AVG</PrimaryLabel>
-                                <SecondaryLabel>{asset.apy_7days} 7D</SecondaryLabel>
+                                <PrimaryLabel>{/* asset.apy_avg */}- AVG</PrimaryLabel>
+                                <SecondaryLabel>{/* asset.apy_7days */}- 7D</SecondaryLabel>
                             </CardColumn>
                             <CardColumn 
                                 direction="row"

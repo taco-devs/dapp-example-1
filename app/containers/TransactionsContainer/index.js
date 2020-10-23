@@ -19,7 +19,7 @@ import saga from './saga';
 import messages from './messages';
 import styled from 'styled-components';
 import { getTransactions, changePage } from './actions';
-import { makeSelectTransactions, makeSelectPagination, makeSelectIsLoading } from './selectors';
+import { makeSelectTransactions, makeSelectPagination, makeSelectIsLoading, makeSelectError } from './selectors';
 import { TransactionsList, TransactionsHeader } from './components';
 import { makeSelectUser } from '../GrowthStats/selectors';
 import NetworkData from 'contracts';
@@ -36,6 +36,7 @@ const Transactions = styled.div`
   display: flex;
   flex-direction: row;
   height: 100%;
+  min-height: 200px;
   width: 100%;
   background-color: rgba(0, 0, 0, .15);
   border-radius: 5px;
@@ -46,6 +47,10 @@ const Transactions = styled.div`
 
 const LoaderContainer = styled.div`
   margin: 1em 0 1em 0;
+`
+
+const ErrorMessage = styled.b`
+  color: #E56B70;
 `
 
 class TransactionsContainer extends React.Component {
@@ -67,10 +72,10 @@ class TransactionsContainer extends React.Component {
   }
 
   render () {
-    const { transactions, network_id, isLoading } = this.props;
+    const { transactions, network_id, isLoading, error } = this.props;
     const Network = network_id ? NetworkData[network_id] : NetworkData['eth'];
     const assets = this.assetKeys(Network);
-    if (!transactions) {
+    if (!transactions && !error) {
       this.fetchTransactions();
     }
     return (
@@ -81,13 +86,7 @@ class TransactionsContainer extends React.Component {
             fetchTransactions={this.fetchTransactions}
           />
           <Transactions>
-              {transactions && !isLoading ? (
-                <TransactionsList 
-                  {...this.props}
-                  Network={Network}
-                  assets={assets}
-                />
-              ) : (
+              {isLoading && !transactions && (
                 <LoaderContainer>
                   <Loader
                     type="TailSpin"
@@ -97,6 +96,14 @@ class TransactionsContainer extends React.Component {
                   />
                 </LoaderContainer>
               )}
+              {transactions && (
+                <TransactionsList 
+                  {...this.props}
+                  Network={Network}
+                  assets={assets}
+                />
+              )}
+              {error && <ErrorMessage>{error}</ErrorMessage>}
               
           </Transactions>
         </TransactionsSection>
@@ -119,6 +126,7 @@ const mapStateToProps = createStructuredSelector({
   transactions: makeSelectTransactions(),
   pagination: makeSelectPagination(),
   isLoading: makeSelectIsLoading(),
+  error: makeSelectError(),
 });
 
 function mapDispatchToProps(dispatch) {

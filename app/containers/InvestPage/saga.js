@@ -6,8 +6,9 @@ import {
 import request from 'utils/request'
 import NetworkData from 'contracts';
 
-import { APPROVE_TOKEN, GET_TOKEN_STATS_REQUEST, MINT_GTOKEN_FROM_CTOKEN, MINT_GTOKEN_FROM_UNDERLYING, REDEEM_GTOKEN_TO_CTOKEN, REDEEM_GTOKEN_TO_UNDERLYING } from './constants'
+import { APPROVE_TOKEN, GET_TOKENS_REQUEST, GET_TOKEN_STATS_REQUEST, MINT_GTOKEN_FROM_CTOKEN, MINT_GTOKEN_FROM_UNDERLYING, REDEEM_GTOKEN_TO_CTOKEN, REDEEM_GTOKEN_TO_UNDERLYING } from './constants'
 import { 
+  getTokensSuccess, getTokensError,
   mintGTokenFromCTokenSuccess, mintGTokenFromCTokenError,
   mintGTokenFromUnderlyingSuccess, mintGTokenFromUnderlyingError,
   approveTokenSuccess, approveTokenError,
@@ -274,6 +275,45 @@ const approve = (Contract, asset, total_supply, address, functions) => {
     });
 }
 
+function* getTokensSaga(params) {
+  const {payload} = params;
+  
+  const query = `
+    {
+      tokens {
+        id
+        name
+        symbol
+        total_supply
+      }
+    }
+  `
+
+  try { 
+
+      // Fetch Pairs price
+      const query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi';
+      const options = {
+        method: 'POST',
+        body: JSON.stringify({ query })
+      };
+
+      const response = yield call(request, query_url, options);
+
+      if ( response && response.data) {
+        const {tokens} = response.data;
+
+        if (tokens) {
+          yield put(getTokensSuccess(tokens));
+        }
+      }
+  } catch (error) {
+    //const jsonError = yield error.response ? error.response.json() : error;
+    // yield put(dismissApproval());
+    yield put(getTokensError('Could not fetch tokens data'));
+  }
+}
+
 function* mintGTokenFromCTokenSaga(params) {
   const {payload} = params;
   const {GContractInstance, _cost, address, asset, toggle, web3} = payload;
@@ -500,11 +540,6 @@ function* getTokenStatsSaga(params) {
   const {payload} = params;
   const {token} = payload;
   
-  const where = `
-    where: {
-      token: "0x6620a56bfc69c0694c15495c3d311c2f8eec0261"
-    }
-  `
   
   const parsed_where = `
     where: {
@@ -535,7 +570,7 @@ function* getTokenStatsSaga(params) {
   try { 
 
       // Fetch Pairs price
-      const query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi-kovan';
+      const query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi';
       const options = {
         method: 'POST',
         body: JSON.stringify({ query })
@@ -555,6 +590,10 @@ function* getTokenStatsSaga(params) {
     // yield put(dismissApproval());
     // yield put(approveTokenError(jsonError));
   }
+}
+
+function* getTokensRequest() {
+  yield takeLatest(GET_TOKENS_REQUEST, getTokensSaga);
 }
 
 function* mintGTokenFromCTokenRequest() {
@@ -582,7 +621,6 @@ function* getTokenStatsRequest() {
   yield takeLatest(GET_TOKEN_STATS_REQUEST, getTokenStatsSaga);
 }
 
-
 function* watchDownloadFileChannel() {
   while (true) {
     const action = yield take(connectionStatusChannel)
@@ -592,6 +630,7 @@ function* watchDownloadFileChannel() {
 
 export default function* rootSaga() {
   yield all([
+    fork(getTokensRequest),
     fork(mintGTokenFromCTokenRequest),
     fork(mintGTokenFromUnderlyingRequest),
     fork(redeemGTokenToCTokenRequest),

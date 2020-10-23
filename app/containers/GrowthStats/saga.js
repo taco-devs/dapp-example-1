@@ -35,6 +35,29 @@ const USER_STATS = (address) => {
   `
 }
 
+const BALANCES = (address) => {
+  return `
+    {
+      userBalances (
+        where: {
+          user: "${address.toLowerCase()}"
+        }
+      ) {
+        id
+        amount
+        token {
+          id
+          symbol
+          totalSupply
+          totalReserve
+          depositFee
+          withdrawalFee
+        }
+      }
+    }
+  `
+}
+
 const PAIR_QUERIES = (all_pairs) =>  {
   return `
     {
@@ -59,43 +82,36 @@ const balanceChecker = (ContractInstance, address) => {
 }
 
 
-const fetch_balances = async (available_assets, web3, address) => {
-  const assets_keys = Object.keys(available_assets);
+const fetch_balances = async (available_assets, user_balances, web3, address) => {
   // Iterate through the contracts
   const balances = [];
-  for (const key of assets_keys) {
+  for (const balance of user_balances) {
     try {
 
-      const asset = available_assets[key];
+      const asset = available_assets[balance.token.symbol];
 
       // Check for abi and address
-      if (!asset.gtoken_abi || !asset.gtoken_address) continue;
+      if (!asset) continue;
 
       // Fetch asset balance
-      const ContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
-      const balance = await ContractInstance.methods.balanceOf(address).call();
-      const withdrawal_fee = await ContractInstance.methods.withdrawalFee().call();
+      const ContractInstance = await new web3.eth.Contract(asset.gtoken_abi, balance.token.id);
       const exchange_rate = await ContractInstance.methods.exchangeRate().call();
-      const total_reserve = await ContractInstance.methods.totalReserve().call();
-      const total_supply = await ContractInstance.methods.totalSupply().call();
-      
-      //console.log(balance, withdrawal_fee, exchange_rate, total_reserve, total_supply);
 
       let liquidation_price = 0;
 
-      if (Number(balance) > 0) {
-        liquidation_price = await ContractInstance.methods.calcWithdrawalCostFromShares(balance, total_reserve, total_supply, withdrawal_fee).call();
+      if (Number(balance.amount) > 0) {
+        liquidation_price = await ContractInstance.methods.calcWithdrawalCostFromShares(balance.amount, balance.token.totalReserve, balance.token.totalSupply, balance.token.withdrawalFee).call();
       }
 
       balances.push({
-        name: asset.g_asset,
+        name: balance.token.symbol,
         base: asset.base_asset,
         underlying: asset.native,
-        gtoken_address: asset.gtoken_address,
-        balance,
-        withdrawal_fee,
+        gtoken_address: balance.token.id,
+        balance: Number(balance.amount),
+        withdrawal_fee: balance.token.withdrawalFee,
         exchange_rate,
-        total_reserve,
+        total_reserve: balance.token.totalReserve,
         liquidation_price,
       })
 
@@ -152,7 +168,8 @@ function* getUserStatsSaga(params) {
     const query = USER_STATS(address);
 
     // Fetch Pairs price
-    const query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi-kovan';
+    // const query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi-kovan';
+    const query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi';
     const options = {
       method: 'POST',
       body: JSON.stringify({ query })
@@ -171,7 +188,7 @@ function* getUserStatsSaga(params) {
     
   } catch (error) {
     const jsonError = yield error.response ? error.response.json() : error;
-    yield put(getBalancesError(jsonError));
+    yield put(getUserStatsError(jsonError));
   }
 }
 
@@ -189,6 +206,19 @@ function* getBalancesSaga(params) {
 
         // Get the correct pairs to fetch price
         const PAIRS = get_pairs(Network);
+        const balances_query = BALANCES(address);
+
+        // Get the balances
+        // const growth_query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi-kovan';
+        const growth_query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi';
+        const balances_options = {
+          method: 'POST',
+          body: JSON.stringify({ query: balances_query })
+        };
+
+        const balances_response = yield call(request, growth_query_url, balances_options);
+
+        const {data: balances_data} = balances_response;
 
         // Fetch Pairs price
         const query_url = 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2';
@@ -199,6 +229,7 @@ function* getBalancesSaga(params) {
 
         const response = yield call(request, query_url, options);
         const { data } = response;
+
         
         // Set Eth Price in USDT
         const eth_price = data.pairs[0].token1Price
@@ -210,11 +241,10 @@ function* getBalancesSaga(params) {
         const gro_balance = yield call([GRO_Method, GRO_Method.call]);
 
         // Fetch all balances
-        const asset_balances = yield fetch_balances(Network.available_assets, web3, address);;
+        const asset_balances = yield fetch_balances(Network.available_assets, balances_data.userBalances, web3, address);
 
         // Calculate the asset price
         const balances_with_rate = yield get_prices(asset_balances, data, web3, address);
-        
 
         const balances = [
           {
@@ -229,8 +259,8 @@ function* getBalancesSaga(params) {
     }
 
   } catch (error) {
-    const jsonError = yield error.response ? error.response.json() : error;
-    yield put(getBalancesError(jsonError));
+    // const jsonError = yield error.response ? error.response.json() : error;
+    yield put(getBalancesError('Could not fetch balances'));
   }
 }
 

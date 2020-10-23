@@ -20,8 +20,15 @@ const makeSelectIsLoading = () =>
     }
   );
 
+const makeSelectError = () =>
+  createSelector(selectTransactions, transactionsState => {
+      return transactionsState.get('error')
+    }
+  );
+
 export { 
   makeSelectTransactions,
   makeSelectPagination,
   makeSelectIsLoading,
+  makeSelectError,
 };

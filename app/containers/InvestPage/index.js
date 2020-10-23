@@ -13,7 +13,7 @@ import { compose } from 'redux';
 
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
-import { makeSelectPagination, makeSelectSearch, makeSelectTokenData, makeSelectIsLoadingChart } from './selectors';
+import { makeSelectPagination, makeSelectSearch, makeSelectTokenData, makeSelectIsLoadingChart, makeSelectTokens, makeSelectError } from './selectors';
 import { makeSelectCurrrentNetwork, makeSelectCurrrentSwap, makeSelectCurrrentApproval } from '../App/selectors';
 import { makeSelectBalances, makeSelectEthPrice } from '../GrowthStats/selectors';
 import {isMobile} from 'react-device-detect';
@@ -24,14 +24,16 @@ import styled from 'styled-components';
 import ConfirmationModal from 'components/ConfirmationModal';
 import {AssetList, InvestHeader} from './components';
 import NetworkData from 'contracts';
-import { changePage, searchAssets, mintGTokenFromCToken, mintGTokenFromUnderlying, redeemGTokenToCToken, redeemGTokenToUnderlying, approveToken, getTokenStats } from './actions';
+import { getTokens, changePage, searchAssets, mintGTokenFromCToken, mintGTokenFromUnderlying, redeemGTokenToCToken, redeemGTokenToUnderlying, approveToken, getTokenStats } from './actions';
 import { addCurrentSwap, dismissSwap, addCurrentApproval, dismissApproval } from '../App/actions';
 import Loader from 'react-loader-spinner';
+import { stubTrue } from 'lodash';
 
 const Invest = styled.div`
   display: flex;
   flex-direction: column;
   margin: ${props => props.isMobile ? '0 0.5em 0 0.5em' : '0 1em 0 1em;'}
+  align-items: center;
 `
 
 const InvestContainer = styled.div`
@@ -50,7 +52,17 @@ const LoaderContainer = styled.div`
   margin: 1em 0 1em 0;
 `
 
+const ErrorMessage = styled.b`
+  margin: 1em 0 1em 0;
+  color: #E56B70;
+`
+
+
 class InvestPage extends React.Component {
+
+  componentDidMount = () => {
+    this.handleGetTokens();
+  }
 
   /* Parse the assets */
   assetKeys = (Network) => {
@@ -58,10 +70,20 @@ class InvestPage extends React.Component {
     return Object.keys(Network.available_assets);
   }
 
+  handleGetTokens = () => {
+    const {getTokens} = this.props;
+    getTokens();
+  }
+
   render () {
-    const {network, web3, balances} = this.props;
+    const {network, web3, balances, tokens, error} = this.props;
     const Network = network ? NetworkData[network] : NetworkData['eth'];
     const assets = this.assetKeys(Network);
+
+    if (!tokens && !error) {
+      this.handleGetTokens();
+    }
+
     return (
       <React.Fragment>
         <Invest isMobile={isMobile}>
@@ -71,7 +93,7 @@ class InvestPage extends React.Component {
             assets={assets}
           />
           <InvestContainer>
-            {web3 && balances ? (
+            {true ? (
               <AssetList 
                 {...this.props}
                 isMobile={isMobile}
@@ -89,8 +111,8 @@ class InvestPage extends React.Component {
               </LoaderContainer>
               
             )}
-            
           </InvestContainer>
+          {error && <ErrorMessage>{error}</ErrorMessage>}
         </Invest>
         <ConfirmationModal {...this.props} />
       </React.Fragment>
@@ -113,10 +135,12 @@ const mapStateToProps = createStructuredSelector({
   currentSwap: makeSelectCurrrentSwap(),
   currentApproval: makeSelectCurrrentApproval(),
   // Invest
+  tokens: makeSelectTokens(),
   pagination: makeSelectPagination(),
   search: makeSelectSearch(),
   isLoadingChart: makeSelectIsLoadingChart(),
   tokenData: makeSelectTokenData(),
+  error: makeSelectError(),
   // Stats
   balances: makeSelectBalances(),
   ethPrice: makeSelectEthPrice()
@@ -130,6 +154,7 @@ function mapDispatchToProps(dispatch) {
     addCurrentApproval: (approval) => dispatch(addCurrentApproval(approval)),
     dismissApproval: () => dispatch(dismissApproval()),
     // Invest
+    getTokens: () => dispatch(getTokens()),
     changePage: (pagination) => dispatch(changePage(pagination)),
     searchAssets: (search) => dispatch(searchAssets(search)),
     mintGTokenFromCToken: (payload) => dispatch(mintGTokenFromCToken(payload)),

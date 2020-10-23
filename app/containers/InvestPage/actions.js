@@ -6,6 +6,7 @@
 
 import { 
   DEFAULT_ACTION, CHANGE_PAGE, SEARCH,
+  GET_TOKENS_REQUEST, GET_TOKENS_SUCCESS, GET_TOKENS_ERROR,
   MINT_GTOKEN_FROM_CTOKEN, MINT_GTOKEN_FROM_CTOKEN_SUCCESS, MINT_GTOKEN_FROM_CTOKEN_ERROR, 
   MINT_GTOKEN_FROM_UNDERLYING, MINT_GTOKEN_FROM_UNDERLYING_SUCCESS, MINT_GTOKEN_FROM_UNDERLYING_ERROR, REDEEM_GTOKEN_TO_CTOKEN, REDEEM_GTOKEN_TO_UNDERLYING,
   APPROVE_TOKEN, APPROVE_TOKEN_SUCCESS, APPROVE_TOKEN_ERROR,
@@ -29,6 +30,27 @@ export function searchAssets(search) {
   return {
     type: SEARCH,
     search
+  }
+}
+
+// GET TOKEN REQUEST
+export function getTokens() {
+  return {
+    type: GET_TOKENS_REQUEST,
+  }
+}
+
+export function getTokensSuccess(tokens) {
+  return {
+    type: GET_TOKENS_SUCCESS,
+    tokens
+  }
+}
+
+export function getTokensError(error) {
+  return {
+    type: GET_TOKENS_ERROR,
+    error
   }
 }
 

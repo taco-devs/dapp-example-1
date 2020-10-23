@@ -55,7 +55,7 @@ function* getTransactionsSaga(params) {
       const query = get_query(address, pagination);
 
       // Fetch Pairs price
-      const query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi-kovan';
+      const query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi';
       const options = {
         method: 'POST',
         body: JSON.stringify({ query })
@@ -66,13 +66,13 @@ function* getTransactionsSaga(params) {
       if (response && response.data) {
         const { transactions } = response.data;
         yield put(getTransactionsSuccess(transactions));
-      }
+      } 
     }
 
   } catch (error) {
     console.log(error);
-    const jsonError = yield error.response ? error.response.json() : error;
-    yield put(getTransactionsError(jsonError));
+    // const jsonError = yield error.response ? error.response.json() : error;
+    yield put(getTransactionsError('Could not fetch transactions at this moment'));
   }
 }
 

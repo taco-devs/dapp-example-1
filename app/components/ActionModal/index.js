@@ -938,7 +938,7 @@ class ActionModal extends React.Component {
           <Summary
             onClick={e => e.stopPropagation()}
           >
-            <SummaryRow>
+            {/* <SummaryRow>
               <SummaryColumn>
                 <PrimaryLabel>PRICE</PrimaryLabel>
               </SummaryColumn>
@@ -948,7 +948,7 @@ class ActionModal extends React.Component {
                   <HiSwitchHorizontal />
                 </SummaryRow>
               </SummaryColumn>
-            </SummaryRow>
+            </SummaryRow> */}
             <SummaryRow>
               <SummaryColumn>
                 <PrimaryLabel>{asset.base_asset} RESERVE</PrimaryLabel>
@@ -973,8 +973,8 @@ class ActionModal extends React.Component {
                 </SummaryRow>
               </SummaryColumn>
               <SummaryColumn align="flex-end">
-                {modal_type === 'mint' && <PrimaryLabel> {this.parseNumber(this.calculateFee(), 1e18)} {asset.native}  ({this.parseNumber(deposit_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}
-                {modal_type === 'redeem' && <PrimaryLabel> {Math.round(this.calculateBurningFee() * 100) / 100} {asset.native}  ({(asset.burning_fee * 100).toFixed(2)}%)</PrimaryLabel>}   
+                {modal_type === 'mint' && <PrimaryLabel>{this.parseNumber(this.calculateFee(), 1e18)} {is_native ? asset.native : asset.base_asset}  ({this.parseNumber(deposit_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}
+                {modal_type === 'redeem' && <PrimaryLabel>{Math.round(this.calculateBurningFee() * 100) / 100} {asset.g_asset}  ({(asset.burning_fee * 100).toFixed(2)}%)</PrimaryLabel>}   
               </SummaryColumn>
             </SummaryRow>
             <SummaryRow>

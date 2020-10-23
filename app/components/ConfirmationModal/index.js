@@ -236,7 +236,7 @@ class ConfirmationModal extends React.Component {
                             <StyledLogo src={require(`images/tokens/${currentSwap.fromImage}`)}/>
                           )}
                           {currentSwap && currentSwap.modal_type === 'mint' && (
-                            <StyledLogo src={currentSwap.toImage}/>
+                            <StyledLogo src={currentSwap.fromImage}/>
                           )}
                         </DataBodyColumn>
                         <DataBodyColumn flex="3" margin="0 1.5em 0 0">

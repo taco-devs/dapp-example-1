@@ -20,7 +20,21 @@ const makeSelectEthPrice = () =>
     }
   );
 
+const makeSelectBalancesError = () =>
+  createSelector(selectStatsPage, statsState => {
+      return statsState.get('balancesError')
+    }
+  );
+
+const makeSelectIsLoadingBalances = () =>
+  createSelector(selectStatsPage, statsState => {
+      return statsState.get('isLoadingBalances')
+    }
+  );
+
 export { 
+  makeSelectBalancesError,
+  makeSelectIsLoadingBalances,
   makeSelectUser,
   makeSelectBalances,
   makeSelectEthPrice

@@ -6,6 +6,10 @@
 
 export const DEFAULT_ACTION = 'app/InvestPage/DEFAULT_ACTION';
 
+export const GET_TOKENS_REQUEST = 'app/InvestPage/GET_TOKENS_REQUEST';
+export const GET_TOKENS_SUCCESS = 'app/InvestPage/GET_TOKENS_SUCCESS';
+export const GET_TOKENS_ERROR = 'app/InvestPage/GET_TOKENS_ERROR';
+
 export const MINT_GTOKEN_FROM_CTOKEN = 'app/InvestPage/MINT_GTOKEN_FROM_CTOKEN';
 export const MINT_GTOKEN_FROM_CTOKEN_SUCCESS = 'app/InvestPage/MINT_GTOKEN_FROM_CTOKEN_SUCCESS';
 export const MINT_GTOKEN_FROM_CTOKEN_ERROR = 'app/InvestPage/MINT_GTOKEN_FROM_CTOKEN_ERROR';
