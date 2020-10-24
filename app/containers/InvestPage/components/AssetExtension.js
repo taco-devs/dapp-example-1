@@ -270,7 +270,7 @@ export default class AssetExtension extends Component {
                         <StatLabel>TOKEN ADDRESS</StatLabel>
                         <ExtensionRow justify="flex-end">
                             <Stat>{this.parseAddress(asset.gtoken_address)}</Stat>
-                            <IconContainer href={`https://kovan.etherscan.io/token/${asset.gtoken_address}`} target="_blank">
+                            <IconContainer href={`https://etherscan.io/token/${asset.gtoken_address}`} target="_blank">
                                 <MdOpenInNew size="1.25em" style={{ margin: '0 5px 0 10px'}}/>
                             </IconContainer>
                         </ExtensionRow>
