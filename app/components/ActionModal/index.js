@@ -202,7 +202,7 @@ const Summary = styled.div`
   flex-direction: column;
   background-color: #E8E8E8;
   flex: 1;
-  height: calc(55vh - 260px);
+  height: calc(550px - 260px);
   padding: 2em 1.5em 1em 1.5em;
 `
 
@@ -352,7 +352,7 @@ const customStyles = {
     padding: 0,
     borderRadius: '5px',
     width: '450px',
-    height: '55vh',
+    height: '550px',
   },
   overlay: {
     backgroundColor: 'rgb(0,0,0, 0.50)'
