@@ -417,7 +417,6 @@ function* redeemGTokenToCTokenSaga(params) {
   const {payload} = params;
   const {GContractInstance, _grossShares, address, asset, toggle, web3} = payload;
   try { 
-  
     // Close the current modal
     yield toggle();
 
