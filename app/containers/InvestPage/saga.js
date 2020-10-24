@@ -284,7 +284,7 @@ function* getTokensSaga(params) {
         id
         name
         symbol
-        total_supply
+        totalSupply
       }
     }
   `

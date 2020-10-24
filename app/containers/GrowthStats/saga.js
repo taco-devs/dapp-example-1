@@ -197,6 +197,9 @@ function* getBalancesSaga(params) {
 
   const {address, web3} = params;
 
+  if (!address || !web3) {
+    return yield put(getBalancesError('No wallet detected'));
+  }
 
   try { 
 

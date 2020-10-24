@@ -125,7 +125,7 @@ class GrowthDashboard extends React.Component {
             {...messages.tvl} 
             values={{
               growth: isMobile ? 'TVL' : 'GROWTH TVL', 
-              value: '$1,237,766.23'
+              value: '-'
             }}
           />
           {/* <FormattedMessage {...messages.more} /> */}

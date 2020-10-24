@@ -119,6 +119,37 @@ export default class AssetCard extends Component {
         return `$${market_cap.toLocaleString('en-En')}`;
     }
 
+    getMarketSize = () => {
+        const {asset, balances, tokens, ethPrice} = this.props;
+
+        if (!balances || !tokens) return '-';
+
+        const token = tokens.find(token => token.symbol === asset.g_asset);
+
+        if (!token) return '-';
+
+        const asset_data = balances.find(balance => balance.name === asset.g_asset);
+
+        if (!asset_data) return '-';
+        
+        const market_cap = (Number(token.totalSupply) / 1e8) / Number(asset_data.base_price_eth) * ethPrice;
+
+        if (!market_cap || market_cap <= 1) return 'N/A'
+
+        return `$${market_cap.toLocaleString('en-En')}`;
+    }
+
+    getSupply = () => {
+        const {tokens, asset} = this.props;
+        if (!tokens) return '-'
+        
+        const token = tokens.find(token => token.symbol === asset.g_asset);
+
+        if (!token) return '-';
+
+        return (Math.round(token.totalSupply / 1e8 * 1000) / 1000).toLocaleString('En-en');
+    }
+
     render() {
         const {asset, data, balances, isMobile, asset_key, currentOpenExtension} = this.props;
         const {isMobileDrawerOpen, total_supply} = this.state;
@@ -189,8 +220,8 @@ export default class AssetCard extends Component {
                             <CardColumn 
                                 direction="column"
                             >
-                                <PrimaryLabel>{this.calculateMarketCap(asset, balances, total_supply)}</PrimaryLabel>
-                                <SecondaryLabel>{total_supply && (total_supply / 1e8) >= 1 ? Math.round(total_supply / 1e8).toLocaleString('En-en') : '-'} {asset.g_asset}</SecondaryLabel>
+                                <PrimaryLabel>{this.getMarketSize()}</PrimaryLabel>
+                                <SecondaryLabel>{this.getSupply()} {asset.g_asset}</SecondaryLabel>
                             </CardColumn>
                             <CardColumn 
                                 direction="column"

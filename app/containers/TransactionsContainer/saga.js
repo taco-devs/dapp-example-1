@@ -42,6 +42,10 @@ function* getTransactionsSaga(params) {
 
   const {address} = params;
 
+  if (!address) {
+    yield put(getTransactionsError('No wallet detected'));
+  }
+
   try { 
 
     // Get network
@@ -67,6 +71,7 @@ function* getTransactionsSaga(params) {
         const { transactions } = response.data;
         yield put(getTransactionsSuccess(transactions));
       } 
+      
     }
 
   } catch (error) {
