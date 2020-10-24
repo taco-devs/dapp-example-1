@@ -84,7 +84,7 @@ class BalancePage extends React.Component {
     return (
       <Balance>
         <BalanceContainer>
-          {isLoadingBalances && (
+          {isLoadingBalances && !balances && (
             <LoaderContainer>
               <Loader
                 type="TailSpin"

@@ -43,7 +43,7 @@ const assets = {
             gcUSDC: {
                 pair_address: "0x9896bd979f9da57857322cc15e154222c4658a5a",
                 base_address: '0x39aa39c021dfbae8fac545936693ac917d5e7563',
-                gtoken_address: '0xa37d9c78Fd0D07658Eab383202aD9B17F1C3266e',
+                gtoken_address: '0x67c713424295f81548c93bbd280474218c1b5a8b',
                 underlying_address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
                 base_abi: CToken,
                 gtoken_abi: GCToken,
@@ -61,7 +61,7 @@ const assets = {
                 g_price: 1.20,
                 apy_avg: '12.58%',
                 apy_7days: '0.58%',
-                img_url: 'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png',
+                img_url: 'https://s2.coinmarketcap.com/static/img/coins/64x64/5265.png',
                 native_img_url: 'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png',
                 gtoken_img_url: 'gctoken_usdc.png',
                 minting_fee: 0.01,

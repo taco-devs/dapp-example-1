@@ -398,21 +398,38 @@ class ActionModal extends React.Component {
     const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
     const UnderlyingContractInstance = await new web3.eth.Contract(asset.underlying_abi, asset.underlying_address);
     const BaseContractInstance = await new web3.eth.Contract(asset.base_abi, asset.base_address);
-    
-    const total_supply = await GContractInstance.methods.totalSupply().call();
-    const deposit_fee = await GContractInstance.methods.depositFee().call();
-    const withdrawal_fee = await GContractInstance.methods.withdrawalFee().call();
-    const exchange_rate = await GContractInstance.methods.exchangeRate().call();
-    const total_reserve = await GContractInstance.methods.totalReserve().call(); 
 
-    // Balance of the underlying asset
-    const g_balance = await GContractInstance.methods.balanceOf(address).call(); 
-    const underlying_balance = await UnderlyingContractInstance.methods.balanceOf(address).call(); 
-    const asset_balance = await BaseContractInstance.methods.balanceOf(address).call(); 
-  
-    // Allowance of the underlying asset
-    const underlying_allowance = await UnderlyingContractInstance.methods.allowance(address, asset.gtoken_address).call();
-    const asset_allowance = await BaseContractInstance.methods.allowance(address, asset.gtoken_address).call();
+    let total_supply;    
+    let deposit_fee;   
+    let withdrawal_fee;  
+    let exchange_rate;   
+    let total_reserve;  
+    let g_balance;
+    
+    if (GContractInstance) {
+      total_supply    = await GContractInstance.methods.totalSupply().call();
+      deposit_fee     = await GContractInstance.methods.depositFee().call();
+      withdrawal_fee  = await GContractInstance.methods.withdrawalFee().call();
+      exchange_rate   = await GContractInstance.methods.exchangeRate().call();
+      total_reserve   = await GContractInstance.methods.totalReserve().call(); 
+      g_balance       = await GContractInstance.methods.balanceOf(address).call(); 
+    }
+
+    let underlying_balance;
+    let underlying_allowance;
+
+    if (UnderlyingContractInstance) {
+      underlying_balance = await UnderlyingContractInstance.methods.balanceOf(address).call(); 
+      underlying_allowance = await UnderlyingContractInstance.methods.allowance(address, asset.gtoken_address).call();
+    }
+    
+    let asset_balance;
+    let asset_allowance;
+
+    if (BaseContractInstance) {
+      asset_balance = await BaseContractInstance.methods.balanceOf(address).call();
+      asset_allowance = await BaseContractInstance.methods.allowance(address, asset.gtoken_address).call();
+    }
 
     this.setState({total_supply, deposit_fee, withdrawal_fee, exchange_rate, total_reserve, underlying_balance, asset_balance, g_balance, isLoading: false, underlying_allowance, asset_allowance});
   }
@@ -449,7 +466,7 @@ class ActionModal extends React.Component {
       } 
     
       if (modal_type === 'redeem') {
-        this.calculateBurningTotal(value);
+        this.calculateBurningTotal(value, true);
         this.setState({value_redeem: value})
       }
     }
@@ -501,10 +518,9 @@ class ActionModal extends React.Component {
 
   }, 250);
 
-  calculateBurningTotal = debounce(async (value) => {
+  calculateBurningTotal = debounce(async (value, parseString) => {
     const { web3, asset } = this.props;
     const { modal_type, is_native, total_reserve, total_supply, exchange_rate, withdrawal_fee} = this.state;
-
   
     // Handle 0 value transactions
     if (!value || value.length <= 0) {
@@ -514,28 +530,19 @@ class ActionModal extends React.Component {
       })
     }
 
-    if (is_native) {
-      const netShares = (value * 1e8).toString();
-      const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
-      const result = await GContractInstance.methods.calcWithdrawalCostFromShares(netShares, total_reserve, total_supply, withdrawal_fee).call();
-      const rate = await GContractInstance.methods.calcUnderlyingCostFromCost(result._cost, exchange_rate).call();
-      const {_cost, _feeShares} = result;
-      this.setState({
-        real_fee: _feeShares,
-        total_native_cost_redeem: netShares,
-        total_native_redeem: rate,
-      });
-    } else {
-        const netShares = (value * 1e8).toString()
-        const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
-        const result = await GContractInstance.methods.calcWithdrawalCostFromShares(netShares, total_reserve, total_supply, withdrawal_fee).call();
-        const {_cost, _feeShares} = result;
-        this.setState({
-          real_fee: _feeShares,
-          total_base_cost_redeem: netShares,
-          total_base_redeem: _cost,
-        });
-    }
+
+    const netShares = parseString ? (value * 1e8).toString() : Math.round(value * 1e8).toString();
+
+    const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+    const result = await GContractInstance.methods.calcWithdrawalCostFromShares(netShares, total_reserve, total_supply, withdrawal_fee).call();
+    const rate = await GContractInstance.methods.calcUnderlyingCostFromCost(result._cost, exchange_rate).call();
+    const {_cost, _feeShares} = result;
+    this.setState({
+      real_fee: _feeShares,
+      total_native_cost_redeem: netShares,
+      total_base_redeem: _cost,
+      total_native_redeem: rate,
+    });
 
   }, 250)
 
@@ -598,7 +605,7 @@ class ActionModal extends React.Component {
       if ((Number(g_balance) / 1e8) < 0.01) return;
       const value_redeem = g_balance / 1e8;
       this.setState({value_redeem});
-      this.handleInputChange(value_redeem)
+      this.calculateBurningTotal(value_redeem, false);
     }
   }
 
@@ -786,14 +793,13 @@ class ActionModal extends React.Component {
         return  Number(value_native * asset.underlying_decimals) * (deposit_fee / asset.underlying_decimals);
       } else {
         if (!value_base || Number(value_base) <= 0) return true;
-        return Number(value_base * 1e18) * (deposit_fee / asset.underlying_decimals);
+        return Number(value_base * asset.base_decimals) * (deposit_fee / asset.base_decimals);
       }
     }
 
-    /* if (modal_type === 'redeem') {
-      if (!value_redeem) return true;
-      return Number(value_redeem * 1e8) > Number(g_balance);
-    } */
+    if (modal_type === 'redeem') {
+      return Number(value_redeem * 1e8) * (withdrawal_fee / asset.base_decimals);
+    }
   }
 
   render () {
@@ -913,7 +919,7 @@ class ActionModal extends React.Component {
               >
                 <PrimaryLabel align="right">ASSET</PrimaryLabel>
                 <SelectorRow>
-                  <IconLogo src={modal_type === 'mint' && is_native ? asset.native_img_url : asset.img_url} />
+                  <IconLogo src={modal_type === 'mint' ? is_native ? asset.native_img_url : asset.img_url : require(`images/tokens/${asset.gtoken_img_url}`)} />
                   <AssetLabel>{modal_type === 'mint' ? is_native ? asset.native : asset.base_asset : asset.g_asset}</AssetLabel>
                   <FaChevronDown />
                 </SelectorRow>
@@ -974,7 +980,7 @@ class ActionModal extends React.Component {
               </SummaryColumn>
               <SummaryColumn align="flex-end">
                 {modal_type === 'mint' && <PrimaryLabel>{this.parseNumber(this.calculateFee(), 1e18)} {is_native ? asset.native : asset.base_asset}  ({this.parseNumber(deposit_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}
-                {modal_type === 'redeem' && <PrimaryLabel>{Math.round(this.calculateBurningFee() * 100) / 100} {asset.g_asset}  ({(asset.burning_fee * 100).toFixed(2)}%)</PrimaryLabel>}   
+                {modal_type === 'redeem' && <PrimaryLabel>{this.parseNumber(this.calculateFee(), 1e18)} {asset.g_asset}  ({this.parseNumber(deposit_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}   
               </SummaryColumn>
             </SummaryRow>
             <SummaryRow>
