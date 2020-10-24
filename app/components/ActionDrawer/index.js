@@ -432,7 +432,7 @@ export default class ActionDrawer extends Component {
                               <PrimaryLabel>{asset.base_asset} SUPPLY</PrimaryLabel>
                             </SummaryColumn>
                             <SummaryColumn align="flex-end">
-                              <PrimaryLabel>{asset.base_total_supply.toLocaleString('En-en')} {asset.base_asset}</PrimaryLabel>
+                              {/* <PrimaryLabel>{asset.base_total_supply.toLocaleString('En-en')} {asset.base_asset}</PrimaryLabel> */}
                             </SummaryColumn>
                           </SummaryRow>
                           <SummaryRow>
@@ -440,7 +440,7 @@ export default class ActionDrawer extends Component {
                               <PrimaryLabel>{asset.g_asset} SUPPLY</PrimaryLabel>
                             </SummaryColumn>
                             <SummaryColumn align="flex-end">
-                              <PrimaryLabel>{asset.total_supply.toLocaleString('En-en')} {asset.g_asset}</PrimaryLabel>
+                              {/* <PrimaryLabel>{asset.total_supply.toLocaleString('En-en')} {asset.g_asset}</PrimaryLabel> */}
                             </SummaryColumn>
                           </SummaryRow>
                           <SummaryRow>

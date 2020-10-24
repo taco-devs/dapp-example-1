@@ -163,7 +163,7 @@ export default class AssetCard extends Component {
                         text="MINT"
                         data={data}
                         asset={asset}
-                        toggleMobileDrawer={this.toggleMobileDrawer}
+                        // toggleMobileDrawer={this.toggleMobileDrawer}
                         isMobileDrawerOpen={isMobileDrawerOpen}
                     >
                         <Card 
@@ -177,20 +177,22 @@ export default class AssetCard extends Component {
                                     justify="flex-start"
                                     margin="0 0 0 1em"
                                 >
-                                    <AssetLogo src={require(asset.img_url)} isMobile={isMobile} />
+                                    {asset.gtoken_img_url && (
+                                        <AssetLogo src={require(`images/tokens/${asset.gtoken_img_url}`)} isMobile={isMobile} />
+                                    )}
                                     <PrimaryLabel>{asset.g_asset} {!isMobile && '/'} {asset.base_asset}</PrimaryLabel>
                                 </CardColumn>
                                 <CardColumn 
                                     direction="column"
                                 >
-                                    <PrimaryLabel>{asset.tvl}</PrimaryLabel>
-                                    <SecondaryLabel>{total_supply ? total_supply.toLocaleString('En-en') : '-'} {asset.g_asset}</SecondaryLabel>
+                                    <PrimaryLabel>{this.getMarketSize()}</PrimaryLabel>
+                                    <SecondaryLabel>{this.getSupply()} {asset.g_asset}</SecondaryLabel>
                                 </CardColumn>
                                 <CardColumn 
                                     direction="column"
                                 >
-                                    <PrimaryLabel>{asset.apy_avg}- AVG</PrimaryLabel>
-                                    <SecondaryLabel>{asset.apy_7days}- 7D</SecondaryLabel>
+                                    <PrimaryLabel>{/* asset.apy_avg */}- AVG</PrimaryLabel>
+                                <SecondaryLabel>{/* asset.apy_7days */}- 7D</SecondaryLabel>
                                 </CardColumn>
                             </CardRow>
                             
