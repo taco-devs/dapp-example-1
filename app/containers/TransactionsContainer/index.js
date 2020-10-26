@@ -53,6 +53,10 @@ const ErrorMessage = styled.b`
   color: #E56B70;
 `
 
+const InfoMessage = styled.b`
+  color: white;
+`
+
 class TransactionsContainer extends React.Component {
 
   componentDidMount = () => {
@@ -72,7 +76,7 @@ class TransactionsContainer extends React.Component {
   }
 
   render () {
-    const { transactions, network_id, isLoading, error } = this.props;
+    const { transactions, network_id, isLoading, error, address } = this.props;
     const Network = network_id ? NetworkData[network_id] : NetworkData['eth'];
     const assets = this.assetKeys(Network);
     if (!transactions && !error) {
@@ -96,15 +100,17 @@ class TransactionsContainer extends React.Component {
                   />
                 </LoaderContainer>
               )}
-              {transactions && (
+              {address && transactions && transactions.length > 0 && (
                 <TransactionsList 
                   {...this.props}
                   Network={Network}
                   assets={assets}
                 />
+              )} 
+              {transactions && transactions.length < 1 && (
+                <InfoMessage>No transactions</InfoMessage>
               )}
               {error && <ErrorMessage>{error}</ErrorMessage>}
-              
           </Transactions>
         </TransactionsSection>
       </React.Fragment>
