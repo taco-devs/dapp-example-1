@@ -5,13 +5,14 @@ import {
 import request from 'utils/request'
 import NetworkData from 'contracts';
 
-import { GET_BALANCES_REQUEST, GET_USER_STATS_REQUEST, GET_TVL_REQUEST } from './constants'
+import { GET_BALANCES_REQUEST, GET_USER_STATS_REQUEST, GET_TVL_REQUEST, GET_PRICES_REQUEST } from './constants'
 import { 
   getUserStatsSuccess, getUserStatsError,
   getBalancesSuccess, getBalancesError,
   getEthPrice,
   getTVLSuccess,
-  getTVLError
+  getTVLError,
+  getPricesSuccess, getPricesError
 } from './actions';
 
 import { makeSelectCurrrentNetwork } from '../App/selectors';
@@ -76,7 +77,6 @@ const PAIR_QUERIES = (all_pairs) =>  {
       }
     }
 `
-
 
 
 }
@@ -282,6 +282,7 @@ function* getBalancesSaga(params) {
         const response = yield call(request, query_url, options);
         const { data } = response;
 
+        yield put(getPricesSuccess(data));
         
         // Set Eth Price in USDT
         const eth_price = data.pairs[0].token1Price
@@ -293,6 +294,7 @@ function* getBalancesSaga(params) {
         const gro_balance = yield call([GRO_Method, GRO_Method.call]);
 
         // Fetch all balances
+        if (balances_data) {
         const asset_balances = yield fetch_balances(Network.available_assets, balances_data.userBalances, web3, address);
 
         // Calculate the asset price
@@ -308,6 +310,7 @@ function* getBalancesSaga(params) {
         ]
 
         yield put(getBalancesSuccess(balances))
+      }
     }
 
   } catch (error) {
@@ -315,6 +318,35 @@ function* getBalancesSaga(params) {
     yield put(getBalancesError('Could not fetch balances'));
   }
 }
+
+
+function* getPricesSaga() {
+
+  try { 
+
+    const Network = NetworkData['eth'];
+    const PAIRS = get_pairs(Network);
+
+    // Fetch Pairs price
+    const query_url = 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2';
+    const options = {
+      method: 'POST',
+      body: JSON.stringify({ query: PAIRS })
+    };
+
+    const response = yield call(request, query_url, options);
+    const { data } = response;
+
+    yield put(getEthPrice(data.pairs[0].token1Price))
+
+    yield put(getPricesSuccess(data))
+    
+  } catch (error) {
+    // const jsonError = yield error.response ? error.response.json() : error;
+    yield put(getPricesError('Could not fetch balances'));
+  }
+}
+
 
 function* getUserStatsRequest() {
   yield takeLatest(GET_USER_STATS_REQUEST, getUserStatsSaga);
@@ -328,10 +360,15 @@ function* getTVLRequest() {
   yield takeLatest(GET_TVL_REQUEST, getTVLSaga);
 }
 
+function* getPricesRequest() {
+  yield takeLatest(GET_PRICES_REQUEST, getPricesSaga);
+}
+
 export default function* rootSaga() {
   yield all([
     fork(getUserStatsRequest),
     fork(getBalancesRequest),
     fork(getTVLRequest),
+    fork(getPricesRequest)
   ]);
 }

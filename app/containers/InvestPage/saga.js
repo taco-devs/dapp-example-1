@@ -21,7 +21,7 @@ import {
 } from '../App/actions'
 
 import {
-  getBalances
+  getBalances, getPricesSuccess
 } from '../GrowthStats/actions'
 
 
@@ -285,6 +285,7 @@ function* getTokensSaga(params) {
         name
         symbol
         totalSupply
+        totalReserve
       }
     }
   `

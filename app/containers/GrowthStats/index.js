@@ -19,7 +19,7 @@ import reducer from './reducer';
 import saga from './saga';
 import messages from './messages';
 import StatsContainer from 'components/StatsContainer';
-import { getUserStats, getBalances, getTVL } from './actions';
+import { getUserStats, getBalances, getTVL, getPrices } from './actions';
 import { makeSelectBalances, makeSelectEthPrice, makeSelectTvl, makeSelectTvlHistory } from '../GrowthStats/selectors';
 
 import { makeSelectCurrrentNetwork } from '../App/selectors'
@@ -28,8 +28,9 @@ import { makeSelectCurrrentNetwork } from '../App/selectors'
 class GrowthStats extends React.Component {
 
   componentDidMount = () => {
-    const {getTVL} = this.props;
+    const {getTVL, getPrices} = this.props;
     getTVL();
+    getPrices();
   }
 
   fetchBalances = () => {
@@ -74,7 +75,8 @@ function mapDispatchToProps(dispatch) {
   return {
     getUserStats: (addresss, web3) => dispatch(getUserStats(addresss, web3)),
     getBalances: (address, web3) => dispatch(getBalances(address, web3)),
-    getTVL: () => dispatch(getTVL())
+    getTVL: () => dispatch(getTVL()),
+    getPrices: () => dispatch(getPrices())
   };
 }
 

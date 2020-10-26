@@ -44,6 +44,12 @@ const makeSelectTvlHistory = () =>
     }
   );
 
+const makeSelectPrices = () =>
+  createSelector(selectStatsPage, statsState => {
+      return statsState.get('prices')
+    }
+  );
+
 export { 
   makeSelectBalancesError,
   makeSelectIsLoadingBalances,
@@ -51,5 +57,6 @@ export {
   makeSelectBalances,
   makeSelectEthPrice,
   makeSelectTvl,
-  makeSelectTvlHistory
+  makeSelectTvlHistory,
+  makeSelectPrices
 };

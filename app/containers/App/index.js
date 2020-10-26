@@ -242,7 +242,7 @@ class App extends React.Component {
       await web3.currentProvider.close();
     }
     await this.web3Modal.clearCachedProvider();
-    this.setState({ ...INITIAL_STATE });
+    this.setState({ ...INITIAL_STATE, connected: true });
   };
 
 
