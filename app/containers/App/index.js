@@ -105,7 +105,9 @@ class App extends React.Component {
     }
 
     // Load Growth Token Contract
-
+    setTimeout(() => {
+      this.setState({ connected: true });
+    }, 2000);
   }
 
   // Init Web3
@@ -166,7 +168,6 @@ class App extends React.Component {
     await this.setState({
       web3,
       provider,
-      connected: true,
       address,
       chainId,
       networkId,
