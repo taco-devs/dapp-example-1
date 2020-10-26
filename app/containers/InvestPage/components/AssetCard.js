@@ -42,7 +42,7 @@ const CardColumn = styled.div`
 `
 
 const AssetLogo = styled.img`
-    width: ${props => props.isMobile ? '25px' : '50px'};
+    width: ${props => props.isMobile ? '40px' : '50px'};
     height: auto;
 `
 
@@ -168,7 +168,7 @@ export default class AssetCard extends Component {
                     >
                         <Card 
                             isMobile={isMobile}
-                            onClick={this.toggleMobileDrawer}
+                            // onClick={this.toggleMobileDrawer}
                         >
                             <CardRow>
                                 <CardColumn
@@ -180,7 +180,11 @@ export default class AssetCard extends Component {
                                     {asset.gtoken_img_url && (
                                         <AssetLogo src={require(`images/tokens/${asset.gtoken_img_url}`)} isMobile={isMobile} />
                                     )}
-                                    <PrimaryLabel>{asset.g_asset} {!isMobile && '/'} {asset.base_asset}</PrimaryLabel>
+                                    <CardColumn>
+                                        <PrimaryLabel>{asset.g_asset}</PrimaryLabel>
+                                        <SecondaryLabel>{asset.base_asset}</SecondaryLabel>
+                                    </CardColumn>
+                                    
                                 </CardColumn>
                                 <CardColumn 
                                     direction="column"

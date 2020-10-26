@@ -109,6 +109,15 @@ const MenuTab = styled.div`
   margin: 1em 0 1em 0;
   padding: 0.5em 0 0.5em 0;
   border-radius: 5px;
+
+  &:focus {
+    outline-style: none;
+    box-shadow: none;
+    border-color: transparent;
+    background-color: black;
+    color: white;
+  }
+
   ${props => props.active && `
     background-color: #00d395;
     -webkit-box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
@@ -297,7 +306,7 @@ export default class MenuDrawer extends Component {
                                             </StyledMessage>
                                         </MenuTab>
                                     </StyledLink>
-                                    <StyledLink to="/vote">
+                                    {/* <StyledLink to="/vote">
                                         <MenuTab
                                             active={active === '/vote'}
                                             onClick={() => this.selectActive('/vote')}
@@ -329,7 +338,7 @@ export default class MenuDrawer extends Component {
                                             <FormattedMessage {...messages.balance} />
                                             </StyledMessage>
                                         </MenuTab>
-                                    </StyledLink>
+                                    </StyledLink> */}
                                 </Menu>
                             </StyledDrawerContainer>
                         </MaskContainer>
