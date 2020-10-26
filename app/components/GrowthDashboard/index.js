@@ -116,8 +116,14 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 class GrowthDashboard extends React.Component {
+
+  parseTVL = (value) => {
+    return (Math.round(value * 100) / 100).toLocaleString('en-En')
+  }
+
   render () {
-    const {isMobile} = this.props;
+    const {isMobile, tvl} = this.props;
+    console.log(tvl)
     return (
       <GrowthContainer>
         <GrowthDashboardHeader>
@@ -125,7 +131,7 @@ class GrowthDashboard extends React.Component {
             {...messages.tvl} 
             values={{
               growth: isMobile ? 'TVL' : 'GROWTH TVL', 
-              value: '-'
+              value: tvl ? `$ ${this.parseTVL(tvl.totalValueLockedUSD)} USD` : '-'
             }}
           />
           {/* <FormattedMessage {...messages.more} /> */}

@@ -32,10 +32,24 @@ const makeSelectIsLoadingBalances = () =>
     }
   );
 
+const makeSelectTvl = () =>
+  createSelector(selectStatsPage, statsState => {
+      return statsState.get('tvl')
+    }
+  );
+
+const makeSelectTvlHistory = () =>
+  createSelector(selectStatsPage, statsState => {
+      return statsState.get('tvl_history')
+    }
+  );
+
 export { 
   makeSelectBalancesError,
   makeSelectIsLoadingBalances,
   makeSelectUser,
   makeSelectBalances,
-  makeSelectEthPrice
+  makeSelectEthPrice,
+  makeSelectTvl,
+  makeSelectTvlHistory
 };

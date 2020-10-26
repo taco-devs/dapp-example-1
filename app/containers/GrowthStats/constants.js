@@ -14,6 +14,10 @@ export const GET_BALANCES_REQUEST = 'app/GrowthStats/GET_BALANCES_REQUEST';
 export const GET_BALANCES_SUCCESS = 'app/GrowthStats/GET_BALANCES_SUCCESS';
 export const GET_BALANCES_ERROR = 'app/GrowthStats/GET_BALANCES_ERROR';
 
+export const GET_TVL_REQUEST = 'app/GrowthStats/GET_TVL_REQUEST';
+export const GET_TVL_SUCCESS = 'app/GrowthStats/GET_TVL_SUCCESS';
+export const GET_TVL_ERROR = 'app/GrowthStats/GET_TVL_ERROR';
+
 export const GET_ETH_PRICE = 'app/GrowthStats/GET_ETH_PRICE';
 
 

@@ -5,11 +5,13 @@ import {
 import request from 'utils/request'
 import NetworkData from 'contracts';
 
-import { GET_BALANCES_REQUEST, GET_USER_STATS_REQUEST } from './constants'
+import { GET_BALANCES_REQUEST, GET_USER_STATS_REQUEST, GET_TVL_REQUEST } from './constants'
 import { 
   getUserStatsSuccess, getUserStatsError,
   getBalancesSuccess, getBalancesError,
-  getEthPrice
+  getEthPrice,
+  getTVLSuccess,
+  getTVLError
 } from './actions';
 
 import { makeSelectCurrrentNetwork } from '../App/selectors';
@@ -193,6 +195,50 @@ function* getUserStatsSaga(params) {
   }
 }
 
+function* getTVLSaga() {
+
+  try { 
+
+    // Get the correct pairs to fetch price
+    const query = `
+    {
+      totalValueLocked (id: 1) {
+        id
+        totalValueLockedETH
+        totalValueLockedUSD
+      }
+      dailyDatas {
+        id
+        date
+        cumulativeTotalValueLockedUSD
+        cumulativeTotalValueLockedETH
+      }
+    }
+    `;
+
+    // Fetch Pairs price
+    // const query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi-kovan';
+    const query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi';
+    const options = {
+      method: 'POST',
+      body: JSON.stringify({ query })
+    };
+
+    const response = yield call(request, query_url, options);
+
+    if ( response && response.data) {
+      console.log(response.data)
+      const {totalValueLocked, dailyDatas} = response.data;
+
+      yield put(getTVLSuccess(totalValueLocked, dailyDatas));
+    }
+    
+  } catch (error) {
+    const jsonError = yield error.response ? error.response.json() : error;
+    yield put(getTVLError(jsonError));
+  }
+}
+
 function* getBalancesSaga(params) {
 
   const {address, web3} = params;
@@ -279,9 +325,14 @@ function* getBalancesRequest() {
   yield takeLatest(GET_BALANCES_REQUEST, getBalancesSaga);
 }
 
+function* getTVLRequest() {
+  yield takeLatest(GET_TVL_REQUEST, getTVLSaga);
+}
+
 export default function* rootSaga() {
   yield all([
     fork(getUserStatsRequest),
     fork(getBalancesRequest),
+    fork(getTVLRequest),
   ]);
 }

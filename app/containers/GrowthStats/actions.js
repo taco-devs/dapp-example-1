@@ -7,6 +7,7 @@
 import { DEFAULT_ACTION,
   GET_BALANCES_REQUEST, GET_BALANCES_SUCCESS, GET_BALANCES_ERROR,
   GET_USER_STATS_REQUEST, GET_USER_STATS_SUCCESS, GET_USER_STATS_ERROR,
+  GET_TVL_REQUEST, GET_TVL_SUCCESS, GET_TVL_ERROR,
   GET_ETH_PRICE
 } from './constants';
 
@@ -56,6 +57,27 @@ export function getBalancesSuccess(balances) {
 export function getBalancesError(error) {
   return {
     type: GET_BALANCES_ERROR,
+    error
+  };
+}
+
+export function getTVL() {
+  return {
+    type: GET_TVL_REQUEST
+  };
+}
+
+export function getTVLSuccess(tvl, tvl_history) {
+  return {
+    type: GET_TVL_SUCCESS,
+    tvl,
+    tvl_history
+  };
+}
+
+export function getTVLError(error) {
+  return {
+    type: GET_TVL_ERROR,
     error
   };
 }
