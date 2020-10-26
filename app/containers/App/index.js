@@ -29,6 +29,7 @@ import StatsContainer from 'components/StatsContainer';
 import Web3ProviderModal from 'components/Web3ProviderModal';
 import Footer from 'components/Footer';
 import SplashScreen from 'components/SplashScreen';
+import Announcement from 'components/Announcement';
 import Web3 from "web3";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
@@ -263,6 +264,7 @@ class App extends React.Component {
               toggleModal={this.toggleModal}
               resetApp={this.resetApp}
             />
+            <Announcement />
             <GrowthStats {...this.state} />
             <Navbar />
             <Switch>
