@@ -7,6 +7,7 @@
 import React from 'react';
 // import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import Loader from 'react-loader-spinner';
 
 const SplashContainer = styled.div`
   display: flex;
@@ -28,6 +29,12 @@ class SplashScreen extends React.Component {
     return (
       <SplashContainer>
         <Logo src={require('images/full_logo.png')}/>
+        <Loader
+          type="ThreeDots"
+          color='#00d395'
+          height={120}
+          width={120}
+        />
       </SplashContainer>
     )
   }
