@@ -143,6 +143,7 @@ class GrowthDashboard extends React.Component {
       tvl_history
         .map(dayData => Number(Math.round(dayData.cumulativeTotalValueLockedUSD)));
 
+
     
     return Math.max(...data);
   }
