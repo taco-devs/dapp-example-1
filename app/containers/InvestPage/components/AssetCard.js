@@ -253,15 +253,15 @@ export default class AssetCard extends Component {
                                 />
                             </CardColumn>
                         </CardRow>
-                        <CardRow>
                         {currentOpenExtension === asset_key && ( 
-                            <AssetExtension 
-                                {...this.props}
-                                {...this.state}
-                                asset={asset}
-                            />
+                            <CardRow>
+                                <AssetExtension 
+                                    {...this.props}
+                                    {...this.state}
+                                    asset={asset}
+                                />
+                            </CardRow>
                         )}
-                        </CardRow>
                     </Card>
                 )}
             </React.Fragment>
