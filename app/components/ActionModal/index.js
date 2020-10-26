@@ -803,20 +803,23 @@ class ActionModal extends React.Component {
   }
 
   render () {
-    const {type, asset} = this.props;
+    const {type, asset, address} = this.props;
     const {show, isLoading, modal_type, value_base, value_native, is_native, total_supply, total_reserve, deposit_fee, total_base, total_native, value_redeem, total_native_redeem, total_base_redeem } = this.state;
     return (
       <div
         onClick={(e) => {
           e.stopPropagation();
+          if (!address) return alert('Please connect a wallet');
           this.setState({is_native: true});
           this.toggleModal()
         }}
       >
         <ActionButton
+          address={address}
           type={type}
           onClick={(e) => {
             e.stopPropagation();
+            if (!address) return alert('Please connect your wallet');
             this.toggleModal()
           }}
         >
