@@ -16,8 +16,9 @@ import {isMobile} from 'react-device-detect';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
+import moment from 'moment';
 
-const data = [
+const data_dummy = [
   {
     name: 'SEPT 01', uv: 0, pv: 2400, amt: 2400,
   },
@@ -104,10 +105,10 @@ const StyledTooltip = styled.div`
 `
 
 const CustomTooltip = ({ active, payload, label }) => {
-  if (active) {
+  if (active && payload[0]) {
     return (
       <StyledTooltip>
-        <p className="label">{`${data[label].name} - $${payload[0].value.toLocaleString('En-en')} USD`}</p>
+       <p className="label">{`${payload[0].payload.x_axis_label} - $${(Math.round(payload[0].payload.y_value * 100) / 100).toLocaleString('En-en')} USD`}</p> 
       </StyledTooltip>
     );
   }
@@ -121,9 +122,36 @@ class GrowthDashboard extends React.Component {
     return (Math.round(value * 100) / 100).toLocaleString('en-En')
   }
 
-  render () {
-    const {isMobile, tvl} = this.props;
-    console.log(tvl)
+  parseTVLData = (tvl_history) => {
+    if (!tvl_history) return [];
+    if (tvl_history.length < 1) return [];
+
+    const history = 
+      tvl_history
+        .map(dayData => {
+          let x_axis_label = moment(dayData.date * 1000).format('MMM DD');
+          let y_value = dayData.cumulativeTotalValueLockedUSD
+          return {x_axis_label, y_value}
+        })
+
+    return history;
+  }
+
+  getMax = (tvl_history) => {
+
+    const data = 
+      tvl_history
+        .map(dayData => Number(Math.round(dayData.cumulativeTotalValueLockedUSD)));
+
+    
+    return Math.max(...data);
+  }
+
+
+
+    render () {
+    const {isMobile, tvl, tvl_history} = this.props;
+    const data = this.parseTVLData(tvl_history);
     return (
       <GrowthContainer>
         <GrowthDashboardHeader>
@@ -137,23 +165,25 @@ class GrowthDashboard extends React.Component {
           {/* <FormattedMessage {...messages.more} /> */}
         </GrowthDashboardHeader>
         <GrowthDashboardStats>
-          <div style={{ width: '100%', height: isMobile ? '180px' : '100%' }}>
-            <ResponsiveContainer>
-              <AreaChart
-                height={180}
-                data={data}
-                margin={{
-                  top: 10, right: 0, left: 0, bottom: 0,
-                }}
-              >
-                {/* <CartesianGrid strokeDasharray="3 3" /> */}
-                {/* <XAxis dataKey="name" />
-                <YAxis /> */}
-                <Tooltip content={<CustomTooltip />}/>
-                <Area type="monotone" dataKey="uv" stroke="#161d6b" fill="#00d395" />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
+          {data && data.length > 0 && (
+            <div style={{ width: '100%', height: isMobile ? '180px' : '100%' }}>
+              <ResponsiveContainer>
+                <AreaChart
+                  height={180}
+                  data={data}
+                  margin={{
+                    top: 10, right: 0, left: 0, bottom: 0,
+                  }}
+                >
+                  {/* <CartesianGrid strokeDasharray="3 3" /> */}
+                  <XAxis dataKey="x_axis_label" hide={true}/>
+                  <YAxis hide={true} domain={[0, this.getMax(tvl_history)]}/>
+                  <Tooltip content={<CustomTooltip />}/>
+                  <Area type="monotone" dataKey="y_value" stroke="#161d6b" fill="#00d395" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          )}
         </GrowthDashboardStats>
       </GrowthContainer>
     );

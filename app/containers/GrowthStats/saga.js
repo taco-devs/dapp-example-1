@@ -227,7 +227,6 @@ function* getTVLSaga() {
     const response = yield call(request, query_url, options);
 
     if ( response && response.data) {
-      console.log(response.data)
       const {totalValueLocked, dailyDatas} = response.data;
 
       yield put(getTVLSuccess(totalValueLocked, dailyDatas));

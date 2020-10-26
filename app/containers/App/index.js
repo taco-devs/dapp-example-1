@@ -28,6 +28,7 @@ import Navbar from 'components/Navbar';
 import StatsContainer from 'components/StatsContainer';
 import Web3ProviderModal from 'components/Web3ProviderModal';
 import Footer from 'components/Footer';
+import SplashScreen from 'components/SplashScreen';
 import Web3 from "web3";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
@@ -245,6 +246,7 @@ class App extends React.Component {
 
 
   render () {
+    const {connected} = this.state;
     return (
       <AppWrapper>
         <Helmet
@@ -253,45 +255,51 @@ class App extends React.Component {
         >
           <meta name="description" content="Liquidity DeFi Protocol" />
         </Helmet>
-        <Header
-          {...this.state}
-          toggleModal={this.toggleModal}
-          resetApp={this.resetApp}
-        />
-        <GrowthStats {...this.state} />
-        <Navbar />
-        <Switch>
-          <Route 
-            exact 
-            path="/" 
-            render={(props) => (
-              <InvestPage 
-                {...props}
-                {...this.state}
+        {connected ? (
+          <React.Fragment>
+            <Header
+              {...this.state}
+              toggleModal={this.toggleModal}
+              resetApp={this.resetApp}
+            />
+            <GrowthStats {...this.state} />
+            <Navbar />
+            <Switch>
+              <Route 
+                exact 
+                path="/" 
+                render={(props) => (
+                  <InvestPage 
+                    {...props}
+                    {...this.state}
+                  />
+                )}
               />
-            )}
-          />
-          <Route 
-            path="/balance" 
-            render={(props) => (
-              <BalancePage 
-                {...props}
-                {...this.state}
+              <Route 
+                path="/balance" 
+                render={(props) => (
+                  <BalancePage 
+                    {...props}
+                    {...this.state}
+                  />
+                )}
               />
-            )}
-          />
-          <Route 
-            path="/transactions" 
-            render={(props) => (
-              <TransactionsContainer 
-                {...props}
-                {...this.state}
+              <Route 
+                path="/transactions" 
+                render={(props) => (
+                  <TransactionsContainer 
+                    {...props}
+                    {...this.state}
+                  />
+                )}
               />
-            )}
-          />
-          <Route path="" component={NotFoundPage} />
-        </Switch>
-        <Footer />
+              <Route path="" component={NotFoundPage} />
+            </Switch>
+            <Footer />
+          </React.Fragment>
+        ) : (
+          <SplashScreen />
+        )}
         <GlobalStyle />
       </AppWrapper>
     );

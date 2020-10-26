@@ -27,11 +27,15 @@ import { makeSelectCurrrentNetwork } from '../App/selectors'
 
 class GrowthStats extends React.Component {
 
+  componentDidMount = () => {
+    const {getTVL} = this.props;
+    getTVL();
+  }
+
   fetchBalances = () => {
     const { getUserStats, getBalances, getTVL, address, web3 } = this.props;
     getUserStats(address, web3);
     getBalances(address, web3);
-    getTVL();
   }
 
   render () {
