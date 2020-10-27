@@ -495,7 +495,7 @@ class ActionModal extends React.Component {
     // Calculate the total to mint
     if (modal_type === 'mint') {
       if (is_native) {
-        const netShares = (value * asset.underlying_decimals).toString()
+        const netShares = web3.utils.toWei(value);
         const underlying_conversion = await GContractInstance.methods.calcCostFromUnderlyingCost(netShares, exchange_rate).call();
         const result = await GContractInstance.methods.calcDepositSharesFromCost(underlying_conversion, total_reserve, total_supply, deposit_fee).call();
         const {_netShares, _feeShares} = result;
@@ -505,8 +505,10 @@ class ActionModal extends React.Component {
         });
   
       } else {
-        // CTokens only have 8 decimals
-        const _cost = value * 1e8;
+        // CTokens only have 8 decimals 
+        // NOTE: Standarized to gwei by converting it to 1e9 because .toWei() doesn't handle 1e8
+        const raw_cost = (value / 10).toString()
+        const _cost = web3.utils.toWei(raw_cost, 'gwei');
         const result = await GContractInstance.methods.calcDepositSharesFromCost(_cost, total_reserve, total_supply, deposit_fee).call();
         const {_netShares, _feeShares} = result;
         this.setState({

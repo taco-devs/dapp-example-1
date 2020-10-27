@@ -27,9 +27,18 @@ import {
 
 const connectionStatusChannel = channel();
 
-const deposit = (ContractInstance, _cost, address, asset, web3, functions) => {
+const getGasInfo = async (method, amount, address, web3) => {
+  const gas = await method(amount).estimateGas({from: address});
+  const gasPrice = await web3.eth.getGasPrice();
+
+  return {gas, gasPrice};
+}
+
+const deposit = async (ContractInstance, _cost, address, asset, web3, functions) => {
   let stored_hash;
-  return ContractInstance.methods.deposit(_cost).send({ from: address})
+  const {gas, gasPrice} = await getGasInfo(ContractInstance.methods.deposit, _cost, address, web3);
+
+  return ContractInstance.methods.deposit(_cost).send({ from: address, gasPrice})
     .on("transactionHash", (hash) => {
         stored_hash = hash;
         connectionStatusChannel.put(
