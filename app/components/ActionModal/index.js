@@ -649,7 +649,7 @@ class ActionModal extends React.Component {
     if (is_native) {
 
       const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
-      const _cost = (value_native * asset.underlying_decimals).toString();
+      const _cost = this.getWei(value_native, asset.underlying_decimals);
       mintGTokenFromUnderlying({
         GContractInstance, 
         _cost, 
@@ -670,7 +670,8 @@ class ActionModal extends React.Component {
 
     } else {
       const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
-      const _cost = (value_base * 1e8).toString();
+      // const _cost = (value_base * 1e8).toString();
+      const _cost = this.getWei(value_base, 1e8);
       mintGTokenFromCToken({
         GContractInstance, 
         _cost, 
