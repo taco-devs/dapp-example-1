@@ -610,11 +610,12 @@ class ActionModal extends React.Component {
   setMax = () => {
     const { asset } = this.props;
     const {modal_type, is_native, underlying_balance, asset_balance, g_balance, deposit_fee} = this.state;
+    const SAFE_MARGIN = 0.975;
     
     if (modal_type === 'mint') {
       if (is_native) {
         if ((Number(underlying_balance) / asset.underlying_decimals) < 0.01) return;
-        const value_native = (underlying_balance / asset.underlying_decimals);
+        const value_native = ((underlying_balance * SAFE_MARGIN) / asset.underlying_decimals);
         this.setState({value_native});
         this.handleInputChange(value_native)
       } else {
