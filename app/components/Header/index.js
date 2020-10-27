@@ -35,6 +35,11 @@ const StyledLogo = styled.img`
   }
 `
 
+const LogoContainer = styled.a`
+
+`
+
+
 
 class Header extends React.Component {
 
@@ -42,10 +47,12 @@ class Header extends React.Component {
     const {address} = this.props;
     return (
       <StyledHeader>
-          <StyledLogo 
-            src={require('images/full_logo.png')}
-            isMobile={isMobile}
-          />
+          <LogoContainer href="https://growthdefi.com" target='_blank'>
+            <StyledLogo 
+              src={require('images/full_logo.png')}
+              isMobile={isMobile}
+            />
+          </LogoContainer>
           {address && isMobile ? (  
               <MenuDrawer 
                 {...this.props}
