@@ -20,7 +20,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  height: ${props => props.isMobile ? '100%' : '25vh'};
+  height: ${props => props.isMobile ? '100%' : '275px'};
   width: 100%;
   background-color: rgba(0, 0, 0, .15);
   border-radius: 5px;
