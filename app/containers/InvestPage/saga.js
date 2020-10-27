@@ -28,13 +28,21 @@ import {
 const connectionStatusChannel = channel();
 
 const getGasInfo = async (method, amount, address, web3) => {
-  const SAFE_MULTIPLIER = 1.15;
-  const raw_gas = await method(amount).estimateGas({from: address});
-  const gas = web3.utils.BN(raw_gas).mul(SAFE_MULTIPLIER);
-  const raw_gasPrice = await web3.eth.getGasPrice();
-  const gasPrice = web3.utils.BN(raw_gasPrice).mul(SAFE_MULTIPLIER);
+  try {
+    const SAFE_MULTIPLIER = 1.15;
+    const raw_gas = await method(amount).estimateGas({from: address});
+    const gas = web3.utils.BN(raw_gas).mul(SAFE_MULTIPLIER);
+    const raw_gasPrice = await web3.eth.getGasPrice();
+    const gasPrice = web3.utils.BN(raw_gasPrice).mul(SAFE_MULTIPLIER); 
 
-  return {gas, gasPrice};
+    return {gas, gasPrice};
+  } catch(e) {
+    console.log(e);
+    return {
+      gas: null, 
+      gasPrice: null
+    }
+  }
 }
 
 const deposit = async (ContractInstance, _cost, address, asset, web3, functions) => {
@@ -404,10 +412,8 @@ function* mintGTokenFromUnderlyingSaga(params) {
       fromImage: asset.fromImage,
       toImage: asset.toImage
     }));    
-
     
     // Call Web3 to Confirm this transaction
-    // const result = yield call([DepositMethod, DepositMethod.send], {from: address});
     yield deposit_underlying(
       GContractInstance, 
       _cost, 
@@ -518,7 +524,6 @@ function* redeemGTokenToUnderlyingSaga(params) {
       });
 
   } catch (error) {
-    console.log(error);
     const jsonError = yield error.response ? error.response.json() : error;
     yield put(dismissSwap());
     yield toggle();
