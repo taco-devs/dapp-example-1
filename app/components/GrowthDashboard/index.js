@@ -125,11 +125,12 @@ class GrowthDashboard extends React.Component {
   parseTVLData = (tvl_history) => {
     if (!tvl_history) return [];
     if (tvl_history.length < 1) return [];
+    const SECONDS_IN_DAY = 86400;
 
     const history = 
       tvl_history
         .map(dayData => {
-          let x_axis_label = moment(dayData.date * 1000).format('MMM DD');
+          let x_axis_label = moment((dayData.date + SECONDS_IN_DAY) * 1000).format('MMM DD');
           let y_value = dayData.cumulativeTotalValueLockedUSD
           return {x_axis_label, y_value}
         })
