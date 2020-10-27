@@ -488,6 +488,20 @@ class ActionModal extends React.Component {
     return total_minting;
   }
 
+  getWei = (value, decimals) => {
+    const {web3} = this.props;
+    if (decimals === 1e18) {
+      return web3.utils.toWei(value);
+    }
+    if (decimals === 1e8) {
+      const raw_value = (value / 10).toString()
+      return web3.utils.toWei(raw_value, 'gwei');
+    }
+    if (decimals === 1e6) {
+      return web3.utils.toWei(value, 'mwei');
+    }
+  }
+
   calculateMintingTotal = debounce(async (value) => {
     const { web3, asset } = this.props;
     const { modal_type, is_native, total_reserve, total_supply, exchange_rate, deposit_fee} = this.state;
@@ -505,7 +519,7 @@ class ActionModal extends React.Component {
     // Calculate the total to mint
     if (modal_type === 'mint') {
       if (is_native) {
-        const netShares = web3.utils.toWei(value);
+        const netShares = this.getWei(value, asset.underlying_decimals);
         const underlying_conversion = await GContractInstance.methods.calcCostFromUnderlyingCost(netShares, exchange_rate).call();
         const result = await GContractInstance.methods.calcDepositSharesFromCost(underlying_conversion, total_reserve, total_supply, deposit_fee).call();
         const {_netShares, _feeShares} = result;
@@ -517,8 +531,7 @@ class ActionModal extends React.Component {
       } else {
         // CTokens only have 8 decimals 
         // NOTE: Standarized to gwei by converting it to 1e9 because .toWei() doesn't handle 1e8
-        const raw_cost = (value / 10).toString()
-        const _cost = web3.utils.toWei(raw_cost, 'gwei');
+        const _cost = this.getWei(value, 1e8)
         const result = await GContractInstance.methods.calcDepositSharesFromCost(_cost, total_reserve, total_supply, deposit_fee).call();
         const {_netShares, _feeShares} = result;
         this.setState({
@@ -542,10 +555,8 @@ class ActionModal extends React.Component {
       })
     }
 
-
-    const raw_netShares = (value / 10).toString();
-    const netShares = web3.utils.toWei(raw_netShares, 'gwei');
-
+    const netShares = this.getWei(value, 1e8);
+  
     const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
     const result = await GContractInstance.methods.calcWithdrawalCostFromShares(netShares, total_reserve, total_supply, withdrawal_fee).call();
     const rate = await GContractInstance.methods.calcUnderlyingCostFromCost(result._cost, exchange_rate).call();
@@ -1009,7 +1020,7 @@ class ActionModal extends React.Component {
               <SummaryColumn align="flex-end">
                 {modal_type === 'mint'&& is_native && <PrimaryLabel spacing="1px">{total_native ? this.parseNumber(total_native, 1e8).toLocaleString('en-En') : '-'} {asset.g_asset}</PrimaryLabel>}
                 {modal_type === 'mint'&& !is_native && <PrimaryLabel spacing="1px">{total_base ? this.parseNumber(total_base, 1e8).toLocaleString('en-En') : '-'} {asset.g_asset}</PrimaryLabel>}
-                {modal_type === 'redeem'&& is_native && <PrimaryLabel spacing="1px">{total_native_redeem ? this.parseNumber(total_native_redeem, 1e18).toLocaleString('en-En') : '-'} {asset.native}</PrimaryLabel>}
+                {modal_type === 'redeem'&& is_native && <PrimaryLabel spacing="1px">{total_native_redeem ? this.parseNumber(total_native_redeem, asset.underlying_decimals).toLocaleString('en-En') : '-'} {asset.native}</PrimaryLabel>}
                 {modal_type === 'redeem'&& !is_native && <PrimaryLabel spacing="1px">{total_base_redeem ? this.parseNumber(total_base_redeem, 1e8).toLocaleString('en-En') : '-'} {asset.base_asset}</PrimaryLabel>}
                  
               </SummaryColumn>
