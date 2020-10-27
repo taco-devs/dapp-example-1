@@ -103,14 +103,14 @@ export default class TransactionsHeader extends Component {
         return (
             <TransactionsHeaderRow isMobile={isMobile}>
                 <TransactionsHeaderColumn flex={isMobile ? 2.5 : 1}>
-                    <SearchContainer isMobile={isMobile}>
+                    {/* <SearchContainer isMobile={isMobile}>
                         <BsSearch style={{margin: isMobile ? '0 8px 0 8px' : '0 15px 0 15px'}} />
                         <StyledSearchBox 
                             placeholder={isMobile ? "FILTER ASSETS" : "FILTER BY TOKEN, PROTOCOL OR POOL"}
                             value={search}
                             onChange={(e) => this.handleSearch(e.target.value)}
                         />
-                    </SearchContainer>
+                    </SearchContainer> */}
                 </TransactionsHeaderColumn>
                 <TransactionsHeaderColumn flex={1}>
                     <PaginationButtons>
