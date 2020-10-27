@@ -87,7 +87,8 @@ class ApproveContainer extends React.Component {
         total_supply,
         address,
         asset,
-        updateApprovalBalance
+        updateApprovalBalance,
+        web3
       })
     } else {
       const BaseContractInstance = await new web3.eth.Contract(asset.base_abi, asset.base_address);

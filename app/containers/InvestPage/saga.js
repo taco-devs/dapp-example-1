@@ -27,10 +27,10 @@ import {
 
 const connectionStatusChannel = channel();
 
-const getGasInfo = async (method, amount, address, web3) => {
+const getGasInfo = async (method, values, address, web3) => {
   try {
     const SAFE_MULTIPLIER = 1.15;
-    const raw_gas = await method(amount).estimateGas({from: address});
+    const raw_gas = await method(...values).estimateGas({from: address});
     const gas = web3.utils.BN(raw_gas).mul(SAFE_MULTIPLIER);
     const raw_gasPrice = await web3.eth.getGasPrice();
     const gasPrice = web3.utils.BN(raw_gasPrice).mul(SAFE_MULTIPLIER); 
@@ -47,7 +47,7 @@ const getGasInfo = async (method, amount, address, web3) => {
 
 const deposit = async (ContractInstance, _cost, address, asset, web3, functions) => {
   let stored_hash;
-  const {gas, gasPrice} = await getGasInfo(ContractInstance.methods.deposit, _cost, address, web3);
+  const {gas, gasPrice} = await getGasInfo(ContractInstance.methods.deposit, [_cost], address, web3);
 
   return ContractInstance.methods.deposit(_cost).send({ from: address, gasPrice, gas})
     .on("transactionHash", (hash) => {
@@ -104,7 +104,7 @@ const deposit = async (ContractInstance, _cost, address, asset, web3, functions)
 
 const deposit_underlying = async (ContractInstance, _cost, address, asset, web3, functions) => {
   let stored_hash;
-  const {gas, gasPrice} = await getGasInfo(ContractInstance.methods.depositUnderlying, _cost, address, web3);
+  const {gas, gasPrice} = await getGasInfo(ContractInstance.methods.depositUnderlying, [_cost], address, web3);
 
   return ContractInstance.methods.depositUnderlying(_cost).send({ from: address, gas, gasPrice})
     .on("transactionHash", (hash) => {
@@ -161,7 +161,7 @@ const deposit_underlying = async (ContractInstance, _cost, address, asset, web3,
 
 const withdraw = async (ContractInstance, _cost, address, asset, web3, functions) => {
   let stored_hash;
-  const {gas, gasPrice} = await getGasInfo(ContractInstance.methods.withdraw, _cost, address, web3);
+  const {gas, gasPrice} = await getGasInfo(ContractInstance.methods.withdraw, [_cost], address, web3);
   return ContractInstance.methods.withdraw(_cost).send({ from: address, gas, gasPrice})
     .on("transactionHash", (hash) => {
         stored_hash = hash;
@@ -217,7 +217,7 @@ const withdraw = async (ContractInstance, _cost, address, asset, web3, functions
 
 const withdraw_underlying = async (ContractInstance, _cost, address, asset, web3, functions) => {
   let stored_hash;
-  const {gas, gasPrice} = await getGasInfo(ContractInstance.methods.withdrawUnderlying, _cost, address, web3);
+  const {gas, gasPrice} = await getGasInfo(ContractInstance.methods.withdrawUnderlying, [_cost], address, web3);
   return ContractInstance.methods.withdrawUnderlying(_cost).send({ from: address, gas, gasPrice})
     .on("transactionHash", (hash) => {
         stored_hash = hash;
@@ -272,9 +272,11 @@ const withdraw_underlying = async (ContractInstance, _cost, address, asset, web3
 }
 
 // Approve the user to send tokens
-const approve = (Contract, asset, total_supply, address, functions) => {
+const approve = async (Contract, asset, total_supply, address, web3, functions) => {
   let stored_hash;
-  return Contract.methods.approve(asset.gtoken_address, total_supply).send({ from: address })
+  const {gas, gasPrice} = await getGasInfo(Contract.methods.approve, [asset.gtoken_address, total_supply], address, web3);
+
+  return Contract.methods.approve(asset.gtoken_address, total_supply).send({ from: address, gas, gasPrice })
     .on("transactionHash", (hash) => {
         stored_hash = hash;
         connectionStatusChannel.put(
@@ -533,7 +535,7 @@ function* redeemGTokenToUnderlyingSaga(params) {
 
 function* approveTokenSaga(params) {
   const {payload} = params;
-  const {Contract, asset, total_supply, address, updateApprovalBalance} = payload;
+  const {Contract, asset, total_supply, address, updateApprovalBalance, web3} = payload;
 
   try { 
 
@@ -544,6 +546,7 @@ function* approveTokenSaga(params) {
       asset, 
       total_supply, 
       address,
+      web3,
       {
         addCurrentApproval,
         dismissApproval, 
