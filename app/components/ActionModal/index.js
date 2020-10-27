@@ -179,7 +179,7 @@ const AssetLabel = styled.b`
   font-size: 0.85em;
 `
 
-const SelectorRow = styled.div`
+/* const SelectorRow = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -191,6 +191,15 @@ const SelectorRow = styled.div`
     background-color: #E8E8E8;
     cursor: pointer;
   }
+` */ 
+
+const SelectorRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  border-radius: 5px;
+  padding: 5px 0 5px 0;
 `
 
 const IconLogo = styled.img`
@@ -928,7 +937,7 @@ class ActionModal extends React.Component {
                 <SelectorRow>
                   <IconLogo src={modal_type === 'mint' ? is_native ? asset.native_img_url : asset.img_url : require(`images/tokens/${asset.gtoken_img_url}`)} />
                   <AssetLabel>{modal_type === 'mint' ? is_native ? asset.native : asset.base_asset : asset.g_asset}</AssetLabel>
-                  <FaChevronDown />
+                 {/*  <FaChevronDown /> */}
                 </SelectorRow>
               </InputSectionColumn>
             </InputSection>            
