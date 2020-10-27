@@ -121,6 +121,7 @@ const PrimaryLabel = styled.b`
   opacity: 0.75; 
   margin: ${props => props.margin || '0'};
   text-align: ${props => props.align || 'left'};
+  letter-spacing: ${props => props.spacing || '0'};∫
 `
 
 const TotalLabel = styled.p`
@@ -533,7 +534,8 @@ class ActionModal extends React.Component {
     }
 
 
-    const netShares = parseString ? (value * 1e8).toString() : Math.round(value * 1e8).toString();
+    const raw_netShares = (value / 10).toString();
+    const netShares = web3.utils.toWei(raw_netShares, 'gwei');
 
     const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
     const result = await GContractInstance.methods.calcWithdrawalCostFromShares(netShares, total_reserve, total_supply, withdrawal_fee).call();
@@ -965,7 +967,7 @@ class ActionModal extends React.Component {
                 <PrimaryLabel>{asset.base_asset} RESERVE</PrimaryLabel>
               </SummaryColumn>
               <SummaryColumn align="flex-end">
-                <PrimaryLabel>{total_reserve ?  this.parseNumber(total_reserve, 1e8).toLocaleString('En-en') : '-'} {asset.base_asset}</PrimaryLabel>
+                <PrimaryLabel spacing="1px">{total_reserve ?  this.parseNumber(total_reserve, 1e8).toLocaleString('En-en') : '-'} {asset.base_asset}</PrimaryLabel>
               </SummaryColumn>
             </SummaryRow>
             <SummaryRow>
@@ -973,7 +975,7 @@ class ActionModal extends React.Component {
                 <PrimaryLabel>{asset.g_asset} SUPPLY</PrimaryLabel>
               </SummaryColumn>
               <SummaryColumn align="flex-end">
-                <PrimaryLabel>{total_supply ? this.parseNumber(total_supply, 1e8).toLocaleString('En-en') : '-'} {asset.g_asset}</PrimaryLabel>
+                <PrimaryLabel spacing="1px">{total_supply ? this.parseNumber(total_supply, 1e8).toLocaleString('En-en') : '-'} {asset.g_asset}</PrimaryLabel>
               </SummaryColumn>
             </SummaryRow>
             <SummaryRow>
@@ -984,8 +986,8 @@ class ActionModal extends React.Component {
                 </SummaryRow>
               </SummaryColumn>
               <SummaryColumn align="flex-end">
-                {modal_type === 'mint' && <PrimaryLabel>{this.parseNumber(this.calculateFee(), 1e18)} {is_native ? asset.native : asset.base_asset}  ({this.parseNumber(deposit_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}
-                {modal_type === 'redeem' && <PrimaryLabel>{this.parseNumber(this.calculateFee(), 1e18)} {asset.g_asset}  ({this.parseNumber(withdrawal_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}   
+                {modal_type === 'mint' && <PrimaryLabel spacing="1px">{this.parseNumber(this.calculateFee(), 1e18)} {is_native ? asset.native : asset.base_asset}  ({this.parseNumber(deposit_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}
+                {modal_type === 'redeem' && <PrimaryLabel spacing="1px">{this.parseNumber(this.calculateFee(), 1e18)} {asset.g_asset}  ({this.parseNumber(withdrawal_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}   
               </SummaryColumn>
             </SummaryRow>
             <SummaryRow>
@@ -996,10 +998,10 @@ class ActionModal extends React.Component {
                 </SummaryRow>
               </SummaryColumn>
               <SummaryColumn align="flex-end">
-                {modal_type === 'mint'&& is_native && <PrimaryLabel>{total_native ? this.parseNumber(total_native, 1e8) : '-'} {asset.g_asset}</PrimaryLabel>}
-                {modal_type === 'mint'&& !is_native && <PrimaryLabel>{total_base ? this.parseNumber(total_base, 1e8) : '-'} {asset.g_asset}</PrimaryLabel>}
-                {modal_type === 'redeem'&& is_native && <PrimaryLabel>{total_native_redeem ? this.parseNumber(total_native_redeem, 1e18) : '-'} {asset.native}</PrimaryLabel>}
-                {modal_type === 'redeem'&& !is_native && <PrimaryLabel>{total_base_redeem ? this.parseNumber(total_base_redeem, 1e8) : '-'} {asset.base_asset}</PrimaryLabel>}
+                {modal_type === 'mint'&& is_native && <PrimaryLabel spacing="1px">{total_native ? this.parseNumber(total_native, 1e8).toLocaleString('en-En') : '-'} {asset.g_asset}</PrimaryLabel>}
+                {modal_type === 'mint'&& !is_native && <PrimaryLabel spacing="1px">{total_base ? this.parseNumber(total_base, 1e8).toLocaleString('en-En') : '-'} {asset.g_asset}</PrimaryLabel>}
+                {modal_type === 'redeem'&& is_native && <PrimaryLabel spacing="1px">{total_native_redeem ? this.parseNumber(total_native_redeem, 1e18).toLocaleString('en-En') : '-'} {asset.native}</PrimaryLabel>}
+                {modal_type === 'redeem'&& !is_native && <PrimaryLabel spacing="1px">{total_base_redeem ? this.parseNumber(total_base_redeem, 1e8).toLocaleString('en-En') : '-'} {asset.base_asset}</PrimaryLabel>}
                  
               </SummaryColumn>
             </SummaryRow>
