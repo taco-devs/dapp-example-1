@@ -9,9 +9,11 @@ import Modal from 'react-modal';
 // import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import BounceLoader from "react-spinners/BounceLoader";
-import { FaArrowRight } from 'react-icons/fa'
-import {MdOpenInNew} from 'react-icons/md'
-import {TiTick} from 'react-icons/ti'
+
+import { Icon } from 'react-icons-kit';
+import {arrowRight} from 'react-icons-kit/fa/arrowRight';
+import {shareSquareO} from 'react-icons-kit/fa/shareSquareO';
+import {check} from 'react-icons-kit/fa/check';
 
 import { FormattedMessage } from 'react-intl';
 import messages from './messages';
@@ -244,7 +246,7 @@ class ConfirmationModal extends React.Component {
                           <StyledText>{`${currentSwap.from}`}</StyledText>
                         </DataBodyColumn>
                         <DataBodyColumn flex="1" color={currentSwap.modal_type === 'mint' ? "#161d6b" : '#00d395'}>
-                          <FaArrowRight size="2em"/>
+                          <Icon icon={arrowRight} size="2em"/>
                         </DataBodyColumn>
                         <DataBodyColumn flex="3" margin="0 0 0 1.5em">
                           <StyledText size="1.2em" modal_type={currentSwap.modal_type}>{this.parseNumber(currentSwap.receiving, currentSwap.toDecimals)}</StyledText>
@@ -280,7 +282,7 @@ class ConfirmationModal extends React.Component {
                             />
                             )}
                             {currentSwap.status === 'confirmed' && (
-                              <IconContainer><TiTick size="2em"/></IconContainer>
+                              <IconContainer><Icon icon={check} size="2em"/></IconContainer>
                             )}
                           </StyledTransactionReceiptRow>
                         </StyledTransactionReceiptColumn>
@@ -304,7 +306,7 @@ class ConfirmationModal extends React.Component {
                                 target='_blank'
                                 modal_type={currentSwap.modal_type}
                               >
-                                <MdOpenInNew size="2em"/>
+                                <Icon icon={shareSquareO} size="2em"/>
                               </CustomLink>
                             </StyledTransactionReceiptRow>
                           </StyledTransactionReceiptRow>

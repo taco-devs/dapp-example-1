@@ -12,8 +12,10 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import styled from 'styled-components';
 import BounceLoader from "react-spinners/BounceLoader";
-import {MdOpenInNew} from 'react-icons/md'
 
+import { Icon } from 'react-icons-kit';
+import {shareSquareO} from 'react-icons-kit/fa/shareSquareO'
+ 
 const ApproveRow = styled.div`
   display: flex;
   flex-direction: row;
@@ -145,7 +147,7 @@ class ApproveContainer extends React.Component {
                   <StyledText>APPROVAL SUBMITTED</StyledText>
                   <ApproveAction>
                     <CustomLink>{this.parseHash(currentApproval.hash)}</CustomLink>
-                    <MdOpenInNew size="1.3em"/>
+                    <Icon icon={shareSquareO} size="1.3em"/>
                   </ApproveAction>
                 </ApproveActionColumn>
               </ApproveAction>

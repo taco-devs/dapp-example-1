@@ -135,7 +135,7 @@ export default class AssetCard extends Component {
 
         if (!market_cap || market_cap <= 1) return 'N/A'
 
-        return `$${market_cap.toLocaleString('en-En')}`;
+        return `$${Math.round(market_cap).toLocaleString('en-En')}`;
     }
 
     getSupply = () => {
@@ -146,7 +146,7 @@ export default class AssetCard extends Component {
 
         if (!token) return '-';
 
-        return (Math.round(token.totalSupply / 1e8 * 1000) / 1000).toLocaleString('En-en');
+        return (Math.round(token.totalSupply / 1e8)).toLocaleString('En-en');
     }
 
     render() {

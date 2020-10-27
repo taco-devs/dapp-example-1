@@ -3,7 +3,10 @@ import styled from 'styled-components';
 import {
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
   } from 'recharts';
-import { MdOpenInNew } from 'react-icons/md';
+
+import { Icon } from 'react-icons-kit';
+import {shareSquareO} from 'react-icons-kit/fa/shareSquareO';
+
 import Loader from 'react-loader-spinner';
 import moment from 'moment';
   
@@ -276,7 +279,7 @@ export default class AssetExtension extends Component {
                         <ExtensionRow justify="flex-end">
                             <Stat>{this.parseAddress(asset.gtoken_address)}</Stat>
                             <IconContainer href={`https://etherscan.io/token/${asset.gtoken_address}`} target="_blank">
-                                <MdOpenInNew size="1.25em" style={{ margin: '0 5px 0 10px'}}/>
+                                <Icon icon={shareSquareO} size="1.25em" style={{ margin: '0 5px 0 10px'}}/>
                             </IconContainer>
                         </ExtensionRow>
                         

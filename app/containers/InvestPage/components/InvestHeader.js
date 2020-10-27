@@ -1,6 +1,11 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import {BsSearch, BsArrowLeftShort, BsArrowRightShort} from 'react-icons/bs';
+
+import { Icon } from 'react-icons-kit';
+import {ic_search} from 'react-icons-kit/md/ic_search';
+import {ic_arrow_forward} from 'react-icons-kit/md/ic_arrow_forward';
+import {ic_arrow_back} from 'react-icons-kit/md/ic_arrow_back'
+
 
 const InvestHeaderRow = styled.div`
     display: flex;
@@ -120,7 +125,7 @@ export default class InvestHeader extends Component {
             <InvestHeaderRow isMobile={isMobile}>
                 <InvestHeaderColumn flex={isMobile ? 2.5 : 1}>
                     <SearchContainer isMobile={isMobile}>
-                        <BsSearch style={{margin: isMobile ? '0 8px 0 8px' : '0 15px 0 15px'}} />
+                        <Icon icon={ic_search} size="1.5em" style={{margin: isMobile ? '0 8px 0 8px' : '0 15px 0 15px'}} />
                         <StyledSearchBox 
                             placeholder={isMobile ? "FILTER ASSETS" : "FILTER BY TOKEN, PROTOCOL OR POOL"}
                             value={search}
@@ -130,9 +135,9 @@ export default class InvestHeader extends Component {
                 </InvestHeaderColumn>
                 <InvestHeaderColumn flex={1}>
                     <PaginationButtons>
-                        <BsArrowLeftShort class="hover-item" size="1.5em" style={{margin: isMobile ? '0 5px 0 0' : '0 15px 0 0'}} onClick={() => this.handlePagination('back')} />
+                        <Icon icon={ic_arrow_back} class="hover-item" size="1.5em" style={{margin: isMobile ? '0 5px 0 0' : '0 15px 0 0'}} onClick={() => this.handlePagination('back')} />
                         <p>{this.showPagination()}</p>
-                        <BsArrowRightShort class="hover-item" size="1.5em" style={{margin: isMobile ? '0 0 0 5px' : '0 0 0 15px'}} onClick={() => this.handlePagination('forward')} />
+                        <Icon icon={ic_arrow_forward} class="hover-item" size="1.5em" style={{margin: isMobile ? '0 0 0 5px' : '0 0 0 15px'}} onClick={() => this.handlePagination('forward')} />
                     </PaginationButtons>
                 </InvestHeaderColumn>
             </InvestHeaderRow>

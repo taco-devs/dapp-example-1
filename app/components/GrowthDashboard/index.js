@@ -119,7 +119,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 class GrowthDashboard extends React.Component {
 
   parseTVL = (value) => {
-    return (Math.round(value * 100) / 100).toLocaleString('en-En')
+    return Math.round(value).toLocaleString('en-En')
   }
 
   parseTVLData = (tvl_history) => {

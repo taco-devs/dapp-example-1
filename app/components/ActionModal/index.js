@@ -13,10 +13,10 @@ import { FormattedMessage } from 'react-intl';
 import debounce from 'lodash.debounce';
 import messages from './messages';
 import styled from 'styled-components';
-import {FaChevronDown} from 'react-icons/fa';
-import { HiSwitchHorizontal } from 'react-icons/hi';
-import { BsInfoCircleFill } from 'react-icons/bs';
-import { mintGTokenFromUnderlying } from '../../containers/InvestPage/actions';
+
+import { Icon } from 'react-icons-kit';
+import {info} from 'react-icons-kit/icomoon/info';
+
 import ApproveContainer from 'components/ApproveContainer';
 import Loader from 'react-loader-spinner';
 
@@ -1003,7 +1003,7 @@ class ActionModal extends React.Component {
               <SummaryColumn>
                 <SummaryRow>
                   <PrimaryLabel margin="0 5px 0 0">FEE</PrimaryLabel>
-                  <BsInfoCircleFill style={{color: '#BEBEBE' }} />
+                  <Icon icon={info} style={{color: '#BEBEBE' }} />
                 </SummaryRow>
               </SummaryColumn>
               <SummaryColumn align="flex-end">
@@ -1015,7 +1015,7 @@ class ActionModal extends React.Component {
               <SummaryColumn>
                 <SummaryRow>
                   <BalanceLabel margin="0 5px 0 0">TOTAL</BalanceLabel>
-                  <BsInfoCircleFill style={{color: '#BEBEBE' }} />
+                  <Icon icon={info} style={{color: '#BEBEBE' }} />
                 </SummaryRow>
               </SummaryColumn>
               <SummaryColumn align="flex-end">

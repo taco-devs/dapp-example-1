@@ -3,11 +3,12 @@ import * as Drawer from '@accessible/drawer'
 import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import styled from 'styled-components';
-import {GiHamburgerMenu} from 'react-icons/gi'
-import { BiLineChart, BiTransfer } from 'react-icons/bi';
-import { FaVoteYea } from 'react-icons/fa';
-import { MdAccountBalanceWallet } from 'react-icons/md';
-import { RiSettings3Fill } from 'react-icons/ri';
+
+import { Icon } from 'react-icons-kit';
+import {ic_menu} from 'react-icons-kit/md/ic_menu'
+import {lineChart} from 'react-icons-kit/fa/lineChart'
+import {ic_settings} from 'react-icons-kit/md/ic_settings'
+
 import {Link} from 'react-router-dom';
 
 
@@ -259,7 +260,7 @@ export default class MenuDrawer extends Component {
                         <Burger
                             onClick={() => this.toggle()}
                         >
-                            <GiHamburgerMenu size="1.5em"/>
+                            <Icon icon={ic_menu} size="1.5em"/>
                         </Burger>
                     </Drawer.Trigger>
                 
@@ -282,7 +283,7 @@ export default class MenuDrawer extends Component {
                                         <NetworkLabel>Connected ( {this.connectedNetwork()} )</NetworkLabel>
                                     </NetworkColumn>
                                     <NetworkColumn>
-                                        <RiSettings3Fill size="1.5em" style={{color: 'white'}} />
+                                        <Icon icon={ic_settings} size="1.5em" style={{color: 'white'}} />
                                     </NetworkColumn>
                                 </NetworkRow>
                                 <WalletContainer>
@@ -300,7 +301,7 @@ export default class MenuDrawer extends Component {
                                             active={active === '/'}
                                             onClick={() => this.selectActive('/')}
                                         >
-                                            <BiLineChart />
+                                            <Icon icon={lineChart} />
                                             <StyledMessage>
                                             <FormattedMessage {...messages.invest} />
                                             </StyledMessage>

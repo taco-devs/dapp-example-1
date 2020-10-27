@@ -11,9 +11,10 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import styled from 'styled-components';
-import {FaChevronDown} from 'react-icons/fa';
-import {BiExit} from 'react-icons/Bi';
-import { HiSwitchHorizontal } from 'react-icons/hi';
+
+import { Icon } from 'react-icons-kit';
+import {chevronDown} from 'react-icons-kit/fa/chevronDown';
+import {logout} from 'react-icons-kit/iconic/logout';
 
 
 const ConnectButton = styled.div`
@@ -249,7 +250,7 @@ class ConnectWallet extends React.Component {
                 mainnet={network_id === 'eth'}
               >
                 {this.parseAddress(address)}
-                <FaChevronDown />
+                <Icon style={{margin: '-3px 0 0 2px'}} icon={chevronDown}/>
               </AddressContainer>
             </WalletContainer>
 
@@ -271,7 +272,7 @@ class ConnectWallet extends React.Component {
                     <DropdownLabel>Switch Wallet Provider</DropdownLabel>
                   </ListItem> */}
                   <ListItem onClick={this.handleExit} hoverable>
-                    <BiExit />
+                    <Icon icon={logout} />
                     <DropdownLabel>Exit</DropdownLabel>
                   </ListItem>
                 </DropDownList>

@@ -11,9 +11,12 @@ import {Link} from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import styled from 'styled-components';
-import { BiLineChart, BiTransfer } from 'react-icons/bi';
-import { FaVoteYea } from 'react-icons/fa';
-import { MdAccountBalanceWallet } from 'react-icons/md';
+
+import { Icon } from 'react-icons-kit';
+import {lineChart} from 'react-icons-kit/fa/lineChart';
+import {exchange} from 'react-icons-kit/fa/exchange';
+import {suitcase} from 'react-icons-kit/fa/suitcase';
+
 import {isMobile} from 'react-device-detect';
 
 const NavbarContainer = styled.div`
@@ -108,7 +111,7 @@ class Navbar extends React.Component {
               active={active === '/'}
               onClick={() => this.selectActive('/')}
             >
-              <BiLineChart />
+              <Icon icon={lineChart} style={{margin: '-3px 0 0 0'}}/>
               <StyledMessage>
                 <FormattedMessage {...messages.invest} />
               </StyledMessage>
@@ -134,7 +137,7 @@ class Navbar extends React.Component {
               active={active === '/transactions'}
               onClick={() => this.selectActive('/transactions')}
             >
-              <BiTransfer />
+              <Icon icon={exchange} style={{margin: '-3px 0 0 0'}}/>
               <StyledMessage>
                 <FormattedMessage {...messages.transactions} />
               </StyledMessage>
@@ -147,7 +150,7 @@ class Navbar extends React.Component {
               active={active === '/balance'}
               onClick={() => this.selectActive('/balance')}
             >
-              <MdAccountBalanceWallet />
+              <Icon icon={suitcase} style={{margin: '-3px 0 0 0'}}/>
               <StyledMessage>
                 <FormattedMessage {...messages.balance} />
               </StyledMessage>

@@ -117,7 +117,7 @@ module.exports = options => ({
   ]),
   resolve: {
     modules: ['node_modules', 'app'],
-    extensions: ['.js', '.jsx', '.react.js'],
+    extensions: ['.js', '.jsx', '.react.js', '.mjs'],
     mainFields: ['browser', 'jsnext:main', 'main'],
   },
   devtool: options.devtool,

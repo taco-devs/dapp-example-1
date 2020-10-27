@@ -3,10 +3,11 @@ import * as Drawer from '@accessible/drawer'
 import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import styled from 'styled-components';
-import {FaChevronDown} from 'react-icons/fa';
-import { HiSwitchHorizontal } from 'react-icons/hi';
+import { Icon } from 'react-icons-kit';
+import {chevronDown} from 'react-icons-kit/fa/chevronDown'
+/* import { HiSwitchHorizontal } from 'react-icons/hi';
 import { BsInfoCircleFill } from 'react-icons/bs';
-import { AiOutlineArrowLeft } from 'react-icons/ai';
+import { AiOutlineArrowLeft } from 'react-icons/ai'; */
 import Loader from 'react-loader-spinner';
 
 const Container = styled.div`
@@ -365,7 +366,7 @@ export default class ActionDrawer extends Component {
                     >
                       <Container>
                         <ActionRow>
-                          <AiOutlineArrowLeft style={{margin: '0 5px 0 5px'}} onClick={() => toggleMobileDrawer()}/>
+                          {/* <AiOutlineArrowLeft style={{margin: '0 5px 0 5px'}} onClick={() => toggleMobileDrawer()}/> */}
                           <PrimaryLabel onClick={() => toggleMobileDrawer()}>RETURN</PrimaryLabel>
                         </ActionRow>
                         <InputContainer>
@@ -397,7 +398,7 @@ export default class ActionDrawer extends Component {
                               <SelectorRow>
                                 <IconLogo src={modal_type === 'mint' && is_native ? asset.native_img_url : asset.img_url} />
                                 <AssetLabel>{modal_type === 'mint' ? is_native ? asset.native : asset.base_asset : asset.g_asset}</AssetLabel>
-                                <FaChevronDown />
+                                <Icon icon={chevronDown} />
                               </SelectorRow>
                             </InputSectionColumn>
                           </InputSection>            
@@ -423,7 +424,7 @@ export default class ActionDrawer extends Component {
                             <SummaryColumn align="flex-end">
                               <SummaryRow>
                                 <PrimaryLabel margin="0 5px 0 5px">10.78 {asset.native} = 1 ETH</PrimaryLabel>
-                                <HiSwitchHorizontal />
+                                {/* <HiSwitchHorizontal /> */}
                               </SummaryRow>
                             </SummaryColumn>
                           </SummaryRow>
@@ -447,7 +448,7 @@ export default class ActionDrawer extends Component {
                             <SummaryColumn>
                               <SummaryRow>
                                 <PrimaryLabel margin="0 5px 0 0">BURNING FEE</PrimaryLabel>
-                                <BsInfoCircleFill style={{color: '#BEBEBE' }} />
+                                {/* <BsInfoCircleFill style={{color: '#BEBEBE' }} /> */}
                               </SummaryRow>
                             </SummaryColumn>
                             <SummaryColumn align="flex-end">
@@ -460,7 +461,7 @@ export default class ActionDrawer extends Component {
                               <SummaryColumn>
                                 <SummaryRow>
                                   <PrimaryLabel margin="0 5px 0 0">EXCHANGE FEE</PrimaryLabel>
-                                  <BsInfoCircleFill style={{color: '#BEBEBE' }} />
+                                  {/* <BsInfoCircleFill style={{color: '#BEBEBE' }} /> */}
                                 </SummaryRow>
                               </SummaryColumn>
                               <SummaryColumn align="flex-end">
@@ -472,7 +473,7 @@ export default class ActionDrawer extends Component {
                             <SummaryColumn>
                               <SummaryRow>
                                 <PrimaryLabel margin="0 5px 0 0">TOTAL</PrimaryLabel>
-                                <BsInfoCircleFill style={{color: '#BEBEBE' }} />
+                                {/* <BsInfoCircleFill style={{color: '#BEBEBE' }} /> */}
                               </SummaryRow>
                             </SummaryColumn>
                             <SummaryColumn align="flex-end">

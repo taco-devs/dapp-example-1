@@ -9,7 +9,6 @@ import HeaderLink from './HeaderLink';
 import Banner from './banner.jpg';
 import messages from './messages';
 import ConnectWallet from '../ConnectWallet';
-import {GiHamburgerMenu} from 'react-icons/gi'
 import * as Drawer from '@accessible/drawer'
 import MenuDrawer from './MenuDrawer';
 
