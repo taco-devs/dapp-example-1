@@ -286,6 +286,8 @@ function* getTokensSaga(params) {
         symbol
         totalSupply
         totalReserve
+        depositFee
+        withdrawalFee
       }
     }
   `

@@ -193,8 +193,13 @@ export default class AssetExtension extends Component {
     }
 
     render() {
-        const {asset, isLoadingChart, total_supply, total_reserve, deposit_fee, withdrawal_fee} = this.props;
+        const {asset, isLoadingChart, total_supply, total_reserve, deposit_fee, withdrawal_fee, tokens} = this.props;
         const data= this.formatData();
+        let token;
+        if (tokens) {
+            token = tokens.find(token => token.symbol === asset.g_asset);
+        }
+        console.log(token);
         return (
             <ExtensionContainer>
                 <Divider />
@@ -252,19 +257,19 @@ export default class AssetExtension extends Component {
                 >
                     <ExtensionColumn align="flex-start">
                         <StatLabel>TOTAL SUPPLY</StatLabel>
-                        <Stat>{(total_supply / 1e8).toLocaleString('En-en')} {asset.g_asset}</Stat>
+                        <Stat>{token && (token.totalSupply / 1e8).toLocaleString('En-en')} {asset.g_asset}</Stat>
                     </ExtensionColumn>
                     <ExtensionColumn>
                         <StatLabel>TOKENS LOCKED</StatLabel>
-                        <Stat>{(total_reserve / asset.base_decimals).toLocaleString('En-en')} {asset.base_asset}</Stat>
+                        <Stat>{token && (token.totalReserve / asset.base_decimals).toLocaleString('En-en')} {asset.base_asset}</Stat>
                     </ExtensionColumn>
                     <ExtensionColumn>
                         <StatLabel>MINTING FEE</StatLabel>
-                        <Stat>{((deposit_fee / 1e18) * 100).toFixed(2)}%</Stat>
+                        <Stat>{token && ((token.depositFee / 1e18) * 100).toFixed(2)}%</Stat>
                     </ExtensionColumn>
                     <ExtensionColumn>
                         <StatLabel>WITHDRAW FEE</StatLabel>
-                        <Stat>{((withdrawal_fee / 1e18) * 100).toFixed(2)}%</Stat>
+                        <Stat>{token && ((token.withdrawalFee / 1e18) * 100).toFixed(2)}%</Stat>
                     </ExtensionColumn>
                     <ExtensionColumn align="flex-end">
                         <StatLabel>TOKEN ADDRESS</StatLabel>

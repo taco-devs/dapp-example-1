@@ -804,7 +804,7 @@ class ActionModal extends React.Component {
 
   render () {
     const {type, asset, address} = this.props;
-    const {show, isLoading, modal_type, value_base, value_native, is_native, total_supply, total_reserve, deposit_fee, total_base, total_native, value_redeem, total_native_redeem, total_base_redeem } = this.state;
+    const {show, isLoading, modal_type, value_base, value_native, is_native, total_supply, total_reserve, deposit_fee, total_base, total_native, value_redeem, total_native_redeem, total_base_redeem, withdrawal_fee } = this.state;
     return (
       <div
         onClick={(e) => {
@@ -983,7 +983,7 @@ class ActionModal extends React.Component {
               </SummaryColumn>
               <SummaryColumn align="flex-end">
                 {modal_type === 'mint' && <PrimaryLabel>{this.parseNumber(this.calculateFee(), 1e18)} {is_native ? asset.native : asset.base_asset}  ({this.parseNumber(deposit_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}
-                {modal_type === 'redeem' && <PrimaryLabel>{this.parseNumber(this.calculateFee(), 1e18)} {asset.g_asset}  ({this.parseNumber(deposit_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}   
+                {modal_type === 'redeem' && <PrimaryLabel>{this.parseNumber(this.calculateFee(), 1e18)} {asset.g_asset}  ({this.parseNumber(withdrawal_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}   
               </SummaryColumn>
             </SummaryRow>
             <SummaryRow>

@@ -38,7 +38,7 @@ class Announcement extends React.Component {
   render() {
     return (
       <AnnouncementContainer>
-        <p>Growth DeFi will be running a Bug Bounty from 28/10/2020 to 28/11/2020. Check the details <StyledLink>here</StyledLink>. This is a project currently on BETA, please use at your own risk.</p>
+        <p>Growth DeFi is currently running a Bug Bounty. Check the details <StyledLink>here</StyledLink>. This is a project currently on BETA, please use at your own risk.</p>
       </AnnouncementContainer>
     )
   }
