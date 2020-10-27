@@ -28,8 +28,11 @@ import {
 const connectionStatusChannel = channel();
 
 const getGasInfo = async (method, amount, address, web3) => {
-  const gas = await method(amount).estimateGas({from: address});
-  const gasPrice = await web3.eth.getGasPrice();
+  const SAFE_MULTIPLIER = 1.15;
+  const raw_gas = await method(amount).estimateGas({from: address});
+  const gas = web3.utils.BN(raw_gas).mul(SAFE_MULTIPLIER);
+  const raw_gasPrice = await web3.eth.getGasPrice();
+  const gasPrice = web3.utils.BN(raw_gasPrice).mul(SAFE_MULTIPLIER);
 
   return {gas, gasPrice};
 }
@@ -38,7 +41,7 @@ const deposit = async (ContractInstance, _cost, address, asset, web3, functions)
   let stored_hash;
   const {gas, gasPrice} = await getGasInfo(ContractInstance.methods.deposit, _cost, address, web3);
 
-  return ContractInstance.methods.deposit(_cost).send({ from: address, gasPrice})
+  return ContractInstance.methods.deposit(_cost).send({ from: address, gasPrice, gas})
     .on("transactionHash", (hash) => {
         stored_hash = hash;
         connectionStatusChannel.put(
@@ -91,9 +94,11 @@ const deposit = async (ContractInstance, _cost, address, asset, web3, functions)
     });
 }
 
-const deposit_underlying = (ContractInstance, _cost, address, asset, web3, functions) => {
+const deposit_underlying = async (ContractInstance, _cost, address, asset, web3, functions) => {
   let stored_hash;
-  return ContractInstance.methods.depositUnderlying(_cost).send({ from: address})
+  const {gas, gasPrice} = await getGasInfo(ContractInstance.methods.depositUnderlying, _cost, address, web3);
+
+  return ContractInstance.methods.depositUnderlying(_cost).send({ from: address, gas, gasPrice})
     .on("transactionHash", (hash) => {
         stored_hash = hash;
         connectionStatusChannel.put(
@@ -146,9 +151,10 @@ const deposit_underlying = (ContractInstance, _cost, address, asset, web3, funct
     });
 }
 
-const withdraw = (ContractInstance, _cost, address, asset, web3, functions) => {
+const withdraw = async (ContractInstance, _cost, address, asset, web3, functions) => {
   let stored_hash;
-  return ContractInstance.methods.withdraw(_cost).send({ from: address})
+  const {gas, gasPrice} = await getGasInfo(ContractInstance.methods.withdraw, _cost, address, web3);
+  return ContractInstance.methods.withdraw(_cost).send({ from: address, gas, gasPrice})
     .on("transactionHash", (hash) => {
         stored_hash = hash;
         connectionStatusChannel.put(
@@ -201,9 +207,10 @@ const withdraw = (ContractInstance, _cost, address, asset, web3, functions) => {
     });
 }
 
-const withdraw_underlying = (ContractInstance, _cost, address, asset, web3, functions) => {
+const withdraw_underlying = async (ContractInstance, _cost, address, asset, web3, functions) => {
   let stored_hash;
-  return ContractInstance.methods.withdrawUnderlying(_cost).send({ from: address})
+  const {gas, gasPrice} = await getGasInfo(ContractInstance.methods.withdrawUnderlying, _cost, address, web3);
+  return ContractInstance.methods.withdrawUnderlying(_cost).send({ from: address, gas, gasPrice})
     .on("transactionHash", (hash) => {
         stored_hash = hash;
         connectionStatusChannel.put(
@@ -366,7 +373,6 @@ function* mintGTokenFromCTokenSaga(params) {
       });
 
   } catch (error) {
-    console.log(error);
     const jsonError = yield error.response ? error.response.json() : error;
     yield put(dismissSwap());
     yield toggle();
