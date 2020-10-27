@@ -488,8 +488,9 @@ class ActionModal extends React.Component {
     return total_minting;
   }
 
-  getWei = (value, decimals) => {
+  getWei = (value_number, decimals) => {
     const {web3} = this.props;
+    const value = value_number.toString();
     if (decimals === 1e18) {
       return web3.utils.toWei(value);
     }
@@ -508,6 +509,7 @@ class ActionModal extends React.Component {
 
     const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
 
+
     // Handle 0 value transactions
     if (!value || value.length <= 0) {
       this.setState({
@@ -523,6 +525,7 @@ class ActionModal extends React.Component {
         const underlying_conversion = await GContractInstance.methods.calcCostFromUnderlyingCost(netShares, exchange_rate).call();
         const result = await GContractInstance.methods.calcDepositSharesFromCost(underlying_conversion, total_reserve, total_supply, deposit_fee).call();
         const {_netShares, _feeShares} = result;
+        console.log(result)
         this.setState({
           real_fee: _feeShares,
           total_native: _netShares,
@@ -543,7 +546,7 @@ class ActionModal extends React.Component {
 
   }, 250);
 
-  calculateBurningTotal = debounce(async (value, parseString) => {
+  calculateBurningTotal = debounce(async (value) => {
     const { web3, asset } = this.props;
     const { modal_type, is_native, total_reserve, total_supply, exchange_rate, withdrawal_fee} = this.state;
   
@@ -610,7 +613,7 @@ class ActionModal extends React.Component {
   setMax = () => {
     const { asset } = this.props;
     const {modal_type, is_native, underlying_balance, asset_balance, g_balance, deposit_fee} = this.state;
-    const SAFE_MARGIN = 0.975;
+    const SAFE_MARGIN = 0.99;
     
     if (modal_type === 'mint') {
       if (is_native) {
