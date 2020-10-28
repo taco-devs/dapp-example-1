@@ -490,15 +490,17 @@ class ActionModal extends React.Component {
 
   getWei = (value_number, decimals) => {
     const {web3} = this.props;
-    const value = value_number.toString();
     if (decimals === 1e18) {
+      const value = value_number.toString();
       return web3.utils.toWei(value);
     }
     if (decimals === 1e8) {
-      const raw_value = (value / 10).toString()
+      // Horrible hack to avoid precision error on js
+      const raw_value = (Math.round(value_number * 10) / 100).toString()
       return web3.utils.toWei(raw_value, 'gwei');
     }
     if (decimals === 1e6) {
+      const value = value_number.toString();
       return web3.utils.toWei(value, 'mwei');
     }
   }
@@ -632,7 +634,7 @@ class ActionModal extends React.Component {
       if ((Number(g_balance) / 1e8) < 0.01) return;
       const value_redeem = g_balance / 1e8;
       this.setState({value_redeem});
-      this.calculateBurningTotal(value_redeem, false);
+      this.calculateBurningTotal(value_redeem);
     }
   }
 

@@ -324,8 +324,6 @@ function* getBalancesSaga(params) {
         const c_response = yield call(request, compound_query_url, compound_options);
         const { data: c_data } = c_response;
 
-        console.log(c_data)
-
         yield put(getPricesSuccess(data));
         
         // Set Eth Price in USDT
