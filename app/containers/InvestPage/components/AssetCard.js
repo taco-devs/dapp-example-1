@@ -211,7 +211,7 @@ export default class AssetCard extends Component {
                                 <CardColumn 
                                     direction="column"
                                 >
-                                    <PrimaryLabel>{/* asset.apy_avg */}- AVG</PrimaryLabel>
+                                    <PrimaryLabel>{this.calculateAvgAPY()}% AVG</PrimaryLabel>
                                 <SecondaryLabel>{/* asset.apy_7days */}- 7D</SecondaryLabel>
                                 </CardColumn>
                             </CardRow>
