@@ -124,7 +124,7 @@ const fetch_balances = async (available_assets, user_balances, web3, address) =>
       let liquidation_price = 0;
 
       if (Number(balance.amount) > 0) {
-        liquidation_price = await ContractInstance.methods.calcWithdrawalCostFromShares(web3_balance, balance.token.totalReserve, balance.token.totalSupply, balance.token.withdrawalFee).call();
+        liquidation_price = await ContractInstance.methods.calcWithdrawalCostFromShares(balance.amount, balance.token.totalReserve, balance.token.totalSupply, balance.token.withdrawalFee).call();
       }
 
       balances.push({
