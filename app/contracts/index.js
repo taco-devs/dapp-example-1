@@ -15,6 +15,7 @@ const assets = {
         available_assets: {
             gcDAI: {
                 pair_address: "0x9896bd979f9da57857322cc15e154222c4658a5a",
+                compound_id: '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643',
                 base_address: '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643',
                 gtoken_address: '0x8c659d745eB24DF270A952F68F4B1d6817c3795C',
                 underlying_address: '0x6b175474e89094c44da98b954eedeac495271d0f',
@@ -42,6 +43,7 @@ const assets = {
             },
             gcUSDC: {
                 pair_address: "0x477fa5406598f8eb1945291867e1654c4d931659",
+                compound_id: '0x39aa39c021dfbae8fac545936693ac917d5e7563',
                 base_address: '0x39aa39c021dfbae8fac545936693ac917d5e7563',
                 gtoken_address: '0x3C918ab39C4680d3eBb3EAFcA91C3494F372a20D',
                 underlying_address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',

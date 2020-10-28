@@ -81,7 +81,7 @@ class WalletDashboard extends React.Component {
                return acc + Number(curr.balance / 1e18) / Number(curr.price_eth) * eth_price; 
              } 
              if (curr.base_price_eth && curr.liquidation_price ) {
-                return acc + Number(curr.liquidation_price._cost / 1e8) * (eth_price / Number(curr.base_price_eth));
+                return acc + Number(curr.liquidation_price._cost / 1e8 * curr.base_price_usd);
              }
              return acc;
           }, 0);

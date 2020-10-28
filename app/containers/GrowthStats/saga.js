@@ -62,6 +62,22 @@ const BALANCES = (address) => {
   `
 }
 
+const COMPOUND_MARKETS = (markets) => {
+  return `
+    {
+      markets (where: {
+          id_in: ${JSON.stringify(markets)}
+      }) {
+        id
+        exchangeRate
+        symbol
+        underlyingPrice
+        underlyingPriceUSD
+      }
+    }
+  `
+}
+
 const PAIR_QUERIES = (all_pairs) =>  {
   return `
     {
@@ -137,19 +153,31 @@ const get_pairs = ( Network ) => {
   return QUERY;
 }
 
+const get_markets = ( Network ) => {
+  const { available_assets } = Network;
+  const assets_keys = Object.keys(available_assets);
+  const asset_markets = 
+    assets_keys
+      .filter((asset_key) => Network.available_assets[asset_key].compound_id)
+      .map((asset_key) => Network.available_assets[asset_key].compound_id);
+  const QUERY = COMPOUND_MARKETS([...asset_markets ]);
+  return QUERY;
+}
+
 const get_prices = async (asset_balances, data, web3) => {
   // Iterate through all prices
   try {
-    const { pairs } = data;
+    const { markets } = data;
     const with_prices = 
           asset_balances.map((asset) => {
-            const pair = pairs.find(pair => pair.token0.symbol === asset.base);
+            const market = markets.find(market => market.symbol === asset.base);
 
             // Get the redeeming rate
 
             return {
               ...asset,
-              base_price_eth: pair ? pair.token0Price : 0,
+              base_price_eth: market ? market.exchangeRate : 0,
+              base_price_usd: market ? market.exchangeRate * market.underlyingPriceUSD : 0,
             }
           })
     
@@ -257,6 +285,7 @@ function* getBalancesSaga(params) {
 
         // Get the correct pairs to fetch price
         const PAIRS = get_pairs(Network);
+        const markets_query = get_markets(Network);
         const balances_query = BALANCES(address);        
 
         // Get the balances
@@ -266,10 +295,8 @@ function* getBalancesSaga(params) {
           method: 'POST',
           body: JSON.stringify({ query: balances_query })
         };
-      
 
         const balances_response = yield call(request, growth_query_url, balances_options);
-
         const {data: balances_data} = balances_response;
 
         // Fetch Pairs price
@@ -281,6 +308,23 @@ function* getBalancesSaga(params) {
 
         const response = yield call(request, query_url, options);
         const { data } = response;
+        
+        // Fetch Markets price
+        let myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        var raw = JSON.stringify({"query":markets_query});
+        const compound_query_url = 'https://api.thegraph.com/subgraphs/name/graphprotocol/compound-v2';
+        const compound_options = {
+          method: 'POST',
+          body: raw,
+          headers: myHeaders,
+          redirect: 'follow'
+        };
+
+        const c_response = yield call(request, compound_query_url, compound_options);
+        const { data: c_data } = c_response;
+
+        console.log(c_data)
 
         yield put(getPricesSuccess(data));
         
@@ -298,7 +342,7 @@ function* getBalancesSaga(params) {
         const asset_balances = yield fetch_balances(Network.available_assets, balances_data.userBalances, web3, address);
 
         // Calculate the asset price
-        const balances_with_rate = yield get_prices(asset_balances, data, web3, address);
+        const balances_with_rate = yield get_prices(asset_balances, c_data, web3, address);
 
         const balances = [
           {

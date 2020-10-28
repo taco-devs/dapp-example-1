@@ -525,7 +525,6 @@ class ActionModal extends React.Component {
         const underlying_conversion = await GContractInstance.methods.calcCostFromUnderlyingCost(netShares, exchange_rate).call();
         const result = await GContractInstance.methods.calcDepositSharesFromCost(underlying_conversion, total_reserve, total_supply, deposit_fee).call();
         const {_netShares, _feeShares} = result;
-        console.log(result)
         this.setState({
           real_fee: _feeShares,
           total_native: _netShares,

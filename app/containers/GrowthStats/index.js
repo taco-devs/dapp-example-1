@@ -34,10 +34,11 @@ class GrowthStats extends React.Component {
   }
 
   fetchBalances = () => {
-    const { getUserStats, getBalances, getTVL, address, web3 } = this.props;
+    const { getUserStats, getBalances, address, web3 } = this.props;
     getUserStats(address, web3);
     getBalances(address, web3);
   }
+
 
   render () {
     const {address, balances, web3, eth_price} = this.props;
