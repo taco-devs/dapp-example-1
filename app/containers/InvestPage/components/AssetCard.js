@@ -119,19 +119,18 @@ export default class AssetCard extends Component {
     }
 
     getMarketSize = () => {
-        const {asset, tokens, ethPrice, prices} = this.props;
+        const {asset, tokens, prices} = this.props;
 
         if (!prices || !tokens) return '-';
 
         const token = tokens.find(token => token.symbol === asset.g_asset);
 
         if (!token) return '-';
-
-        const asset_data = prices.pairs.find(price => price.token0.symbol === asset.base_asset);
+        const asset_data = prices.markets && prices.markets.find(market => market.symbol === asset.base_asset);
 
         if (!asset_data) return '-';
-        
-        const market_cap = (Number(token.totalReserve) / 1e8) / Number(asset_data.token0Price) * ethPrice;
+        const reservePrice = Number(asset_data.exchangeRate) / Number(asset_data.underlyingPriceUSD);
+        const market_cap = (Number(token.totalReserve) / 1e8) * reservePrice;
 
         if (!market_cap || market_cap <= 1) return 'N/A'
 

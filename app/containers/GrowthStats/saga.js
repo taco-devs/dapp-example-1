@@ -312,7 +312,7 @@ function* getBalancesSaga(params) {
 
         const response = yield call(request, query_url, options);
         const { data } = response;
-        
+      
         // Fetch Markets price
         let myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
@@ -328,7 +328,7 @@ function* getBalancesSaga(params) {
         const c_response = yield call(request, compound_query_url, compound_options);
         const { data: c_data } = c_response;
 
-        yield put(getPricesSuccess(data));
+        yield put(getPricesSuccess(c_data));
         
         // Set Eth Price in USDT
         const eth_market = c_data.markets.find(market => market.symbol === 'cETH');
@@ -371,17 +371,7 @@ function* getPricesSaga() {
   try { 
 
     const Network = NetworkData['eth'];
-    const PAIRS = get_pairs(Network);
-
-    // Fetch Pairs price
-    const query_url = 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2';
-    const options = {
-      method: 'POST',
-      body: JSON.stringify({ query: PAIRS })
-    };
-
-    const response = yield call(request, query_url, options);
-    const { data } = response;
+    const markets_query = get_markets(Network);
 
     // Compound implementation
     let myHeaders = new Headers();
@@ -394,17 +384,16 @@ function* getPricesSaga() {
       headers: myHeaders,
       redirect: 'follow'
     };
-    
+
     const c_response = yield call(request, compound_query_url, compound_options);
     const { data: c_data } = c_response;
+    const eth_market = c_data.markets.find(market => market.symbol === 'cETH');
+    yield put(getEthPrice(eth_market.underlyingPriceUSD));
 
-
-    yield put(getEthPrice(data.pairs[0].token1Price));
-    
-
-    yield put(getPricesSuccess(data))
+    yield put(getPricesSuccess(c_data))
     
   } catch (error) {
+    console.log(error)
     // const jsonError = yield error.response ? error.response.json() : error;
     yield put(getPricesError('Could not fetch balances'));
   }
