@@ -22,6 +22,10 @@ const base_pairs = [
   "0x208bd5dc470eba21571ddb439801a614ed346376", // GRO/ETH 
 ]
 
+const compound_base_pairs = [
+  "0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5", // ETH
+]
+
 const USER_STATS = (address) => {
   return `
     {
@@ -160,7 +164,7 @@ const get_markets = ( Network ) => {
     assets_keys
       .filter((asset_key) => Network.available_assets[asset_key].compound_id)
       .map((asset_key) => Network.available_assets[asset_key].compound_id);
-  const QUERY = COMPOUND_MARKETS([...asset_markets ]);
+  const QUERY = COMPOUND_MARKETS([...compound_base_pairs,...asset_markets ]);
   return QUERY;
 }
 
@@ -327,8 +331,8 @@ function* getBalancesSaga(params) {
         yield put(getPricesSuccess(data));
         
         // Set Eth Price in USDT
-        const eth_price = data.pairs[0].token1Price
-        yield put(getEthPrice(eth_price));
+        const eth_market = c_data.markets.find(market => market.symbol === 'cETH');
+        yield put(getEthPrice(eth_market.underlyingPriceUSD));
 
         // Get GRO data
         const GrowTokenInstance = new web3.eth.Contract(Network.growth_token.abi, Network.growth_token.address);
@@ -379,7 +383,24 @@ function* getPricesSaga() {
     const response = yield call(request, query_url, options);
     const { data } = response;
 
-    yield put(getEthPrice(data.pairs[0].token1Price))
+    // Compound implementation
+    let myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    var raw = JSON.stringify({"query":markets_query});
+    const compound_query_url = 'https://api.thegraph.com/subgraphs/name/graphprotocol/compound-v2';
+    const compound_options = {
+      method: 'POST',
+      body: raw,
+      headers: myHeaders,
+      redirect: 'follow'
+    };
+    
+    const c_response = yield call(request, compound_query_url, compound_options);
+    const { data: c_data } = c_response;
+
+
+    yield put(getEthPrice(data.pairs[0].token1Price));
+    
 
     yield put(getPricesSuccess(data))
     

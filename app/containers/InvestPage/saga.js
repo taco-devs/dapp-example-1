@@ -314,6 +314,11 @@ function* getTokensSaga(params) {
         totalReserve
         depositFee
         withdrawalFee
+        tokenDailyDatas (first: 2) {
+          id
+          txCount
+          currentPrice
+        }
       }
     }
   `

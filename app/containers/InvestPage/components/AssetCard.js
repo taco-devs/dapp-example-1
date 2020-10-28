@@ -149,6 +149,24 @@ export default class AssetCard extends Component {
         return (Math.round(token.totalSupply / 1e8)).toLocaleString('En-en');
     }
 
+    calculateAvgAPY = () => {
+        const {tokens, asset} = this.props;
+        if (!tokens) return '-'
+        
+        const token = tokens.find(token => token.symbol === asset.g_asset);
+
+        if (!token) return '-';
+
+        const {tokenDailyDatas} = token;
+        if (!token) return '-';
+
+        const today = tokenDailyDatas[0];
+        const yesterday = tokenDailyDatas[1];
+
+        const increase = ((today.currentPrice / yesterday.currentPrice) - 1) * 100;
+        return Math.round(increase * 100) / 100;
+    }
+
     render() {
         const {asset, data, balances, isMobile, asset_key, currentOpenExtension} = this.props;
         const {isMobileDrawerOpen, total_supply} = this.state;
@@ -230,7 +248,7 @@ export default class AssetCard extends Component {
                             <CardColumn 
                                 direction="column"
                             >
-                                <PrimaryLabel>{/* asset.apy_avg */}- AVG</PrimaryLabel>
+                                <PrimaryLabel>{this.calculateAvgAPY()}% AVG</PrimaryLabel>
                                 <SecondaryLabel>{/* asset.apy_7days */}- 7D</SecondaryLabel>
                             </CardColumn>
                             <CardColumn 
