@@ -156,7 +156,7 @@ export default class BalanceCard extends Component {
                                 justify="flex-start"
                                 margin="0 0 0 1em"
                             >
-                                <AssetLogo src={asset.img_url} isMobile={isMobile} />
+                                <AssetLogo src={require(`images/tokens/${asset.gtoken_img_url}`)} isMobile={isMobile} />
                                 <PrimaryLabel>{asset.g_asset}</PrimaryLabel>
                             </CardColumn>
                             <CardColumn>
