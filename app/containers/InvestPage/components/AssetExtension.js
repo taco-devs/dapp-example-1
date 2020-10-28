@@ -168,8 +168,6 @@ export default class AssetExtension extends Component {
             let x_axis_label;
             let y_value;
 
-            
-
             if (day_data) {
                 x_axis_label = moment(day_data.date * 1000).format('MMM DD');
 
