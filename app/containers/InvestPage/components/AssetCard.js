@@ -166,6 +166,24 @@ export default class AssetCard extends Component {
         return Math.round(increase * 1000) / 1000;
     }
 
+    calculate7DAPY = () => {
+        const {tokens, asset} = this.props;
+        if (!tokens) return '-'
+        
+        const token = tokens.find(token => token.symbol === asset.g_asset);
+
+        if (!token) return '-';
+
+        const {tokenDailyDatas} = token;
+        if (!token) return '-';
+
+        const today = tokenDailyDatas[0];
+        const yesterday = tokenDailyDatas[tokenDailyDatas.length - 1];
+
+        const increase = ((today.avgPrice / yesterday.avgPrice) - 1) * 100;
+        return Math.round(increase * 1000) / 1000;
+    }
+
     render() {
         const {asset, data, balances, isMobile, asset_key, currentOpenExtension} = this.props;
         const {isMobileDrawerOpen, total_supply} = this.state;
@@ -210,8 +228,8 @@ export default class AssetCard extends Component {
                                 <CardColumn 
                                     direction="column"
                                 >
-                                    <PrimaryLabel>{this.calculateAvgAPY()} % AVG</PrimaryLabel>
-                                <SecondaryLabel>{/* asset.apy_7days */} - 7D</SecondaryLabel>
+                                <PrimaryLabel>{this.calculateAvgAPY()}% AVG</PrimaryLabel>
+                                <SecondaryLabel>{this.calculate7DAPY()}% 7D</SecondaryLabel>
                                 </CardColumn>
                             </CardRow>
                             
@@ -248,7 +266,7 @@ export default class AssetCard extends Component {
                                 direction="column"
                             >
                                 <PrimaryLabel>{this.calculateAvgAPY()}% AVG</PrimaryLabel>
-                                <SecondaryLabel>{/* asset.apy_7days */}- 7D</SecondaryLabel>
+                                <SecondaryLabel>{this.calculate7DAPY()}% 7D</SecondaryLabel>
                             </CardColumn>
                             <CardColumn 
                                 direction="row"

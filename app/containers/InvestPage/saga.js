@@ -315,7 +315,7 @@ function* getTokensSaga(params) {
         depositFee
         withdrawalFee
         tokenDailyDatas (
-          first: 2
+          first: 7
           orderBy: id
           orderDirection: desc
         ) {
