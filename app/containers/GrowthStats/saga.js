@@ -119,11 +119,12 @@ const fetch_balances = async (available_assets, user_balances, web3, address) =>
       // Fetch asset balance
       const ContractInstance = await new web3.eth.Contract(asset.gtoken_abi, balance.token.id);
       const exchange_rate = await ContractInstance.methods.exchangeRate().call();
+      const web3_balance = await ContractInstance.methods.balanceOf(address).call();
 
       let liquidation_price = 0;
 
       if (Number(balance.amount) > 0) {
-        liquidation_price = await ContractInstance.methods.calcWithdrawalCostFromShares(balance.amount, balance.token.totalReserve, balance.token.totalSupply, balance.token.withdrawalFee).call();
+        liquidation_price = await ContractInstance.methods.calcWithdrawalCostFromShares(web3_balance, balance.token.totalReserve, balance.token.totalSupply, balance.token.withdrawalFee).call();
       }
 
       balances.push({
@@ -131,6 +132,7 @@ const fetch_balances = async (available_assets, user_balances, web3, address) =>
         base: asset.base_asset,
         underlying: asset.native,
         gtoken_address: balance.token.id,
+        web3_balance: web3_balance,
         balance: Number(balance.amount),
         withdrawal_fee: balance.token.withdrawalFee,
         exchange_rate,
