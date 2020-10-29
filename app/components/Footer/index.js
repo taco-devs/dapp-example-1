@@ -119,7 +119,6 @@ class Footer extends React.Component {
     fetch(process.env.STATUS_URL, {method: 'POST', body: JSON.stringify({query})})
       .then(res => res.json())
       .then(json_res => {
-        console.log(json_res);
         const {data} = json_res;
         const { indexingStatusForCurrentVersion } = data;
         this.setState({

@@ -143,6 +143,8 @@ const fetch_balances = async (available_assets, user_balances, web3, address) =>
       const ContractInstance = await new web3.eth.Contract(asset.gtoken_abi, balance.token.id);
       const exchange_rate = await ContractInstance.methods.exchangeRate().call();
       const web3_balance = await ContractInstance.methods.balanceOf(address).call();
+      const total_supply = await ContractInstance.methods.totalSupply().call();
+      const total_reserve = await ContractInstance.methods.totalReserve().call();
 
       let liquidation_price = 0;
 
@@ -159,7 +161,8 @@ const fetch_balances = async (available_assets, user_balances, web3, address) =>
         balance: Number(balance.amount),
         withdrawal_fee: balance.token.withdrawalFee,
         exchange_rate,
-        total_reserve: balance.token.totalReserve,
+        total_reserve,
+        total_supply,
         liquidation_price,
       })
 
@@ -200,13 +203,14 @@ const get_prices = async (asset_balances, data, web3) => {
     const with_prices = 
           asset_balances.map((asset) => {
             const market = markets.find(market => market.symbol === asset.base);
-
+            const gTokenPrice = Number(asset.total_reserve) / Number(asset.total_supply);
+            const baseAssetPrice = market ? market.exchangeRate * market.underlyingPriceUSD : 0;
+            const base_price_usd = gTokenPrice * baseAssetPrice
             // Get the redeeming rate
-
             return {
               ...asset,
               base_price_eth: market ? market.exchangeRate : 0,
-              base_price_usd: market ? market.exchangeRate * market.underlyingPriceUSD : 0,
+              base_price_usd,
             }
           })
     
@@ -428,7 +432,6 @@ function* getGraphSaga() {
 
     const response = yield call(request, process.env.STATUS_URL, options);
     const { data } = response;
-    console.log(data);
 
     yield put(getGraphSuccess(data))
     

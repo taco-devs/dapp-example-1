@@ -22,7 +22,7 @@
     "preinstall": "npm run npmcheckversion",
     "prebuild": "npm run build:clean",
     "build:stage": "rimraf ./build_stage && cross-env NODE_ENV=production env-cmd -f .env webpack --config internals/webpack/webpack.prod.babel.js --color -p --progress --hide-modules --display-optimization-bailout",
-    "build:prod": "cross-env NODE_ENV=production env-cmd -f .env.prod webpack --config internals/webpack/webpack.prod.babel.js --color -p --progress --hide-modules --display-optimization-bailout",
+    "build:prod": "rimraf ./build_prod && cross-env NODE_ENV=production env-cmd -f .env.prod webpack --config internals/webpack/webpack.prod.babel.js --color -p --progress --hide-modules --display-optimization-bailout",
     "build:clean": "rimraf ./build",
     "start": "cross-env NODE_ENV=development env-cmd -f .env node server",
     "start:tunnel": "cross-env NODE_ENV=development ENABLE_TUNNEL=true node server",
