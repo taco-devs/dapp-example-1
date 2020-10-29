@@ -5,7 +5,7 @@ import A from 'components/A';
 import LocaleToggle from 'containers/LocaleToggle';
 import messages from './messages';
 import styled from 'styled-components';
-
+import {isMobile} from 'react-device-detect';
 import { Icon } from 'react-icons-kit';
 import {twitter} from 'react-icons-kit/fa/twitter';
 import {telegram} from 'react-icons-kit/fa/telegram';
@@ -15,6 +15,7 @@ const Wrapper = styled.footer`
   margin: 3em 0 0 0;
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
   color: white;
   font-size: 0.85em;
 `;
@@ -22,8 +23,20 @@ const Wrapper = styled.footer`
 const LeftSection = styled.section`
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
+  justify-content: ${props => props.isMobile ? 'center' : 'flex-start'};
   align-items: center;
+  min-width: 300px;
+  width: 100%;
+`
+
+const RightSection = styled.section`
+  display: flex;
+  flex-direction: row;
+  justify-content: ${props => props.isMobile ? 'center' : 'flex-end'};
+  margin: ${props => props.isMobile ? '1em 0 0 0' : '0'};
+  align-items: center;
+  min-width: 300px;
+  width: 100%;
 `
 
 const IconLink = styled.a`
@@ -135,8 +148,8 @@ class Footer extends React.Component {
   render() {
     const {current_block, health, synced} = this.state;
     return (
-      <Wrapper>
-        <LeftSection>
+      <Wrapper isMobile={isMobile}>
+        <LeftSection isMobile={isMobile}>
           <IconLink href="https://twitter.com/GrowthDefi" target="_blank">
             <Icon icon={twitter} size="1.5em" style={{margin: '0 10px 0 10px'}}/>
           </IconLink>
@@ -152,11 +165,11 @@ class Footer extends React.Component {
           </StatusSection>
           {/* <LocaleToggle /> */}
         </LeftSection>
-        <section>
+        <RightSection isMobile={isMobile}>
           <FormattedMessage
             {...messages.copyright}
           />
-        </section>
+        </RightSection>
       </Wrapper>
     );
   }

@@ -145,7 +145,7 @@ export default class AssetCard extends Component {
 
         if (!token) return '-';
 
-        return (Math.round(token.totalSupply / 1e8)).toLocaleString('En-en');
+        return this.abbreviateNumber(Math.round(token.totalSupply / 1e8));
     }
 
     calculateAvgAPY = () => {
@@ -184,6 +184,23 @@ export default class AssetCard extends Component {
         return Math.round(increase * 1000) / 1000;
     }
 
+    abbreviateNumber = (value) => {
+        var newValue = value;
+        if (value >= 1000) {
+            var suffixes = ["", "K", "M", "B","T"];
+            var suffixNum = Math.floor( (""+value).length/3 );
+            var shortValue = '';
+            for (var precision = 2; precision >= 1; precision--) {
+                shortValue = parseFloat( (suffixNum != 0 ? (value / Math.pow(1000,suffixNum) ) : value).toPrecision(precision));
+                var dotLessShortValue = (shortValue + '').replace(/[^a-zA-Z 0-9]+/g,'');
+                if (dotLessShortValue.length <= 2) { break; }
+            }
+            if (shortValue % 1 != 0)  shortValue = shortValue.toFixed(1);
+            newValue = shortValue+suffixes[suffixNum];
+        }
+        return newValue;
+    }
+
     render() {
         const {asset, data, balances, isMobile, asset_key, currentOpenExtension} = this.props;
         const {isMobileDrawerOpen, total_supply} = this.state;
@@ -208,7 +225,8 @@ export default class AssetCard extends Component {
                                     direction="row"
                                     align="center"
                                     justify="flex-start"
-                                    margin="0 0 0 1em"
+                                    margin="0 0 0 5px"
+                                    flex="1.1"
                                 >
                                     {asset.gtoken_img_url && (
                                         <AssetLogo src={require(`images/tokens/${asset.gtoken_img_url}`)} isMobile={isMobile} />
@@ -221,12 +239,14 @@ export default class AssetCard extends Component {
                                 </CardColumn>
                                 <CardColumn 
                                     direction="column"
+                                    flex="1.2"
                                 >
                                     <PrimaryLabel>{this.getMarketSize()}</PrimaryLabel>
                                     <SecondaryLabel>{this.getSupply()} {asset.g_asset}</SecondaryLabel>
                                 </CardColumn>
                                 <CardColumn 
                                     direction="column"
+                                    flex="0.9"
                                 >
                                 <PrimaryLabel>{this.calculateAvgAPY()}% AVG</PrimaryLabel>
                                 <SecondaryLabel>{this.calculate7DAPY()}% 7D</SecondaryLabel>
