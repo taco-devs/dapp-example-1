@@ -154,15 +154,20 @@ export default class AssetExtension extends Component {
 
         // Calculate 31 days before
         const seconds_in_day = 86400;
-        const FIRST_DAY = tokenData[tokenData.length - 1].date - (seconds_in_day * 30);
+        let TODAY = new Date();
+        TODAY.setHours(0,0,0,0);
+        TODAY = new Date(TODAY.getTime() - TODAY.getTimezoneOffset() * 60000);
+        const TODAY_DATE = Math.round(TODAY.getTime() / 1000) + seconds_in_day;
+    
+        const FIRST_DAY = TODAY_DATE - (seconds_in_day * 30) - seconds_in_day;
 
         // Chart Array
         let chart_data = new Array(30);
         let current_days = 0;
 
         for (let day of chart_data) {
-            const today_timestamp = FIRST_DAY + (seconds_in_day * current_days) + 1;
-            const tomorrow_timestamp = today_timestamp + seconds_in_day + 1;
+            const today_timestamp = FIRST_DAY + (seconds_in_day * current_days) + seconds_in_day;
+            const tomorrow_timestamp = today_timestamp + seconds_in_day;
             const day_data = tokenData.find(curr_day => curr_day.date >= today_timestamp && curr_day.date < tomorrow_timestamp );
 
             let x_axis_label;
