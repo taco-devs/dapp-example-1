@@ -6,6 +6,10 @@
 
 export const DEFAULT_ACTION = 'app/GrowthStats/DEFAULT_ACTION';
 
+export const GET_GRAPH_REQUEST = 'app/GrowthStats/GET_GRAPH_REQUEST';
+export const GET_GRAPH_SUCCESS = 'app/GrowthStats/GET_GRAPH_SUCCESS';
+export const GET_GRAPH_ERROR = 'app/GrowthStats/GET_GRAPH_ERROR';
+
 export const GET_USER_STATS_REQUEST = 'app/GrowthStats/GET_USER_STATS_REQUEST';
 export const GET_USER_STATS_SUCCESS = 'app/GrowthStats/GET_USER_STATS_SUCCESS';
 export const GET_USER_STATS_ERROR = 'app/GrowthStats/GET_USER_STATS_ERROR';

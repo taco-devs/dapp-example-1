@@ -5,14 +5,15 @@ import {
 import request from 'utils/request'
 import NetworkData from 'contracts';
 
-import { GET_BALANCES_REQUEST, GET_USER_STATS_REQUEST, GET_TVL_REQUEST, GET_PRICES_REQUEST } from './constants'
+import { GET_BALANCES_REQUEST, GET_USER_STATS_REQUEST, GET_TVL_REQUEST, GET_PRICES_REQUEST, GET_GRAPH_REQUEST } from './constants'
 import { 
   getUserStatsSuccess, getUserStatsError,
   getBalancesSuccess, getBalancesError,
   getEthPrice,
   getTVLSuccess,
   getTVLError,
-  getPricesSuccess, getPricesError
+  getPricesSuccess, getPricesError,
+  getGraphSuccess, getGraphError,
 } from './actions';
 
 import { makeSelectCurrrentNetwork } from '../App/selectors';
@@ -97,9 +98,31 @@ const PAIR_QUERIES = (all_pairs) =>  {
       }
     }
 `
-
-
 }
+
+const HEALTH = `
+  indexingStatusForCurrentVersion(subgraphName: "${process.env.GROWTH_GRAPH_NAME}") {
+    synced
+    health
+    fatalError {
+      message
+      block {
+        number
+        hash
+      }
+      handler
+    }
+    chains {
+      chainHeadBlock {
+        number
+      }
+      latestBlock {
+        number
+      }
+    }
+  }
+`
+
 const balanceChecker = (ContractInstance, address) => {
   return ContractInstance.methods.balanceOf(address);
 }
@@ -393,6 +416,29 @@ function* getPricesSaga() {
   }
 }
 
+function* getGraphSaga() {
+
+  try { 
+
+    // Get the balances
+    const options = {
+      method: 'POST',
+      body: JSON.stringify({ query: HEALTH })
+    };
+
+    const response = yield call(request, process.env.STATUS_URL, options);
+    const { data } = response;
+    console.log(data);
+
+    yield put(getGraphSuccess(data))
+    
+  } catch (error) {
+    console.log(error)
+    // const jsonError = yield error.response ? error.response.json() : error;
+    // yield put(getPricesError('Could not fetch balances'));
+  }
+}
+
 
 function* getUserStatsRequest() {
   yield takeLatest(GET_USER_STATS_REQUEST, getUserStatsSaga);
@@ -410,11 +456,16 @@ function* getPricesRequest() {
   yield takeLatest(GET_PRICES_REQUEST, getPricesSaga);
 }
 
+function* getGraphRequest() {
+  yield takeLatest(GET_GRAPH_REQUEST, getGraphSaga);
+}
+
 export default function* rootSaga() {
   yield all([
     fork(getUserStatsRequest),
     fork(getBalancesRequest),
     fork(getTVLRequest),
-    fork(getPricesRequest)
+    fork(getPricesRequest),
+    // fork(getGraphRequest),
   ]);
 }

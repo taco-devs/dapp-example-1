@@ -13,6 +13,7 @@ import { DEFAULT_ACTION,
 } from './constants';
 
 export const initialState = fromJS({
+  status: null,
   user: null,
   balances: null,
   eth_price: null,

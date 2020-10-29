@@ -22,6 +22,7 @@ const Wrapper = styled.footer`
 const LeftSection = styled.section`
   display: flex;
   flex-direction: row;
+  justify-content: flex-start;
   align-items: center;
 `
 
@@ -34,26 +35,132 @@ const IconLink = styled.a`
   }
 `
 
-function Footer() {
-  return (
-    <Wrapper>
-      <LeftSection>
-        <IconLink href="https://twitter.com/GrowthDefi" target="_blank">
-          <Icon icon={twitter} size="1.5em" style={{margin: '0 10px 0 10px'}}/>
-        </IconLink>
-        <IconLink href="https://t.me/growthdefi" target="_blank">
-          <Icon icon={telegram} size="1.5em" style={{margin: '0 10px 0 10px'}}/>
-        </IconLink>
-        <p>v{process.env.VERSION}</p>
-        {/* <LocaleToggle /> */}
-      </LeftSection>
-      <section>
-        <FormattedMessage
-          {...messages.copyright}
-        />
-      </section>
-    </Wrapper>
-  );
+const StyledLabel = styled.p`
+  margin: 0 2px 0 2px;
+`
+
+const StyledLink = styled.a`
+  margin: 0 2px 0 2px;
+  color: white;
+`
+
+const StyledIndicator = styled.div`
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  background-color: ${props => props.color || 'gray'};
+  margin: 0 5px 0 5px;
+`
+
+const StatusSection = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 0 0.5em 0 0.5em;
+`
+
+const Indicator = ({health}) => {
+  if (!health) {
+    return <StyledIndicator />
+  }
+  if (health === 'healthy') {
+    return <StyledIndicator color="#00d395"/>
+  }
+  if (health !== 'healthy') {
+    return <StyledIndicator color="#fcf876"/>
+  }
+  
+}
+
+
+const query = `
+{
+  indexingStatusForCurrentVersion(subgraphName: "${process.env.GROWTH_GRAPH_NAME}") {
+    synced
+    health
+    fatalError {
+      message
+      block {
+        number
+        hash
+      }
+      handler
+    }
+    chains {
+      chainHeadBlock {
+        number
+      }
+      latestBlock {
+        number
+      }
+    }
+  }
+}
+`
+
+
+
+class Footer extends React.Component {
+
+  state = {
+    current_block: null,
+    health: null,
+    synced: null,
+    error: null,
+  }
+
+  componentDidMount = () => {
+    this.fetchStatus();
+  }
+
+  fetchStatus = () => {
+
+    fetch(process.env.STATUS_URL, {method: 'POST', body: JSON.stringify({query})})
+      .then(res => res.json())
+      .then(json_res => {
+        console.log(json_res);
+        const {data} = json_res;
+        const { indexingStatusForCurrentVersion } = data;
+        this.setState({
+          current_block: indexingStatusForCurrentVersion.chains[0].latestBlock.number,
+          health: indexingStatusForCurrentVersion.health,
+          synced: indexingStatusForCurrentVersion.synced,
+        })
+      })
+      .catch(e => console.error(e));
+  }
+
+
+
+  render() {
+    const {current_block, health, synced} = this.state;
+    return (
+      <Wrapper>
+        <LeftSection>
+          <IconLink href="https://twitter.com/GrowthDefi" target="_blank">
+            <Icon icon={twitter} size="1.5em" style={{margin: '0 10px 0 10px'}}/>
+          </IconLink>
+          <IconLink href="https://t.me/growthdefi" target="_blank">
+            <Icon icon={telegram} size="1.5em" style={{margin: '0 10px 0 10px'}}/>
+          </IconLink>
+          <StyledLabel>v{process.env.VERSION}</StyledLabel>
+          <StatusSection> 
+            <Indicator health={health} />
+            <StyledLink href={`https://thegraph.com/explorer/subgraph/${process.env.GROWTH_GRAPH_NAME}`} target="_blank">Status</StyledLink>
+            {health && health === 'healthy' && <StyledLabel>( Healthy )</StyledLabel>}
+            {health && health !== 'healthy' && <StyledLabel>( Intermitent )</StyledLabel>}
+          </StatusSection>
+          {/* <LocaleToggle /> */}
+        </LeftSection>
+        <section>
+          <FormattedMessage
+            {...messages.copyright}
+          />
+        </section>
+      </Wrapper>
+    );
+  }
 }
 
 export default Footer;

@@ -115,7 +115,9 @@ module.exports = options => ({
       'process.env': {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV),
         GROWTH_GRAPH_URL: JSON.stringify(process.env.GROWTH_GRAPH_URL),
+        GROWTH_GRAPH_NAME: JSON.stringify(process.env.GROWTH_GRAPH_NAME),
         COMPOUND_GRAPH_URL: JSON.stringify(process.env.COMPOUND_GRAPH_URL),
+        STATUS_URL: JSON.stringify(process.env.STATUS_URL),
         VERSION: JSON.stringify(process.env.npm_package_version)
       }
     }),

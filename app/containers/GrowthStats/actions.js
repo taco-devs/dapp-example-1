@@ -5,6 +5,7 @@
  */
 
 import { DEFAULT_ACTION,
+  GET_GRAPH_REQUEST, GET_GRAPH_SUCCESS, GET_GRAPH_ERROR,
   GET_BALANCES_REQUEST, GET_BALANCES_SUCCESS, GET_BALANCES_ERROR,
   GET_USER_STATS_REQUEST, GET_USER_STATS_SUCCESS, GET_USER_STATS_ERROR,
   GET_TVL_REQUEST, GET_TVL_SUCCESS, GET_TVL_ERROR,
@@ -15,6 +16,26 @@ import { DEFAULT_ACTION,
 export function defaultAction() {
   return {
     type: DEFAULT_ACTION,
+  };
+}
+
+export function getGraph() {
+  return {
+    type: GET_GRAPH_REQUEST,
+  };
+}
+
+export function getGraphSuccess(status) {
+  return {
+    type: GET_GRAPH_SUCCESS,
+    status
+  };
+}
+
+export function getGraphError(error) {
+  return {
+    type: GET_GRAPH_ERROR,
+    error
   };
 }
 
