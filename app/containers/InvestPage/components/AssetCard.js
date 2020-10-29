@@ -137,7 +137,7 @@ export default class AssetCard extends Component {
         return `$${Math.round(market_cap).toLocaleString('en-En')}`;
     }
 
-    getSupply = () => {
+    getSupply = (abbreviate) => {
         const {tokens, asset} = this.props;
         if (!tokens) return '-'
         
@@ -145,7 +145,12 @@ export default class AssetCard extends Component {
 
         if (!token) return '-';
 
-        return this.abbreviateNumber(Math.round(token.totalSupply / 1e8));
+        if (abbreviate) {
+            return this.abbreviateNumber(Math.round(token.totalSupply / 1e8));
+        } else {
+            return Math.round(token.totalSupply / 1e8).toLocaleString('en-En');
+        }
+        
     }
 
     calculateAvgAPY = () => {
@@ -162,8 +167,8 @@ export default class AssetCard extends Component {
         const today = tokenDailyDatas[0];
         const yesterday = tokenDailyDatas[1];
 
-        const increase = ((today.avgPrice / yesterday.avgPrice) - 1) * 100;
-        return Math.round(increase * 1000) / 1000;
+        const increase = ((today.avgPrice / yesterday.avgPrice) - 1) * 100 * 365;
+        return Math.round(increase * 100) / 100;
     }
 
     calculate7DAPY = () => {
@@ -242,14 +247,14 @@ export default class AssetCard extends Component {
                                     flex="1.2"
                                 >
                                     <PrimaryLabel>{this.getMarketSize()}</PrimaryLabel>
-                                    <SecondaryLabel>{this.getSupply()} {asset.g_asset}</SecondaryLabel>
+                                    <SecondaryLabel>{this.getSupply(true)} {asset.g_asset}</SecondaryLabel>
                                 </CardColumn>
                                 <CardColumn 
                                     direction="column"
                                     flex="0.9"
                                 >
                                 <PrimaryLabel>{this.calculateAvgAPY()}% AVG</PrimaryLabel>
-                                <SecondaryLabel>{this.calculate7DAPY()}% 7D</SecondaryLabel>
+                                <SecondaryLabel>{/* this.calculate7DAPY()*/}- 7D</SecondaryLabel>
                                 </CardColumn>
                             </CardRow>
                             
@@ -286,7 +291,7 @@ export default class AssetCard extends Component {
                                 direction="column"
                             >
                                 <PrimaryLabel>{this.calculateAvgAPY()}% AVG</PrimaryLabel>
-                                <SecondaryLabel>{this.calculate7DAPY()}% 7D</SecondaryLabel>
+                                <SecondaryLabel>{/* this.calculate7DAPY() */}- 7D</SecondaryLabel>
                             </CardColumn>
                             <CardColumn 
                                 direction="row"
