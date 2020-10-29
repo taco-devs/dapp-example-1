@@ -172,12 +172,13 @@ export default class AssetExtension extends Component {
 
             let x_axis_label;
             let y_value;
+            console.log(day_data)
 
             if (day_data) {
                 x_axis_label = moment(day_data.date * 1000).format('MMM DD');
 
                 if (day_data.mintTotalReceived > 0 && day_data.mintTotalSent > 0) {
-                    y_value = Math.round(day_data.mintTotalSent / day_data.mintTotalReceived * 10000) / 10000;
+                    y_value = Math.round(day_data.avgPrice * 10000) / 10000;
                 } else {
                     y_value = chart_data[current_days - 1].y_value;
                 }

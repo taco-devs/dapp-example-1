@@ -594,6 +594,8 @@ function* getTokenStatsSaga(params) {
         mintTotalReceived
         redeemTotalSent
         redeemTotalReceived
+        avgPrice
+        avgUnderlyingPrice
         txCount
         token {
           id
