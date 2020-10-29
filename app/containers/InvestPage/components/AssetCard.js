@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import ActionModal from 'components/ActionModal';
 import ActionDrawer from 'components/ActionDrawer';
 import AssetExtension from './AssetExtension';
+import { Icon } from 'react-icons-kit';
+import {areaChart} from 'react-icons-kit/fa/areaChart'
 
 const Card = styled.div`
     display: flex;
@@ -57,6 +59,25 @@ const SecondaryLabel = styled.p`
     opacity: 0.75;
     margin: 0 1em 0 1em;
     text-align: center;
+`
+
+const ChartButton = styled.div`
+    font-size: 0.85em;
+    background-color: #21262b;
+    border-color: #21262b;
+    border-width: 3px;
+    border-style: solid;
+    margin: 0 0.5em  0 0.5em;
+    padding: 0.5em 1em 0.5em 1em;
+    color: white;
+    border-radius: 5px;
+    min-width: 40;
+
+    &:hover {
+        cursor: pointer;
+        background-color: black;
+        opacity: 0.75em;
+    }
 `
 
 export default class AssetCard extends Component {
@@ -275,7 +296,7 @@ export default class AssetCard extends Component {
                                 align="center"
                                 justify="flex-start"
                                 margin="0 0 0 1em"
-                            >   
+                            >                                   
                                 {asset.gtoken_img_url && (
                                     <AssetLogo src={require(`images/tokens/${asset.gtoken_img_url}`)} isMobile={isMobile} />
                                 )}
@@ -310,6 +331,9 @@ export default class AssetCard extends Component {
                                     data={data}
                                     asset={asset}
                                 />
+                                <ChartButton>
+                                    <Icon icon={areaChart} style={{color: '#00d395'}} size="1.5em"/>
+                                </ChartButton>
                             </CardColumn>
                         </CardRow>
                         {currentOpenExtension === asset_key && ( 
