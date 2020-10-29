@@ -59,13 +59,12 @@ function* getTransactionsSaga(params) {
       const query = get_query(address, pagination);
 
       // Fetch Pairs price
-      const query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi';
       const options = {
         method: 'POST',
         body: JSON.stringify({ query })
       };
 
-      const response = yield call(request, query_url, options);
+      const response = yield call(request, process.env.GROWTH_GRAPH_URL, options);
 
       if (response && response.data) {
         const { transactions } = response.data;

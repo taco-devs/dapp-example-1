@@ -118,7 +118,6 @@ const fetch_balances = async (available_assets, user_balances, web3, address) =>
 
       // Fetch asset balance
       const ContractInstance = await new web3.eth.Contract(asset.gtoken_abi, balance.token.id);
-      const web3_balance = await ContractInstance.methods.balanceOf(address).call();
       const exchange_rate = await ContractInstance.methods.exchangeRate().call();
 
       let liquidation_price = 0;
@@ -132,7 +131,6 @@ const fetch_balances = async (available_assets, user_balances, web3, address) =>
         base: asset.base_asset,
         underlying: asset.native,
         gtoken_address: balance.token.id,
-        web3_balance,
         balance: Number(balance.amount),
         withdrawal_fee: balance.token.withdrawalFee,
         exchange_rate,
@@ -205,14 +203,12 @@ function* getUserStatsSaga(params) {
     const query = USER_STATS(address);
 
     // Fetch Pairs price
-    // const query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi-kovan';
-    const query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi';
     const options = {
       method: 'POST',
       body: JSON.stringify({ query })
     };
 
-    const response = yield call(request, query_url, options);
+    const response = yield call(request, process.env.GROWTH_GRAPH_URL, options);
 
     if ( response && response.data) {
       const {users} = response.data;
@@ -251,14 +247,12 @@ function* getTVLSaga() {
     `;
 
     // Fetch Pairs price
-    // const query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi-kovan';
-    const query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi';
     const options = {
       method: 'POST',
       body: JSON.stringify({ query })
     };
 
-    const response = yield call(request, query_url, options);
+    const response = yield call(request, process.env.GROWTH_GRAPH_URL, options);
 
     if ( response && response.data) {
       const {totalValueLocked, dailyDatas} = response.data;
@@ -295,14 +289,12 @@ function* getBalancesSaga(params) {
         const balances_query = BALANCES(address);        
 
         // Get the balances
-        // const growth_query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi-kovan';
-        const growth_query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi';
         const balances_options = {
           method: 'POST',
           body: JSON.stringify({ query: balances_query })
         };
 
-        const balances_response = yield call(request, growth_query_url, balances_options);
+        const balances_response = yield call(request, process.env.GROWTH_GRAPH_URL, balances_options);
         const {data: balances_data} = balances_response;
 
         // Fetch Pairs price
@@ -318,8 +310,7 @@ function* getBalancesSaga(params) {
         // Fetch Markets price
         let myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
-        var raw = JSON.stringify({"query":markets_query});
-        const compound_query_url = 'https://api.thegraph.com/subgraphs/name/graphprotocol/compound-v2';
+        let raw = JSON.stringify({"query":markets_query});
         const compound_options = {
           method: 'POST',
           body: raw,
@@ -327,7 +318,7 @@ function* getBalancesSaga(params) {
           redirect: 'follow'
         };
 
-        const c_response = yield call(request, compound_query_url, compound_options);
+        const c_response = yield call(request, process.env.COMPOUND_GRAPH_URL, compound_options);
         const { data: c_data } = c_response;
 
         yield put(getPricesSuccess(c_data));
@@ -379,7 +370,6 @@ function* getPricesSaga() {
     let myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     var raw = JSON.stringify({"query":markets_query});
-    const compound_query_url = 'https://api.thegraph.com/subgraphs/name/graphprotocol/compound-v2';
     const compound_options = {
       method: 'POST',
       body: raw,
@@ -387,7 +377,7 @@ function* getPricesSaga() {
       redirect: 'follow'
     };
 
-    const c_response = yield call(request, compound_query_url, compound_options);
+    const c_response = yield call(request, process.env.COMPOUND_GRAPH_URL, compound_options);
     const { data: c_data } = c_response;
     const eth_market = c_data.markets.find(market => market.symbol === 'cETH');
     yield put(getEthPrice(eth_market.underlyingPriceUSD));

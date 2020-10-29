@@ -326,13 +326,13 @@ function* getTokensSaga(params) {
   try { 
 
       // Fetch Pairs price
-      const query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi';
+      // const query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi';
       const options = {
         method: 'POST',
         body: JSON.stringify({ query })
       };
 
-      const response = yield call(request, query_url, options);
+      const response = yield call(request, process.env.GROWTH_GRAPH_URL, options);
 
       if ( response && response.data) {
         const {tokens} = response.data;
@@ -600,7 +600,7 @@ function* getTokenStatsSaga(params) {
   try { 
 
       // Fetch Pairs price
-      const query_url = 'https://api.thegraph.com/subgraphs/name/irvollo/growth-defi';
+      const query_url = `${process.env.GROWTH_GRAPH_URL}`;
       const options = {
         method: 'POST',
         body: JSON.stringify({ query })

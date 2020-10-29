@@ -1,6 +1,7 @@
 # Don't check auto-generated stuff into git
 coverage
-build
+build_stage
+build_prod
 node_modules
 stats.json
 
@@ -8,3 +9,5 @@ stats.json
 .DS_Store
 npm-debug.log
 .idea
+.env
+.env.prod

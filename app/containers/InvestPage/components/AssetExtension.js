@@ -200,7 +200,6 @@ export default class AssetExtension extends Component {
         if (tokens) {
             token = tokens.find(token => token.symbol === asset.g_asset);
         }
-        console.log(token);
         return (
             <ExtensionContainer>
                 <Divider />

@@ -11,7 +11,7 @@ module.exports = options => ({
   output: Object.assign(
     {
       // Compile into js/build.js
-      path: path.resolve(process.cwd(), 'build'),
+      path: path.resolve(process.cwd(), `build_${process.env.BUILD_OUTPUT}`),
       publicPath: '/',
     },
     options.output,
@@ -111,8 +111,13 @@ module.exports = options => ({
     // Always expose NODE_ENV to webpack, in order to use `process.env.NODE_ENV`
     // inside your code for any environment checks; Terser will automatically
     // drop any unreachable code.
-    new webpack.EnvironmentPlugin({
-      NODE_ENV: 'development',
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+        GROWTH_GRAPH_URL: JSON.stringify(process.env.GROWTH_GRAPH_URL),
+        COMPOUND_GRAPH_URL: JSON.stringify(process.env.COMPOUND_GRAPH_URL),
+        VERSION: JSON.stringify(process.env.npm_package_version)
+      }
     }),
   ]),
   resolve: {

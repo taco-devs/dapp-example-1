@@ -44,7 +44,8 @@ function Footer() {
         <IconLink href="https://t.me/growthdefi" target="_blank">
           <Icon icon={telegram} size="1.5em" style={{margin: '0 10px 0 10px'}}/>
         </IconLink>
-        <LocaleToggle />
+        <p>v{process.env.VERSION}</p>
+        {/* <LocaleToggle /> */}
       </LeftSection>
       <section>
         <FormattedMessage
