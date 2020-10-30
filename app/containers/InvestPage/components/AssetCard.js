@@ -62,16 +62,21 @@ const SecondaryLabel = styled.p`
 `
 
 const ChartButton = styled.div`
+    display: flex;
+    flex-direction: row;
     font-size: 0.85em;
     background-color: #21262b;
     border-color: #21262b;
     border-width: 3px;
     border-style: solid;
     margin: 0 0.5em  0 0.5em;
-    padding: 0.5em 1em 0.5em 1em;
+    padding: 0.5em;
     color: white;
     border-radius: 5px;
-    min-width: 40;
+    min-width: 100px;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
 
     &:hover {
         cursor: pointer;
@@ -291,12 +296,22 @@ export default class AssetCard extends Component {
                         }}
                     >
                         <CardRow>
+                            {!isMobile && (
+                                <CardColumn flex="0.5">
+                                    <ChartButton>
+                                        <p style={{margin: '0 10px 0 5px'}}>STATS</p>
+                                        <Icon icon={areaChart} style={{color: '#00d395', margin: '-5px 0 0 0'}} size="1.5em"/>
+                                    </ChartButton>  
+                                </CardColumn>
+                            )}
                             <CardColumn
                                 direction="row"
                                 align="center"
                                 justify="flex-start"
                                 margin="0 0 0 1em"
-                            >                                   
+                                flex="1"
+                            >                           
+                                      
                                 {asset.gtoken_img_url && (
                                     <AssetLogo src={require(`images/tokens/${asset.gtoken_img_url}`)} isMobile={isMobile} />
                                 )}
@@ -331,9 +346,6 @@ export default class AssetCard extends Component {
                                     data={data}
                                     asset={asset}
                                 />
-                                <ChartButton>
-                                    <Icon icon={areaChart} style={{color: '#00d395'}} size="1.5em"/>
-                                </ChartButton>
                             </CardColumn>
                         </CardRow>
                         {currentOpenExtension === asset_key && ( 

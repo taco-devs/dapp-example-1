@@ -79,6 +79,9 @@ export default class AssetList extends Component {
         return (
             <AssetContainer isMobile={isMobile}>
                 <AssetHeader isMobile={isMobile}>
+                    {!isMobile && (
+                        <AssetHeaderColumn flex="0.5"/>
+                    )}
                     <AssetHeaderColumn margin="0 0 0 1em">
                         <p>ASSET</p>
                     </AssetHeaderColumn>
