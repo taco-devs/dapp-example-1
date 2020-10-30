@@ -155,27 +155,29 @@ export default class AssetExtension extends Component {
         // Calculate 31 days before
         const seconds_in_day = 86400;
         let TODAY = new Date();
+        TODAY = new Date(TODAY.getTime() + TODAY.getTimezoneOffset() * 60000);
         TODAY.setHours(0,0,0,0);
-        TODAY = new Date(TODAY.getTime() - TODAY.getTimezoneOffset() * 60000);
-        const TODAY_DATE = Math.round(TODAY.getTime() / 1000) + seconds_in_day;
-    
-        const FIRST_DAY = TODAY_DATE - (seconds_in_day * 30) - seconds_in_day;
+        const TODAY_DATE = Math.round(TODAY.getTime() / 1000);
+        const FIRST_DAY = TODAY_DATE - (seconds_in_day * 30);
 
         // Chart Array
         let chart_data = new Array(30);
         let current_days = 0;
 
+
         for (let day of chart_data) {
-            const today_timestamp = FIRST_DAY + (seconds_in_day * current_days) + seconds_in_day;
+            const today_timestamp = FIRST_DAY + (seconds_in_day * current_days);
             const tomorrow_timestamp = today_timestamp + seconds_in_day;
-            const day_data = tokenData.find(curr_day => curr_day.date >= today_timestamp && curr_day.date < tomorrow_timestamp );
+
+            const day_data = tokenData.find(curr_day => curr_day.date > today_timestamp && curr_day.date <= tomorrow_timestamp);
+
+            console.log(today_timestamp, tomorrow_timestamp, day_data)
 
             let x_axis_label;
             let y_value;
-            console.log(day_data)
 
             if (day_data) {
-                x_axis_label = moment(day_data.date * 1000).format('MMM DD');
+                x_axis_label = moment(day_data.date * 1000).utc(0).format('MMM DD');
 
                 if (day_data.mintTotalReceived > 0 && day_data.mintTotalSent > 0) {
                     y_value = Math.round(day_data.avgPrice * 10000) / 10000;
@@ -183,7 +185,7 @@ export default class AssetExtension extends Component {
                     y_value = chart_data[current_days - 1].y_value;
                 }
             } else {
-                x_axis_label = moment(today_timestamp * 1000).format('MMM DD');
+                x_axis_label = moment(tomorrow_timestamp * 1000).utc(0).format('MMM DD');
                 if (current_days > 0) {
                     y_value = chart_data[current_days - 1].y_value;
                 } else {
