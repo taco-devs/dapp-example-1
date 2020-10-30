@@ -171,8 +171,6 @@ export default class AssetExtension extends Component {
 
             const day_data = tokenData.find(curr_day => curr_day.date > today_timestamp && curr_day.date <= tomorrow_timestamp);
 
-            console.log(today_timestamp, tomorrow_timestamp, day_data)
-
             let x_axis_label;
             let y_value;
 
