@@ -79,20 +79,20 @@ export default class AssetList extends Component {
         return (
             <AssetContainer isMobile={isMobile}>
                 <AssetHeader isMobile={isMobile}>
-                    {!isMobile && (
+                    {/* !isMobile && (
                         <AssetHeaderColumn flex="0.5"/>
-                    )}
+                    ) */}
                     <AssetHeaderColumn margin="0 0 0 1em">
                         <p>ASSET</p>
                     </AssetHeaderColumn>
-                    <AssetHeaderColumn>
+                    <AssetHeaderColumn flex="1.25">
                         <p>MARKET SIZE</p>
                     </AssetHeaderColumn>
                     <AssetHeaderColumn>
                         <p>APY</p>
                     </AssetHeaderColumn>
                     {!isMobile && (
-                        <AssetHeaderColumn>
+                        <AssetHeaderColumn flex="1.25">
                             <p>ACTIONS</p>
                         </AssetHeaderColumn>
                     )}

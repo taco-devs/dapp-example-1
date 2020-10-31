@@ -73,7 +73,7 @@ const ChartButton = styled.div`
     padding: 0.5em;
     color: white;
     border-radius: 5px;
-    min-width: 100px;
+    min-width: 50px;
     align-items: center;
     justify-content: center;
     height: 40px;
@@ -293,14 +293,14 @@ export default class AssetCard extends Component {
                         }}
                     >
                         <CardRow>
-                            {!isMobile && (
+                            {/* !isMobile && (
                                 <CardColumn flex="0.5">
                                     <ChartButton>
                                         <p style={{margin: '0 10px 0 5px'}}>STATS</p>
                                         <Icon icon={areaChart} style={{color: '#00d395', margin: '-5px 0 0 0'}} size="1.5em"/>
                                     </ChartButton>  
                                 </CardColumn>
-                            )}
+                            ) */}
                             <CardColumn
                                 direction="row"
                                 align="center"
@@ -343,6 +343,9 @@ export default class AssetCard extends Component {
                                     data={data}
                                     asset={asset}
                                 />
+                                <ChartButton>
+                                    <Icon icon={areaChart} style={{color: '#00d395', margin: '-5px 0 0 0'}} size="1.5em"/>
+                                </ChartButton>  
                             </CardColumn>
                         </CardRow>
                         {currentOpenExtension === asset_key && ( 
