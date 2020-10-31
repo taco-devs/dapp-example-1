@@ -150,7 +150,7 @@ class WalletDashboard extends React.Component {
         <WalletDashboardStats>
           <InfoRow>
             {address ? (
-              <StatLabel>{hideBalances ? '*****' : this.calculatePortfolio()}</StatLabel>
+              <StatLabel>{hideBalances ? '*****' : `$ ${this.calculatePortfolio()}`}</StatLabel>
             ) : (
               <StatLabel>-</StatLabel>
             )}            
