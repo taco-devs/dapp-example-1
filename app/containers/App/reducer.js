@@ -8,7 +8,7 @@
  */
 
 import { fromJS } from 'immutable';
-import { SETUP_NETWORK, ADD_CURRENT_SWAP, DISMISS_SWAP,  ADD_CURRENT_APPROVAL, DISMISS_APPROVAL, TOGGLE_HIDE_BALANCES } from './constants';
+import { SETUP_NETWORK, ADD_CURRENT_SWAP, DISMISS_SWAP,  ADD_CURRENT_APPROVAL, DISMISS_APPROVAL, TOGGLE_HIDE_BALANCES, TOGGLE_ADD_GRO } from './constants';
 
 const dummyswap = {
   status: 'loading',
@@ -34,6 +34,7 @@ export const initialState = fromJS({
   currentSwap: null,
   currentApproval: null,
   hideBalances: !!localStorage.getItem('hideBalances'),
+  addGRO: localStorage.getItem('addGRO') ? !!localStorage.getItem('addGRO') : true
 });
 
 
@@ -42,6 +43,9 @@ function appReducer(state = initialState, action) {
     case TOGGLE_HIDE_BALANCES: 
       localStorage.setItem('hideBalances',!state.get('hideBalances'));
       return state.set('hideBalances', !state.get('hideBalances'));
+    case TOGGLE_ADD_GRO: 
+      localStorage.setItem('hideBalances',!state.get('addGRO'));
+      return state.set('addGRO', !state.get('addGRO'));
     case SETUP_NETWORK: 
       return state.set('network', action.network);
     case ADD_CURRENT_SWAP: 

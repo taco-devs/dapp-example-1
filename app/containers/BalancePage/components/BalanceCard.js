@@ -101,23 +101,29 @@ export default class BalanceCard extends Component {
 
     getPercentage = () => {
 
-        const { balances, eth_price, asset } = this.props;
+        const { balances, eth_price, asset, addGRO } = this.props;
 
         if (!balances) return '-';
         if (balances.length < 1) return;
 
-        /* const blacklisted_balance = [
-        'GRO'
+        const blacklisted_balance = [
+            'GRO'
         ]
 
-        const gToken_balances = 
-            balances
-            .filter(balance => blacklisted_balance.indexOf(balance.name) < 0);
+        let gToken_balances;
 
-        if (gToken_balances.length < 1) return '-'; */ 
+        if (!addGRO) {
+            gToken_balances = 
+                balances
+                .filter(balance => blacklisted_balance.indexOf(balance.name) < 0);
+
+            if (gToken_balances.length < 1) return '-'; 
+        }
+       
+        let std_balances = addGRO ? balances : gToken_balances;
         
         const portfolio_value = 
-            balances
+            std_balances
                 .reduce((acc, curr) => {
                     // If not available balance
                     if (Number(curr.balance) <= 0 ) return acc; 

@@ -115,13 +115,13 @@ const SwitchLabel = styled.div`
 
 export default class SettingsContainer extends Component {
     render() {
-        const {open, hideBalances} = this.props;
+        const {open, hideBalances, addGRO} = this.props;
         return (
             <StyledMenu open={open}>
                 { open && (
                     <StyledSettingsRow>
                         <SettingColumn>
-                            <SettingLabel>SHOW VALUE</SettingLabel>
+                            <SettingLabel>DISPLAY TYPE</SettingLabel>
                             <SwitchBox  modal_type="mint" onClick={e => e.stopPropagation()}>
                                 <input type="checkbox" checked={hideBalances}/>
                                 <SwitchSlider className="slider" modal_type="mint" onClick={this.props.toggleHideBalances}>
@@ -136,6 +136,26 @@ export default class SettingsContainer extends Component {
                                         active={hideBalances}  
                                         modal_type="mint">
                                     <p>%</p>
+                                    </SwitchLabel>
+                                </SwitchSlider>
+                            </SwitchBox>
+                        </SettingColumn>
+                        <SettingColumn>
+                            <SettingLabel>ADD GRO TO HOLDINGS</SettingLabel>
+                            <SwitchBox  modal_type="mint" onClick={e => e.stopPropagation()}>
+                                <input type="checkbox" checked={addGRO}/>
+                                <SwitchSlider className="slider" modal_type="mint" onClick={this.props.toggleAddGRO}>
+                                    <SwitchLabel 
+                                        value={false}
+                                        active={addGRO}  
+                                        modal_type="mint">
+                                    <p>NO</p>
+                                    </SwitchLabel>
+                                    <SwitchLabel 
+                                        value={true}
+                                        active={addGRO}  
+                                        modal_type="mint">
+                                    <p>YES</p>
                                     </SwitchLabel>
                                 </SwitchSlider>
                             </SwitchBox>

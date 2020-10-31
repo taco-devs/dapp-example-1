@@ -11,7 +11,7 @@ export const scope = 'app.components.WalletDashboard';
 export default defineMessages({
   balance: {
     id: `${scope}.balance`,
-    defaultMessage: 'BALANCE',
+    defaultMessage: 'PERSONAL HOLDINGS',
   },
   more: {
     id: `${scope}.more`,

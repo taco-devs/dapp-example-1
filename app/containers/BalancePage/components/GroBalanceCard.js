@@ -164,7 +164,7 @@ export default class GroBalanceCard extends Component {
     }
 
     render() {
-        const {asset, data, isMobile, asset_key, currentOpenExtension, balances, eth_price, hideBalances} = this.props;
+        const {asset, data, isMobile, asset_key, currentOpenExtension, balances, eth_price, hideBalances, addGRO} = this.props;
       
         return (
             <React.Fragment>
@@ -224,7 +224,7 @@ export default class GroBalanceCard extends Component {
                                 <PrimaryLabel>GRO</PrimaryLabel>
                             </CardColumn>
                             <CardColumn>
-                                <PrimaryLabel>{hideBalances ? `${this.getPercentage()} %` : this.getBalance(balances)}</PrimaryLabel>
+                                <PrimaryLabel>{hideBalances ? addGRO ? `${this.getPercentage()} %` : '-' : this.getBalance(balances)}</PrimaryLabel>
                             </CardColumn>
                             <CardColumn>
                                 <PrimaryLabel>${this.getGroPrice(balances, eth_price)} USD</PrimaryLabel>

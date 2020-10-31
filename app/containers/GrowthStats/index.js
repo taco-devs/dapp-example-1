@@ -20,7 +20,7 @@ import saga from './saga';
 import messages from './messages';
 import StatsContainer from 'components/StatsContainer';
 import { getUserStats, getBalances, getTVL, getPrices, getGraph } from './actions';
-import { makeSelectHideBalances } from '../App/selectors';
+import { makeSelectHideBalances, makeSelectAddGRO } from '../App/selectors';
 import { makeSelectBalances, makeSelectEthPrice, makeSelectTvl, makeSelectTvlHistory } from '../GrowthStats/selectors';
 
 import { makeSelectCurrrentNetwork } from '../App/selectors'
@@ -72,6 +72,7 @@ const mapStateToProps = createStructuredSelector({
   tvl_history: makeSelectTvlHistory(),
   eth_price: makeSelectEthPrice(),
   hideBalances: makeSelectHideBalances(),
+  addGRO: makeSelectAddGRO(),
 });
 
 function mapDispatchToProps(dispatch) {

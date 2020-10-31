@@ -22,9 +22,9 @@ import messages from './messages';
 import styled from 'styled-components';
 import NetworkData from 'contracts';
 import { makeSelectBalances, makeSelectEthPrice } from '../GrowthStats/selectors';
-import { makeSelectCurrrentNetwork, makeSelectCurrrentApproval, makeSelectCurrrentSwap, makeSelectHideBalances } from '../App/selectors';
+import { makeSelectCurrrentNetwork, makeSelectCurrrentApproval, makeSelectCurrrentSwap, makeSelectHideBalances, makeSelectAddGRO } from '../App/selectors';
 import { makeSelectIsLoadingBalances, makeSelectBalancesError } from '../GrowthStats/selectors';
-import { addCurrentApproval, addCurrentSwap, dismissApproval, dismissSwap, toggleHideBalances } from '../App/actions'
+import { addCurrentApproval, addCurrentSwap, dismissApproval, dismissSwap, toggleHideBalances, toggleAddGRO } from '../App/actions'
 import { getBalances } from '../GrowthStats/actions';
 import { mintGTokenFromCToken, mintGTokenFromUnderlying, redeemGTokenToCToken, redeemGTokenToUnderlying } from '../InvestPage/actions'
 import Loader from 'react-loader-spinner';
@@ -37,7 +37,7 @@ const Balance = styled.div`
 
 const BalanceContainer = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: ${props => props.error ? 'column' : 'row'};
   height: 100%;
   min-height: 200px;
   width: 100%;
@@ -91,12 +91,16 @@ class BalancePage extends React.Component {
     const assets = this.assetKeys(Network);
     return (
       <Balance>
-        <BalanceHeader  
-          {...this.state}
-          {...this.props}
-          toggleSettings={this.toggleSettings}
-        />
-        <BalanceContainer>
+        {balances && (
+          <BalanceHeader  
+            {...this.state}
+            {...this.props}
+            toggleSettings={this.toggleSettings}
+          />
+        )}
+        <BalanceContainer
+          error={balancesError}
+        >
           {isLoadingBalances && !balances && (
             <LoaderContainer>
               <Loader
@@ -115,8 +119,8 @@ class BalancePage extends React.Component {
               Network={Network}
             />
           )}
+          {balancesError && <ErrorMessage>{balancesError}</ErrorMessage>}
         </BalanceContainer>
-        {balancesError && <ErrorMessage>{balancesError}</ErrorMessage>}
         <ConfirmationModal {...this.props} />
       </Balance>
     );
@@ -140,6 +144,7 @@ const mapStateToProps = createStructuredSelector({
   balances: makeSelectBalances(),
   eth_price: makeSelectEthPrice(),
   hideBalances: makeSelectHideBalances(),
+  addGRO: makeSelectAddGRO(),
   // Stats
   isLoadingBalances: makeSelectIsLoadingBalances(),
   balancesError: makeSelectBalancesError()
@@ -153,6 +158,7 @@ function mapDispatchToProps(dispatch) {
     addCurrentApproval: (approval) => dispatch(addCurrentApproval(approval)),
     dismissApproval: () => dispatch(dismissApproval()),
     toggleHideBalances: () => dispatch(toggleHideBalances()),
+    toggleAddGRO: () => dispatch(toggleAddGRO()),
     // Invest
     mintGTokenFromCToken: (payload) => dispatch(mintGTokenFromCToken(payload)),
     mintGTokenFromUnderlying: (payload) => dispatch(mintGTokenFromUnderlying(payload)),

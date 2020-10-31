@@ -34,9 +34,17 @@ const makeSelectHideBalances = () =>
     globalState => globalState.get('hideBalances'),
   );
 
+// Toggle Add GRo
+const makeSelectAddGRO = () =>
+  createSelector(
+    selectGlobal,
+    globalState => globalState.get('addGRO'),
+  );
+
 export {
   makeSelectCurrrentNetwork, 
   makeSelectCurrrentSwap,
   makeSelectCurrrentApproval,
-  makeSelectHideBalances
+  makeSelectHideBalances,
+  makeSelectAddGRO
 };

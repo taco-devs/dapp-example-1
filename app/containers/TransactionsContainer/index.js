@@ -85,10 +85,12 @@ class TransactionsContainer extends React.Component {
     return (
       <React.Fragment>
         <TransactionsSection>
-          <TransactionsHeader 
-            {...this.props}
-            fetchTransactions={this.fetchTransactions}
-          />
+          {transactions && (
+            <TransactionsHeader 
+              {...this.props}
+              fetchTransactions={this.fetchTransactions}
+            />
+          )}
           <Transactions>
               {isLoading && !transactions && (
                 <LoaderContainer>
