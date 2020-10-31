@@ -190,13 +190,7 @@ export default class AssetCard extends Component {
         const {tokenDailyDatas} = token;
         if (!token) return '-';
 
-        const today = tokenDailyDatas[0];
-        const yesterday = tokenDailyDatas[1];
-
-        console.log({today, yesterday});
-
-
-        const increase = ((today.currentPrice / yesterday.currentPrice) - 1) * 100 * 365;
+        const increase = (token.cumulativeDailyChange / token.countTokenDailyDatas) * 100 * 365;
         return Math.round(increase * 100) / 100;
     }
 

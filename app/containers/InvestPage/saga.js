@@ -314,6 +314,8 @@ function* getTokensSaga(params) {
         totalReserve
         depositFee
         withdrawalFee
+        countTokenDailyDatas
+        cumulativeDailyChange
         tokenDailyDatas (
           first: 7
           orderBy: id
@@ -322,6 +324,7 @@ function* getTokensSaga(params) {
           id
           txCount
           avgPrice
+          avgUnderlyingPrice
           currentPrice
         }
       }
