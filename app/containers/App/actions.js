@@ -15,7 +15,7 @@
  *    }
  */
 
-import { LOAD_REPOS, LOAD_REPOS_SUCCESS, LOAD_REPOS_ERROR, SETUP_NETWORK, ADD_CURRENT_SWAP, DISMISS_SWAP, ADD_CURRENT_APPROVAL, DISMISS_APPROVAL } from './constants';
+import { LOAD_REPOS, LOAD_REPOS_SUCCESS, LOAD_REPOS_ERROR, SETUP_NETWORK, ADD_CURRENT_SWAP, DISMISS_SWAP, ADD_CURRENT_APPROVAL, DISMISS_APPROVAL, TOGGLE_HIDE_BALANCES } from './constants';
 
 /**
  * Load the repositories, this action starts the request saga
@@ -88,5 +88,11 @@ export function addCurrentApproval(approval) {
 export function dismissApproval() {
   return {
     type: DISMISS_APPROVAL,
+  };
+}
+
+export function toggleHideBalances() {
+  return {
+    type: TOGGLE_HIDE_BALANCES,
   };
 }

@@ -167,7 +167,7 @@ export default class BalanceCard extends Component {
                                 <SecondaryLabel>{Math.round(asset.total_reserve / asset.total_supply * 10000) / 10000} {asset.base_asset}</SecondaryLabel>
                             </CardColumn>
                             <CardColumn>
-                                <PrimaryLabel>${(this.parseNumber(asset.web3_balance, 1e8) * asset.base_price_usd).toLocaleString('En-en')} USD</PrimaryLabel>
+                                <PrimaryLabel>${(Math.round(this.parseNumber(asset.web3_balance, 1e8) * asset.base_price_usd * 100) / 100).toLocaleString('En-en')} USD</PrimaryLabel>
                                 {/* <SecondaryLabel>{(this.parseNumber(asset.web3_balance, 1e8) * this.gTokenToBase(asset)).toLocaleString('En-en')} {asset.base}</SecondaryLabel> */}
                             </CardColumn>
                             <CardColumn 

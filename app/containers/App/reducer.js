@@ -8,7 +8,7 @@
  */
 
 import { fromJS } from 'immutable';
-import { SETUP_NETWORK, ADD_CURRENT_SWAP, DISMISS_SWAP,  ADD_CURRENT_APPROVAL, DISMISS_APPROVAL } from './constants';
+import { SETUP_NETWORK, ADD_CURRENT_SWAP, DISMISS_SWAP,  ADD_CURRENT_APPROVAL, DISMISS_APPROVAL, TOGGLE_HIDE_BALANCES } from './constants';
 
 const dummyswap = {
   status: 'loading',
@@ -33,11 +33,14 @@ export const initialState = fromJS({
   network: 'eth',
   currentSwap: null,
   currentApproval: null,
+  hideBalances: false,
 });
 
 
 function appReducer(state = initialState, action) {
   switch (action.type) {
+    case TOGGLE_HIDE_BALANCES: 
+      return state.set('hideBalances', !state.get('hideBalances'));
     case SETUP_NETWORK: 
       return state.set('network', action.network);
     case ADD_CURRENT_SWAP: 

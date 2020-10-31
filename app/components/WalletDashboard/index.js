@@ -86,7 +86,7 @@ class WalletDashboard extends React.Component {
              return acc;
           }, 0);
         
-    return portfolio_value.toLocaleString('en-En');
+    return (Math.round(portfolio_value * 100) / 100).toLocaleString('en-En');
   }
 
   calculateAPY = () => {

@@ -27,8 +27,16 @@ const makeSelectCurrrentApproval = () =>
     globalState => globalState.get('currentApproval'),
   );
 
+// Hide balances
+const makeSelectHideBalances = () =>
+  createSelector(
+    selectGlobal,
+    globalState => globalState.get('hideBalances'),
+  );
+
 export {
   makeSelectCurrrentNetwork, 
   makeSelectCurrrentSwap,
-  makeSelectCurrrentApproval
+  makeSelectCurrrentApproval,
+  makeSelectHideBalances
 };
