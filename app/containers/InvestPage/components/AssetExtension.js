@@ -152,6 +152,8 @@ export default class AssetExtension extends Component {
         if (!tokenData) return [];
         if (tokenData.length < 1) return [];
 
+        console.log(tokenData);
+
         // Calculate 31 days before
         const seconds_in_day = 86400;
         let TODAY = new Date();
