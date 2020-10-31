@@ -125,9 +125,46 @@ export default class GroBalanceCard extends Component {
         return GRO.balance > 0.001 ? (Math.round((GRO.balance / 1e18) * usd_price * 100) / 100).toLocaleString('En-en') : '0.00'
     }
 
+    getPercentage = () => {
+
+        const { balances, eth_price, asset } = this.props;
+
+        if (!balances) return '-';
+        if (balances.length < 1) return;
+        const GRO = balances.find((balance) => balance.name === 'GRO');
+
+        /* const blacklisted_balance = [
+        'GRO'
+        ]
+
+        const gToken_balances = 
+            balances
+            .filter(balance => blacklisted_balance.indexOf(balance.name) < 0);
+
+        if (gToken_balances.length < 1) return '-'; */ 
+        
+        const portfolio_value = 
+            balances
+                .reduce((acc, curr) => {
+                    // If not available balance
+                    if (Number(curr.balance) <= 0 ) return acc; 
+                    if (curr.name === 'GRO') {
+                        return acc + Number(curr.balance / 1e18) / Number(curr.price_eth) * eth_price; 
+                    } 
+                    // Balances
+                    if (curr.balance > 0 && curr.base_price_usd) {
+                    return acc + Number(curr.balance / 1e8 * curr.base_price_usd);
+                    }
+                    return acc;
+                }, 0);            
+
+        const allocPercentage = (Number(GRO.balance) / 1e18) * (eth_price / Number(GRO.price_eth)) / portfolio_value * 100;
+              
+        return Math.round(allocPercentage * 100) / 100;
+    }
+
     render() {
-        const {asset, data, isMobile, asset_key, currentOpenExtension, balances, eth_price} = this.props;
-        const { balance, gro_price } = this.state;
+        const {asset, data, isMobile, asset_key, currentOpenExtension, balances, eth_price, hideBalances} = this.props;
       
         return (
             <React.Fragment>
@@ -187,13 +224,18 @@ export default class GroBalanceCard extends Component {
                                 <PrimaryLabel>GRO</PrimaryLabel>
                             </CardColumn>
                             <CardColumn>
-                                <PrimaryLabel>{this.getBalance(balances)}</PrimaryLabel>
+                                <PrimaryLabel>{hideBalances ? `${this.getPercentage()} %` : this.getBalance(balances)}</PrimaryLabel>
                             </CardColumn>
                             <CardColumn>
                                 <PrimaryLabel>${this.getGroPrice(balances, eth_price)} USD</PrimaryLabel>
                             </CardColumn>
                             <CardColumn>
-                                <PrimaryLabel>${this.getTotalPrice(balances, eth_price)} USD</PrimaryLabel>
+                                {hideBalances ? (
+                                    <PrimaryLabel>***** USD</PrimaryLabel>
+                                ) : (
+                                    <PrimaryLabel>${this.getTotalPrice(balances, eth_price)} USD</PrimaryLabel>
+                                )}
+                                
                             </CardColumn>
                             <CardColumn 
                                 direction="row"

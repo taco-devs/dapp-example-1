@@ -105,7 +105,6 @@ const SwitchLabel = styled.div`
   justify-content: center;
   z-index: 99;
   color: ${props => {
-    console.log(props.value, props.active)
     if (props.value === props.active) return '#00d395'; 
     return 'white';
   }};

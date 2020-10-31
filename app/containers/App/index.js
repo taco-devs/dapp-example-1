@@ -39,7 +39,7 @@ import NetworkData from 'contracts';
 
 import reducer from './reducer';
 import { setupNetwork } from './actions'
-import { makeSelectCurrrentNetwork } from './selectors';
+import { makeSelectCurrrentNetwork, makeSelectHideBalances } from './selectors';
 
 import GlobalStyle from '../../global-styles';
 
@@ -260,6 +260,7 @@ class App extends React.Component {
         {connected ? (
           <React.Fragment>
             <Header
+              {...this.props}
               {...this.state}
               toggleModal={this.toggleModal}
               resetApp={this.resetApp}
@@ -314,7 +315,8 @@ class App extends React.Component {
 const withReducer = injectReducer({ key: 'global', reducer });
 
 const mapStateToProps = createStructuredSelector({
-  network: makeSelectCurrrentNetwork()
+  network: makeSelectCurrrentNetwork(),
+  hideBalances: makeSelectHideBalances(),
 });
 
 function mapDispatchToProps(dispatch) {

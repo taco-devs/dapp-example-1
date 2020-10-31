@@ -230,7 +230,7 @@ class ConnectWallet extends React.Component {
   }
 
   render () {
-    const {address, GrowTokenInstance, isMobile, network_id} = this.props;
+    const {address, GrowTokenInstance, isMobile, network_id, hideBalances} = this.props;
     const {balance, isOpen} = this.state;
 
     if (GrowTokenInstance && !balance) {
@@ -243,7 +243,8 @@ class ConnectWallet extends React.Component {
           <DropDownContainer>
             <WalletContainer>
               <BalanceContainer>
-                {balance && `${balance} GRO`}
+                {balance && hideBalances && '***** GRO'}
+                {balance && !hideBalances && `${balance} GRO`}
               </BalanceContainer>
               <AddressContainer 
                 onClick={this.toggleDropdown}

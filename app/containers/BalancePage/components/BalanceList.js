@@ -109,7 +109,7 @@ export default class BalanceList extends Component {
                         <p>ASSET</p>
                     </BalanceHeaderColumn>
                     <BalanceHeaderColumn>
-                        <p>BALANCE</p>
+                        <p>HOLDINGS</p>
                     </BalanceHeaderColumn>
                     <BalanceHeaderColumn>
                         <p>PRICE</p>

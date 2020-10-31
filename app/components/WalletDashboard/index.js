@@ -139,7 +139,7 @@ class WalletDashboard extends React.Component {
 
 
   render () {
-    const {address, isMobileSized} = this.props;
+    const {address, isMobileSized, hideBalances} = this.props;
     this.calculatePortfolio();
     return (
       <WalletContainer isMobileSized={isMobileSized} >
@@ -150,7 +150,7 @@ class WalletDashboard extends React.Component {
         <WalletDashboardStats>
           <InfoRow>
             {address ? (
-              <StatLabel>${this.calculatePortfolio()}</StatLabel>
+              <StatLabel>{hideBalances ? '*****' : this.calculatePortfolio()}</StatLabel>
             ) : (
               <StatLabel>-</StatLabel>
             )}            

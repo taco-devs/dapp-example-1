@@ -33,13 +33,14 @@ export const initialState = fromJS({
   network: 'eth',
   currentSwap: null,
   currentApproval: null,
-  hideBalances: false,
+  hideBalances: !!localStorage.getItem('hideBalances'),
 });
 
 
 function appReducer(state = initialState, action) {
   switch (action.type) {
     case TOGGLE_HIDE_BALANCES: 
+      localStorage.setItem('hideBalances',!state.get('hideBalances'));
       return state.set('hideBalances', !state.get('hideBalances'));
     case SETUP_NETWORK: 
       return state.set('network', action.network);

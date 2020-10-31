@@ -99,8 +99,45 @@ export default class BalanceCard extends Component {
         }
     }
 
+    getPercentage = () => {
+
+        const { balances, eth_price, asset } = this.props;
+
+        if (!balances) return '-';
+        if (balances.length < 1) return;
+
+        /* const blacklisted_balance = [
+        'GRO'
+        ]
+
+        const gToken_balances = 
+            balances
+            .filter(balance => blacklisted_balance.indexOf(balance.name) < 0);
+
+        if (gToken_balances.length < 1) return '-'; */ 
+        
+        const portfolio_value = 
+            balances
+                .reduce((acc, curr) => {
+                    // If not available balance
+                    if (Number(curr.balance) <= 0 ) return acc; 
+                    if (curr.name === 'GRO') {
+                        return acc + Number(curr.balance / 1e18) / Number(curr.price_eth) * eth_price; 
+                    } 
+                    // Balances
+                    if (curr.balance > 0 && curr.base_price_usd) {
+                    return acc + Number(curr.balance / 1e8 * curr.base_price_usd);
+                    }
+                    return acc;
+                }, 0);            
+
+        const allocPercentage = Number(asset.balance / 1e8 * asset.base_price_usd) / portfolio_value * 100;
+                
+        return Math.round(allocPercentage * 100) / 100;
+    }
+
     render() {
-        const {asset, data, isMobile, asset_key, currentOpenExtension} = this.props;
+        const {asset, data, isMobile, asset_key, currentOpenExtension, hideBalances} = this.props;
         /* const {isMobileDrawerOpen} = this.state; */
         return (
             <React.Fragment>
@@ -160,15 +197,23 @@ export default class BalanceCard extends Component {
                                 <PrimaryLabel>{asset.g_asset}</PrimaryLabel>
                             </CardColumn>
                             <CardColumn>
-                                <PrimaryLabel>{asset.balance && this.parseNumber(asset.web3_balance, 1e8).toLocaleString('En-en')}</PrimaryLabel>
+                                {asset.balance && (
+                                    <PrimaryLabel>
+                                        {hideBalances ? `${this.getPercentage()} %` : this.parseNumber(asset.web3_balance, 1e8).toLocaleString('En-en')}
+                                    </PrimaryLabel>
+                                )}
+                                
                             </CardColumn>
                             <CardColumn>
                                 <PrimaryLabel>${Math.round(asset.base_price_usd * 100000) / 100000} USD</PrimaryLabel>
                                 <SecondaryLabel>{Math.round(asset.total_reserve / asset.total_supply * 10000) / 10000} {asset.base_asset}</SecondaryLabel>
                             </CardColumn>
                             <CardColumn>
-                                <PrimaryLabel>${(Math.round(this.parseNumber(asset.web3_balance, 1e8) * asset.base_price_usd * 100) / 100).toLocaleString('En-en')} USD</PrimaryLabel>
-                                {/* <SecondaryLabel>{(this.parseNumber(asset.web3_balance, 1e8) * this.gTokenToBase(asset)).toLocaleString('En-en')} {asset.base}</SecondaryLabel> */}
+                                {hideBalances ? (
+                                    <PrimaryLabel>***** USD</PrimaryLabel>
+                                ) : (
+                                    <PrimaryLabel>${(Math.round(this.parseNumber(asset.web3_balance, 1e8) * asset.base_price_usd * 100) / 100).toLocaleString('En-en')} USD</PrimaryLabel>
+                                )}
                             </CardColumn>
                             <CardColumn 
                                 direction="row"
