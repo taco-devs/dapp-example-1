@@ -70,8 +70,8 @@ class WalletDashboard extends React.Component {
     if (!balances) return '-';
     if (balances.length < 1) return;
     
-    // Calculate price by eth
-    const total_eth = 
+    // Calculate price by usd
+    const portfolio_value = 
         balances
           .reduce((acc, curr) => {
              // If not available balance
@@ -80,14 +80,62 @@ class WalletDashboard extends React.Component {
              if (curr.name === 'GRO') {
                return acc + Number(curr.balance / 1e18) / Number(curr.price_eth) * eth_price; 
              } 
-             if (curr.base_price_eth && curr.liquidation_price ) {
-                return acc + Number(curr.liquidation_price._cost / 1e8 * curr.base_price_usd);
+             if (curr.balance > 0 && curr.base_price_usd) {
+                return acc + Number(curr.balance / 1e8 * curr.base_price_usd);
              }
              return acc;
           }, 0);
         
-    return total_eth.toLocaleString('en-En');
+    return portfolio_value.toLocaleString('en-En');
   }
+
+  calculateAPY = () => {
+
+    const { balances, eth_price } = this.props;
+
+    if (!balances) return '-';
+    if (balances.length < 1) return;
+
+    const blacklisted_balance = [
+      'GRO'
+    ]
+
+    const gToken_balances = 
+        balances
+          .filter(balance => blacklisted_balance.indexOf(balance.name) < 0);
+
+    if (gToken_balances.length < 1) return '-';
+    
+    const portfolio_value = 
+      balances
+        .reduce((acc, curr) => {
+            // If not available balance
+            if (Number(curr.balance) <= 0 ) return acc; 
+            // Balances
+            if (curr.balance > 0 && curr.base_price_usd) {
+              return acc + Number(curr.balance / 1e8 * curr.base_price_usd);
+            }
+            return acc;
+        }, 0);
+        
+    const alloc = 
+        gToken_balances
+          .map((curr) => {
+            const allocPercentage = Number(curr.balance / 1e8 * curr.base_price_usd) / portfolio_value;
+            return {
+              ...curr,
+              allocPercentage
+            }
+          })
+            
+    const apy = 
+        alloc.reduce((acc, curr) => {
+          return acc + (Number(curr.apy) * curr.allocPercentage);
+        }, 0)
+        
+    return Math.round(apy * 100) / 100;
+  }
+  
 
 
   render () {
@@ -111,7 +159,7 @@ class WalletDashboard extends React.Component {
           <WalletDashboardDivider />
           <InfoRow>
             {address ? (
-              <StatLabel>- %</StatLabel>
+              <StatLabel>{this.calculateAPY()} %</StatLabel>
             ) : (
               <StatLabel>-</StatLabel>
             )}   

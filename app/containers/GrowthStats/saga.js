@@ -61,6 +61,8 @@ const BALANCES = (address) => {
           totalReserve
           depositFee
           withdrawalFee
+          countTokenDailyDatas
+          cumulativeDailyChange
         }
       }
     }
@@ -157,6 +159,7 @@ const fetch_balances = async (available_assets, user_balances, web3, address) =>
         base: asset.base_asset,
         underlying: asset.native,
         gtoken_address: balance.token.id,
+        apy: balance && balance.token ? (balance.token.cumulativeDailyChange / balance.token.countTokenDailyDatas * 100 * 365) : 1,
         web3_balance: web3_balance,
         balance: Number(balance.amount),
         withdrawal_fee: balance.token.withdrawalFee,
