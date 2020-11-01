@@ -44,7 +44,7 @@ function appReducer(state = initialState, action) {
       localStorage.setItem('hideBalances',!state.get('hideBalances'));
       return state.set('hideBalances', !state.get('hideBalances'));
     case TOGGLE_ADD_GRO: 
-      localStorage.setItem('hideBalances',!state.get('addGRO'));
+      localStorage.setItem('addGRO',!state.get('addGRO'));
       return state.set('addGRO', !state.get('addGRO'));
     case SETUP_NETWORK: 
       return state.set('network', action.network);
