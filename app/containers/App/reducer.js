@@ -33,7 +33,7 @@ export const initialState = fromJS({
   network: 'eth',
   currentSwap: null,
   currentApproval: null,
-  hideBalances: localStorage.getItem('hideBalances') ? !localStorage.getItem('hideBalances') : false,
+  hideBalances: localStorage.getItem('hideBalances') ? localStorage.getItem('hideBalances') : false,
   addGRO: localStorage.getItem('addGRO') ? !localStorage.getItem('addGRO') : true
 });
 
