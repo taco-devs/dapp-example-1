@@ -89,61 +89,21 @@ export default class AssetCard extends Component {
 
     state = {
         isMobileDrawerOpen: false,
-        total_supply: null, 
-        deposit_fee: null, 
-        withdrawal_fee: null,
-        total_reserve: null,
     }
 
-    componentDidMount = () => {
-        // this.fetchSupply();
-    }
-
-    fetchSupply = async () => {
-
-        const { asset, web3, address } = this.props;
-
-        const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
-
-         const total_supply = await GContractInstance.methods.totalSupply().call();
-         const deposit_fee = await GContractInstance.methods.depositFee().call();
-         const withdrawal_fee = await GContractInstance.methods.withdrawalFee().call();
-         const total_reserve = await GContractInstance.methods.totalReserve().call(); 
-    
-         this.setState({
-             total_supply, 
-             deposit_fee, 
-             withdrawal_fee,
-             total_reserve,
-        });
-    }
-
+    // Open / Close mobile drawer on mobile
     toggleMobileDrawer = () => {
         this.setState({isMobileDrawerOpen: !this.state.isMobileDrawerOpen});
     }
 
+    // Open / Close asset stats page
     handleToggleExtension = () => {
         const {toggleExtension, asset} = this.props;
         toggleExtension(asset);
     }
 
-    calculateMarketCap = (asset, balances, total_supply) => {
-        const {ethPrice} = this.props;
-        
-        if (!balances || !total_supply) return '-';
 
-        const asset_data = balances.find(balance => balance.name === asset.g_asset);
-    
-        if (!asset_data || asset_data.base_price_eth <= 0) return 'N/A'
-
-        const market_cap = (Number(total_supply) / 1e8) / Number(asset_data.base_price_eth) * ethPrice;
-
-        if (!market_cap || market_cap <= 1) return 'N/A'
-
-
-        return `$${market_cap.toLocaleString('en-En')}`;
-    }
-
+    // Get the market size for this asset
     getMarketSize = () => {
         const {asset, tokens, prices} = this.props;
 
@@ -163,6 +123,7 @@ export default class AssetCard extends Component {
         return `$${Math.round(market_cap).toLocaleString('en-En')}`;
     }
 
+    // Get the total supply for an asset
     getSupply = (abbreviate) => {
         const {tokens, asset} = this.props;
         if (!tokens) return '-'
@@ -179,6 +140,7 @@ export default class AssetCard extends Component {
         
     }
 
+    // Get the weighted APY 
     calculateAvgAPY = () => {
         const {tokens, asset} = this.props;
         if (!tokens) return '-'
@@ -194,6 +156,7 @@ export default class AssetCard extends Component {
         return Math.round(increase * 100) / 100;
     }
 
+    // Get the 7 day % increase
     calculate7DAPY = () => {
         const {tokens, asset} = this.props;
         if (!tokens) return '-'
@@ -212,6 +175,7 @@ export default class AssetCard extends Component {
         return Math.round(increase * 1000) / 1000;
     }
 
+    // Format the numbers for K, M, B
     abbreviateNumber = (value) => {
         var newValue = value;
         if (value >= 1000) {
@@ -230,8 +194,8 @@ export default class AssetCard extends Component {
     }
 
     render() {
-        const {asset, data, balances, isMobile, asset_key, currentOpenExtension} = this.props;
-        const {isMobileDrawerOpen, total_supply} = this.state;
+        const {asset, data, isMobile, asset_key, currentOpenExtension} = this.props;
+        const {isMobileDrawerOpen} = this.state;
         
         return (
             <React.Fragment>
@@ -241,7 +205,7 @@ export default class AssetCard extends Component {
                         text="MINT"
                         data={data}
                         asset={asset}
-                        // toggleMobileDrawer={this.toggleMobileDrawer}
+                        toggleMobileDrawer={this.toggleMobileDrawer}
                         isMobileDrawerOpen={isMobileDrawerOpen}
                     >
                         <Card 
@@ -293,14 +257,6 @@ export default class AssetCard extends Component {
                         }}
                     >
                         <CardRow>
-                            {/* !isMobile && (
-                                <CardColumn flex="0.5">
-                                    <ChartButton>
-                                        <p style={{margin: '0 10px 0 5px'}}>STATS</p>
-                                        <Icon icon={areaChart} style={{color: '#00d395', margin: '-5px 0 0 0'}} size="1.5em"/>
-                                    </ChartButton>  
-                                </CardColumn>
-                            ) */}
                             <CardColumn
                                 direction="row"
                                 align="center"

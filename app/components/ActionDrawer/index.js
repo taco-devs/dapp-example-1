@@ -5,9 +5,7 @@ import messages from './messages';
 import styled from 'styled-components';
 import { Icon } from 'react-icons-kit';
 import {chevronDown} from 'react-icons-kit/fa/chevronDown'
-/* import { HiSwitchHorizontal } from 'react-icons/hi';
-import { BsInfoCircleFill } from 'react-icons/bs';
-import { AiOutlineArrowLeft } from 'react-icons/ai'; */
+import debounce from 'lodash.debounce';
 import Loader from 'react-loader-spinner';
 
 const Container = styled.div`
@@ -74,8 +72,10 @@ const InputSectionColumn = styled.div`
 
 const PrimaryLabel = styled.b`
   color: #161d6b;
-  opacity: 0.75; 
+  opacity: 0.75;
   margin: ${props => props.margin || '0'};
+  text-align: ${props => props.align || 'left'};
+  letter-spacing: ${props => props.spacing || '0'};
 `
 
 const InputRow = styled.div`
@@ -266,6 +266,15 @@ const SwitchLabel = styled.div`
   font-size: 0.85em;
 `
 
+
+const BalanceRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: flex-start;
+`
+
+
 const customStyles = {
   content : {
     top                   : '50%',
@@ -287,42 +296,126 @@ const customStyles = {
 
 export default class ActionDrawer extends Component {
 
-    state = {
-        open: false,
-        modal_type: 'mint',
-        value: null,
-        is_native: true,
-    }
+  state = {
+    show: false,
+    isLoading: false,
+    modal_type: 'mint',
+    value_base: '',
+    value_native: '',
+    value_redeem: '',
+    is_native: true,
+    underlying_balance: null,
+    asset_balance: null,
+    total_supply: null,
+    deposit_fee: null,
+    withdrawal_fee: null,
+    exchange_rate: null,
+    total_reserve: null,
+    total_native: null,
+    total_base: null,
+    total_native_redeem: null,
+    total_native_cost_redeem: null,
+    total_base_redeem: null,
+    underlying_conversion: null,
+    underlying_allowance: null,
+    asset_allowance: null,
+  }
 
     componentDidMount = () => {
       const {type} = this.props;
       this.setState({ modal_type: type });
     }
+    
+    changeType = (modal_type) => {
+      this.setState({modal_type});
+    }
+    
+    toggleNativeSelector = () => {
+      this.setState({is_native: !this.state.is_native})
+    }
+
+  
+    fetchBalance = async () => {
+  
+      const { asset, web3, address } = this.props;
+      
+      const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+      const UnderlyingContractInstance = await new web3.eth.Contract(asset.underlying_abi, asset.underlying_address);
+      const BaseContractInstance = await new web3.eth.Contract(asset.base_abi, asset.base_address);
+  
+      let total_supply;    
+      let deposit_fee;   
+      let withdrawal_fee;  
+      let exchange_rate;   
+      let total_reserve;  
+      let g_balance;
+      
+      if (GContractInstance) {
+        total_supply    = await GContractInstance.methods.totalSupply().call();
+        deposit_fee     = await GContractInstance.methods.depositFee().call();
+        withdrawal_fee  = await GContractInstance.methods.withdrawalFee().call();
+        exchange_rate   = await GContractInstance.methods.exchangeRate().call();
+        total_reserve   = await GContractInstance.methods.totalReserve().call(); 
+        g_balance       = await GContractInstance.methods.balanceOf(address).call(); 
+      }
+  
+      let underlying_balance;
+      let underlying_allowance;
+  
+      if (UnderlyingContractInstance) {
+        underlying_balance = await UnderlyingContractInstance.methods.balanceOf(address).call(); 
+        underlying_allowance = await UnderlyingContractInstance.methods.allowance(address, asset.gtoken_address).call();
+      }
+      
+      let asset_balance;
+      let asset_allowance;
+  
+      if (BaseContractInstance) {
+        asset_balance = await BaseContractInstance.methods.balanceOf(address).call();
+        asset_allowance = await BaseContractInstance.methods.allowance(address, asset.gtoken_address).call();
+      }
+  
+      this.setState({total_supply, deposit_fee, withdrawal_fee, exchange_rate, total_reserve, underlying_balance, asset_balance, g_balance, isLoading: false, underlying_allowance, asset_allowance});
+    }
   
     toggleModal = (modal_type) => {
-      this.setState({show: !this.state.show});
+      this.setState({show: !this.state.show, isLoading: true, is_native: true});
+      this.fetchBalance();
   
       if (modal_type) {
         this.changeType(modal_type);
       }
     }
   
+  
     changeType = (modal_type) => {
       this.setState({modal_type});
     }
   
     handleInputChange = (value) => {
+      const {modal_type, is_native} = this.state;
+      
       if (value < 0) {
         this.setState({value: 0});
       } else {
-        this.setState({value});
-      }
-    }
   
-    calculateMintingFee = () => {
-      const {asset} = this.props;
-      const total_minting = ((1 + asset.minting_fee) * asset.base_total_supply) / asset.total_supply;
-      return total_minting;
+        // Route total logic
+        if (modal_type === 'mint') {
+          this.calculateMintingTotal(value);
+  
+          // Route native field
+          if (is_native) {
+            this.setState({value_native: value})
+          } else {
+            this.setState({value_base: value});
+          }
+        } 
+      
+        if (modal_type === 'redeem') {
+          this.calculateBurningTotal(value, true);
+          this.setState({value_redeem: value})
+        }
+      }
     }
   
     calculateBurningFee = () => {
@@ -331,22 +424,365 @@ export default class ActionDrawer extends Component {
       return total_minting;
     }
   
-    calculateMintingTotal = () => {
-      const {value} = this.state;
-    
-      const minting_ratio = this.calculateMintingFee();
-      return value / minting_ratio;
+    getWei = (value_number, decimals) => {
+      const {web3} = this.props;
+      if (decimals === 1e18) {
+        const value = value_number.toString();
+        return web3.utils.toWei(value);
+      }
+      if (decimals === 1e8) {
+        // Horrible hack to avoid precision error on js
+        const raw_value = (Math.round(value_number * 10) / 100).toString()
+        return web3.utils.toWei(raw_value, 'gwei');
+      }
+      if (decimals === 1e6) {
+        const value = value_number.toString();
+        return web3.utils.toWei(value, 'mwei');
+      }
     }
   
-    calculateBurningTotal = () => {
-      const {value} = this.state;
+    calculateMintingTotal = debounce(async (value) => {
+      const { web3, asset } = this.props;
+      const { modal_type, is_native, total_reserve, total_supply, exchange_rate, deposit_fee} = this.state;
+  
+      const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+  
+  
+      // Handle 0 value transactions
+      if (!value || value.length <= 0) {
+        this.setState({
+          real_fee: null,
+          total: null,
+        })
+      }
+  
+      // Calculate the total to mint
+      if (modal_type === 'mint') {
+        if (is_native) {
+          const netShares = this.getWei(value, asset.underlying_decimals);
+          const underlying_conversion = await GContractInstance.methods.calcCostFromUnderlyingCost(netShares, exchange_rate).call();
+          const result = await GContractInstance.methods.calcDepositSharesFromCost(underlying_conversion, total_reserve, total_supply, deposit_fee).call();
+          const {_netShares, _feeShares} = result;
+          this.setState({
+            real_fee: _feeShares,
+            total_native: _netShares,
+          });
     
-      const burning_ratio = this.calculateBurningFee();
-      return value / burning_ratio;
-    }
+        } else {
+          // CTokens only have 8 decimals 
+          // NOTE: Standarized to gwei by converting it to 1e9 because .toWei() doesn't handle 1e8
+          const _cost = this.getWei(value, 1e8)
+          const result = await GContractInstance.methods.calcDepositSharesFromCost(_cost, total_reserve, total_supply, deposit_fee).call();
+          const {_netShares, _feeShares} = result;
+          this.setState({
+            real_fee: _feeShares,
+            total_base: _netShares,
+          })
+        }
+      }
+  
+    }, 250);
+  
+    calculateBurningTotal = debounce(async (value) => {
+      const { web3, asset } = this.props;
+      const { modal_type, is_native, total_reserve, total_supply, exchange_rate, withdrawal_fee} = this.state;
+    
+      // Handle 0 value transactions
+      if (!value || value.length <= 0) {
+        this.setState({
+          real_fee: null,
+          total: null,
+        })
+      }
+  
+      const netShares = this.getWei(value, 1e8);
+    
+      const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+      const result = await GContractInstance.methods.calcWithdrawalCostFromShares(netShares, total_reserve, total_supply, withdrawal_fee).call();
+      const rate = await GContractInstance.methods.calcUnderlyingCostFromCost(result._cost, exchange_rate).call();
+      const {_cost, _feeShares} = result;
+      this.setState({
+        real_fee: _feeShares,
+        total_native_cost_redeem: netShares,
+        total_base_redeem: _cost,
+        total_native_redeem: rate,
+      });
+  
+    }, 250)
   
     toggleNativeSelector = () => {
       this.setState({is_native: !this.state.is_native})
+  
+    }
+  
+    parseNumber = (number, decimals) => {
+      const float_number = number / decimals;
+      return Math.round(float_number * 10000) / 10000;
+    }
+  
+    showBalance = (is_native) => {
+        const {asset} = this.props;
+        const { underlying_balance, asset_balance, g_balance, modal_type } = this.state;
+        if (!underlying_balance || !asset_balance || !g_balance ) return (
+          <Loader
+            type="TailSpin"
+            color={is_native ? '#00d395' : '#161d6b'}
+            height={20}
+            width={20}
+          />
+        );
+  
+        if (modal_type === 'mint') {
+          if (is_native) {
+            return (underlying_balance / asset.underlying_decimals).toFixed(2);
+          } else {
+            return (asset_balance / 1e8).toFixed(2);
+          }
+        }
+  
+        if (modal_type === 'redeem') {
+          return Math.round((g_balance / 1e8) * 10000) / 10000;
+        }
+  
+        
+    }
+  
+    setMax = () => {
+      const { asset } = this.props;
+      const {modal_type, is_native, underlying_balance, asset_balance, g_balance, deposit_fee} = this.state;
+      
+      if (modal_type === 'mint') {
+        if (is_native) {
+          const SAFE_MARGIN = 0.0001 * asset.underlying_decimals;
+          if ((Number(underlying_balance) / asset.underlying_decimals) < 0.01) return;
+          const value_native = ((underlying_balance - SAFE_MARGIN) / asset.underlying_decimals);
+          this.setState({value_native});
+          this.handleInputChange(value_native)
+        } else {
+          if ((Number(asset_balance) / 1e8) < 0.01) return;
+          const value_base = asset_balance / 1e8;
+          this.setState({value_base});
+          this.handleInputChange(value_base)
+        }
+      }
+  
+      if (modal_type === 'redeem') {
+        if ((Number(g_balance) / 1e8) < 0.01) return;
+        const value_redeem = g_balance / 1e8;
+        this.setState({value_redeem});
+        this.calculateBurningTotal(value_redeem);
+      }
+    }
+  
+    handleDeposit = async () => {
+      const {
+        asset, web3, address,
+        mintGTokenFromCToken,
+        mintGTokenFromUnderlying,
+      } = this.props;
+  
+      const { is_native, value_base, value_native, total_native, total_base } = this.state;
+  
+      // Avoid clicks when the user is not allowed to make an action
+      if (this.isDisabled()) return;
+      
+      // Handle depending the asset
+      if (is_native) {
+  
+        const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+        const _cost = this.getWei(value_native, asset.underlying_decimals);
+        mintGTokenFromUnderlying({
+          GContractInstance, 
+          _cost, 
+          address,
+          web3,
+          asset: {
+            from: asset.native,
+            to: asset.g_asset,
+            sending: _cost,
+            receiving: total_native,
+            fromDecimals: asset.underlying_decimals,
+            toDecimals: 1e8,
+            fromImage: asset.native_img_url,
+            toImage: asset.gtoken_img_url,
+          },
+          toggle: this.toggleModal
+        })
+  
+      } else {
+        const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+        // const _cost = (value_base * 1e8).toString();
+        const _cost = this.getWei(value_base, 1e8);
+        mintGTokenFromCToken({
+          GContractInstance, 
+          _cost, 
+          address,
+          web3,
+          asset: {
+            from: asset.base_asset ,
+            to: asset.g_asset,
+            sending: _cost,
+            receiving: total_base,
+            fromDecimals: 1e8,
+            toDecimals: 1e8,
+            fromImage: asset.img_url,
+            toImage: asset.gtoken_img_url,
+          },
+          toggle: this.toggleModal
+        })
+      }
+    }
+  
+  
+    handleRedeem = async () => {
+      const {
+        asset, web3, address,
+        redeemGTokenToCToken,
+        redeemGTokenToUnderlying,
+      } = this.props;
+  
+      const { is_native, value_redeem, total_native_cost_redeem, total_base_cost_redeem, total_native_redeem, total_base_redeem } = this.state;
+      
+      // Validate Balance
+      if (this.isDisabled()) return;
+  
+      // Handle depending the asset
+      if (is_native) {
+  
+        const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+        redeemGTokenToUnderlying({
+          GContractInstance, 
+          _grossShares: total_native_cost_redeem,
+          address,
+          web3,
+          asset: {
+            from: asset.g_asset,
+            to: asset.native,
+            sending: total_native_cost_redeem,
+            receiving: total_native_redeem,
+            fromDecimals: 1e8,
+            toDecimals: 1e18,
+            fromImage: asset.gtoken_img_url,
+            toImage: asset.native_img_url,
+          },
+          toggle: this.toggleModal
+        })
+  
+      } else {
+        const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+        redeemGTokenToCToken({
+          GContractInstance, 
+          _grossShares: total_native_cost_redeem,
+          address,
+          web3,
+          asset: {
+            from: asset.g_asset,
+            to: asset.base_asset,
+            sending: total_native_cost_redeem,
+            receiving: total_base_redeem,
+            fromDecimals: 1e8,
+            toDecimals: 1e8,
+            fromImage: asset.gtoken_img_url,
+            toImage: asset.img_url,
+          },
+          toggle: this.toggleModal
+        })
+      }
+    }
+    
+    // Check if a button should be disabled
+    isDisabled = () => {
+      const { asset } = this.props;
+      const {
+        modal_type, is_native,
+        value_base, value_native, value_redeem,
+        underlying_balance, asset_balance, g_balance
+      } = this.state;
+  
+      // Validate when input a mint function
+      if (modal_type === 'mint') {
+        // Validate against native balance
+        if (is_native) {
+          if (!value_native || Number(value_native) <= 0) return true;
+          return  Number(value_native * asset.underlying_decimals) > Number(underlying_balance);
+        } else {
+          if (!value_base || Number(value_base) <= 0) return true;
+          return Number(value_base * 1e8) > Number(asset_balance);
+        }
+      }
+  
+      if (modal_type === 'redeem') {
+        if (!value_redeem) return true;
+        return Number(value_redeem * 1e8) > Number(g_balance);
+      }
+      return true;
+    }
+  
+    // Check for allowance 
+    hasEnoughAllowance = () => {
+      const {asset} = this.props;
+      const {value_native, value_base, underlying_allowance, asset_allowance, is_native} = this.state;
+  
+      // Only apppliable on Mint
+      if (is_native) {
+        if (!value_native || !underlying_allowance) return true;
+        return Number(value_native * asset.underlying_decimals) <= Number(underlying_allowance);
+      } else {
+        if (!value_base || !asset_allowance) return true;
+        return Number(value_base * 1e8) <= Number(asset_allowance);
+      }
+  
+    }
+  
+    // Update the current balance on allowance 
+    updateApprovalBalance = (total_supply) => {
+      const {is_native} = this.state;
+      if (is_native) {
+        this.setState({underlying_allowance: total_supply});
+      } else {
+        this.setState({asset_allowance: total_supply});
+      }
+    }
+  
+    // Calculate correct fee
+    calculateFee = () => {
+      const { asset } = this.props;
+      const {is_native, modal_type, deposit_fee, withdrawal_fee, value_native, value_base, value_redeem } = this.state;
+  
+      if (!deposit_fee || !withdrawal_fee) return 0;
+  
+      // Validate when input a mint function
+      if (modal_type === 'mint') {
+        // Validate against native balance
+        if (is_native) {
+          if (!value_native || Number(value_native) <= 0) return true;
+          return  Number(value_native * asset.underlying_decimals) * (deposit_fee / asset.underlying_decimals);
+        } else {
+          if (!value_base || Number(value_base) <= 0) return true;
+          return Number(value_base * asset.base_decimals) * (deposit_fee / asset.base_decimals);
+        }
+      }
+  
+      if (modal_type === 'redeem') {
+        return Number(value_redeem * 1e8) * (withdrawal_fee / asset.base_decimals);
+      }
+    }
+  
+    abbreviateNumber = (value) => {
+      var newValue = value;
+      if (value >= 1000) {
+          var suffixes = ["", "K", "M", "B","T"];
+          var suffixNum = Math.floor( (""+value).length/3 );
+          var shortValue = '';
+          for (var precision = 2; precision >= 1; precision--) {
+              shortValue = parseFloat( (suffixNum != 0 ? (value / Math.pow(1000,suffixNum) ) : value).toPrecision(precision));
+              var dotLessShortValue = (shortValue + '').replace(/[^a-zA-Z 0-9]+/g,'');
+              if (dotLessShortValue.length <= 2) { break; }
+          }
+          if (shortValue % 1 != 0)  shortValue = shortValue.toFixed(1);
+          newValue = shortValue+suffixes[suffixNum];
+      }
+      return newValue;
     }
 
     render() {
@@ -374,7 +810,10 @@ export default class ActionDrawer extends Component {
                             <InputSectionColumn
                               flex="2"
                             >
-                              <PrimaryLabel>TOTAL</PrimaryLabel>
+                              <BalanceRow>
+                                <BalanceLabel margin="0 0 0 5px">BALANCE:</BalanceLabel>
+                                <BalanceLabel margin="0 10px 0 10px">{this.showBalance(is_native)}</BalanceLabel>
+                              </BalanceRow>
                               <InputRow>
                                 <AmountInput>
                                   <StyledInput
@@ -394,7 +833,7 @@ export default class ActionDrawer extends Component {
                             <InputSectionColumn
                               flex="1"
                             >
-                              <BalanceLabel>BALANCE 80.12</BalanceLabel>
+                              <BalanceLabel style={{textAlign: 'right'}}>ASSET</BalanceLabel>
                               <SelectorRow>
                                 <IconLogo src={modal_type === 'mint' && is_native ? asset.native_img_url : asset.img_url} />
                                 <AssetLabel>{modal_type === 'mint' ? is_native ? asset.native : asset.base_asset : asset.g_asset}</AssetLabel>
@@ -452,8 +891,8 @@ export default class ActionDrawer extends Component {
                               </SummaryRow>
                             </SummaryColumn>
                             <SummaryColumn align="flex-end">
-                              {modal_type === 'mint' && <PrimaryLabel> {Math.round(this.calculateMintingFee() * 100) / 100} {asset.native}  ({(asset.minting_fee * 100).toFixed(2)}%)</PrimaryLabel>}
-                              {modal_type === 'redeem' && <PrimaryLabel> {Math.round(this.calculateBurningFee() * 100) / 100} {asset.native}  ({(asset.burning_fee * 100).toFixed(2)}%)</PrimaryLabel>}   
+                              {/* modal_type === 'mint' && <PrimaryLabel> {Math.round(this.calculateMintingFee() * 100) / 100} {asset.native}  ({(asset.minting_fee * 100).toFixed(2)}%)</PrimaryLabel> */}
+                              {/* modal_type === 'redeem' && <PrimaryLabel> {Math.round(this.calculateBurningFee() * 100) / 100} {asset.native}  ({(asset.burning_fee * 100).toFixed(2)}%)</PrimaryLabel> */}   
                             </SummaryColumn>
                           </SummaryRow>
                           {is_native && (
@@ -477,8 +916,8 @@ export default class ActionDrawer extends Component {
                               </SummaryRow>
                             </SummaryColumn>
                             <SummaryColumn align="flex-end">
-                              {modal_type === 'mint' && <PrimaryLabel>{Math.round(this.calculateMintingTotal() * 100) / 100} {asset.g_asset}</PrimaryLabel>}
-                              {modal_type === 'redeem' && <PrimaryLabel>{Math.round(this.calculateBurningTotal() * 100) / 100} {is_native ? asset.native : asset.base_asset}</PrimaryLabel>}
+                              {modal_type === 'mint' && <PrimaryLabel>{/* Math.round(this.calculateMintingTotal() * 100) / 100} {asset.g_asset}*/}</PrimaryLabel> }
+                              {modal_type === 'redeem' && <PrimaryLabel>{/* Math.round(this.calculateBurningTotal() * 100) / 100} {is_native ? asset.native : asset.base_asset */}</PrimaryLabel>}
                             </SummaryColumn>
                           </SummaryRow>
                           <SummaryRow justify="center" flex="2">

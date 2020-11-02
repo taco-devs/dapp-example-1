@@ -453,12 +453,14 @@ class ActionModal extends React.Component {
     }
   }
 
+
   changeType = (modal_type) => {
     this.setState({modal_type});
   }
 
   handleInputChange = (value) => {
     const {modal_type, is_native} = this.state;
+    
     if (value < 0) {
       this.setState({value: 0});
     } else {
@@ -832,6 +834,23 @@ class ActionModal extends React.Component {
     }
   }
 
+  abbreviateNumber = (value) => {
+    var newValue = value;
+    if (value >= 1000) {
+        var suffixes = ["", "K", "M", "B","T"];
+        var suffixNum = Math.floor( (""+value).length/3 );
+        var shortValue = '';
+        for (var precision = 2; precision >= 1; precision--) {
+            shortValue = parseFloat( (suffixNum != 0 ? (value / Math.pow(1000,suffixNum) ) : value).toPrecision(precision));
+            var dotLessShortValue = (shortValue + '').replace(/[^a-zA-Z 0-9]+/g,'');
+            if (dotLessShortValue.length <= 2) { break; }
+        }
+        if (shortValue % 1 != 0)  shortValue = shortValue.toFixed(1);
+        newValue = shortValue+suffixes[suffixNum];
+    }
+    return newValue;
+  }
+
   render () {
     const {type, asset, address} = this.props;
     const {show, isLoading, modal_type, value_base, value_native, is_native, total_supply, total_reserve, deposit_fee, total_base, total_native, value_redeem, total_native_redeem, total_base_redeem, withdrawal_fee } = this.state;
@@ -1012,8 +1031,8 @@ class ActionModal extends React.Component {
                 </SummaryRow>
               </SummaryColumn>
               <SummaryColumn align="flex-end">
-                {modal_type === 'mint' && <PrimaryLabel spacing="1px">{this.parseNumber(this.calculateFee(), 1e18)} {is_native ? asset.native : asset.base_asset}  ({this.parseNumber(deposit_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}
-                {modal_type === 'redeem' && <PrimaryLabel spacing="1px">{this.parseNumber(this.calculateFee(), 1e18)} {asset.g_asset}  ({this.parseNumber(withdrawal_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}   
+                {modal_type === 'mint' && <PrimaryLabel spacing="1px">{this.abbreviateNumber(this.parseNumber(this.calculateFee(), 1e18))} {is_native ? asset.native : asset.base_asset}  ({this.parseNumber(deposit_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}
+                {modal_type === 'redeem' && <PrimaryLabel spacing="1px">{this.abbreviateNumber(this.parseNumber(this.calculateFee(), 1e18))} {asset.g_asset}  ({this.parseNumber(withdrawal_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}   
               </SummaryColumn>
             </SummaryRow>
             <SummaryRow>
