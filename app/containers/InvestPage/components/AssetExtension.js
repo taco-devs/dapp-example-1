@@ -196,12 +196,27 @@ export default class AssetExtension extends Component {
         }
 
         return chart_data;
+    }
+
+    getDomain = (data) => {
+        if (!data || data.length < 1) return [0,0];
+
+        const range = 
+            data
+                .filter(day => day.y_value > 0)
+                .map(day => day.y_value);
+
+        const min = Math.min(...range);
+        const max = Math.max(...range);
+        
+        return [min, max];
 
     }
 
     render() {
         const {asset, isLoadingChart, total_supply, total_reserve, deposit_fee, withdrawal_fee, tokens} = this.props;
         const data= this.formatData();
+        const domain = this.getDomain(data);
         let token;
         if (tokens) {
             token = tokens.find(token => token.symbol === asset.g_asset);
@@ -249,7 +264,7 @@ export default class AssetExtension extends Component {
                                         tickMargin={5}
 
                                     />
-                                    <YAxis allowDataOverflow type="number" domain={[data[data.length -1].y_value * 0.95, 'dataMax']} hide />
+                                    <YAxis allowDataOverflow type="number" domain={domain} hide />
                                     <Tooltip content={<CustomTooltip base={asset.base_asset} g_asset={asset.g_asset} />}/>
                                     <Area type="monotone" dataKey="y_value" stroke="#161d6b" fill="#00d395" />
                                 </AreaChart>

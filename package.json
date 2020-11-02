@@ -116,7 +116,8 @@
     "web3": "^1.2.11",
     "web3-provider-engine": "^15.0.12",
     "web3-redux": "^0.5.2",
-    "web3modal": "^1.9.0"
+    "web3modal": "^1.9.0",
+    "webpack-remove-serviceworker-plugin": "^1.0.0"
   },
   "devDependencies": {
     "@babel/cli": "7.4.3",
