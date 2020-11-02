@@ -7,6 +7,7 @@ import { Icon } from 'react-icons-kit';
 import {chevronDown} from 'react-icons-kit/fa/chevronDown'
 import debounce from 'lodash.debounce';
 import Loader from 'react-loader-spinner';
+import ApproveContainer from 'components/ApproveContainer';
 
 const Container = styled.div`
   display: flex;
@@ -166,6 +167,7 @@ const ActionConfirmButton = styled.div`
   justify-content: center;
   border-radius: 5px;
   background-color: ${props => {
+    if (props.disabled) return '#BEBEBE';
     if (props.modal_type === 'mint') return '#00d395';
     if (props.modal_type === 'redeem') return '#161d6b';
   }};
@@ -173,10 +175,17 @@ const ActionConfirmButton = styled.div`
   margin: 1em 0 0 0;
   width: 300px;
   color: white;
+  border-width: 3px;
+  border-style: solid;
+  border-color: ${props => {
+    if (props.disabled) return '#BEBEBE';
+    if (props.modal_type === 'mint') return '#00d395';
+    if (props.modal_type === 'redeem') return '#161d6b';
+  }};
   
   &:hover {
     opacity: 0.85;
-    cursor: pointer;
+    cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   }
 `
 
@@ -918,7 +927,7 @@ export default class ActionDrawer extends Component {
                             <SummaryColumn flex="1">
                               <PrimaryLabel>PRICE</PrimaryLabel>
                             </SummaryColumn>
-                            <SummaryColumn align="flex-end" flex="2">
+                            <SummaryColumn align="flex-end" flex="2.5">
                               <SummaryRow>
                                 <PrimaryLabel margin="0 5px 0 5px">~{this.getPrice(is_native)}</PrimaryLabel>
                                 {/* <HiSwitchHorizontal /> */}
@@ -967,11 +976,34 @@ export default class ActionDrawer extends Component {
                             </SummaryColumn>
                           </SummaryRow>
                           <SummaryRow justify="center" flex="2">
-                              <ActionConfirmButton modal_type={modal_type}>
-                                  CONFIRM 
-                                  {modal_type === 'mint' && ' MINT'}
-                                  {modal_type === 'redeem' && ' REDEEM'}
-                              </ActionConfirmButton>
+                          {modal_type === 'mint' &&  (
+                            <React.Fragment>
+                              {this.hasEnoughAllowance() ? (
+                                <ActionConfirmButton
+                                  modal_type={modal_type}
+                                  onClick={() => this.handleDeposit()}
+                                  disabled={this.isDisabled()}
+                                >
+                                  {this.isDisabled() ? 'NOT ENOUGH BALANCE' : 'CONFIRM MINT'}
+                                </ActionConfirmButton>
+                              ) : (
+                                <ApproveContainer 
+                                  {...this.props}
+                                  {...this.state}
+                                  updateApprovalBalance={this.updateApprovalBalance}
+                                />
+                              )}
+                            </React.Fragment>
+                          )}
+                          {modal_type === 'redeem' &&  (
+                            <ActionConfirmButton 
+                              modal_type={modal_type}
+                              onClick={() => this.handleRedeem()}
+                              disabled={this.isDisabled()}
+                            >
+                              {this.isDisabled() ? 'NOT ENOUGH BALANCE' : 'CONFIRM REDEEM'}
+                            </ActionConfirmButton>
+                          )}
                           </SummaryRow>
                         </Summary>  
                         <ModalHeader>

@@ -297,7 +297,8 @@ const approve = async (Contract, asset, total_supply, address, web3, functions) 
       // connectionStatusChannel.put(functions.dismissApproval()); 
     })
     .on("error", async function () {
-        console.log("Error");
+      console.log('dismissing')
+      connectionStatusChannel.put(functions.dismissApproval());
     });
 }
 
@@ -552,7 +553,8 @@ function* approveTokenSaga(params) {
 
   try { 
 
-    yield put(addCurrentApproval({status: 'loading'}))
+    yield put(addCurrentApproval({status: 'loading'}));
+
 
     yield approve(
       Contract, 

@@ -55,6 +55,7 @@ function appReducer(state = initialState, action) {
     case ADD_CURRENT_APPROVAL: 
       return state.set('currentApproval', action.approval);
     case DISMISS_APPROVAL: 
+      console.log('dismissed');
       return state.set('currentApproval', null);
     default:
       return state;

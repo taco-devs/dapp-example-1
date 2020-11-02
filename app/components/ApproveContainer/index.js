@@ -100,7 +100,8 @@ class ApproveContainer extends React.Component {
         total_supply,
         address,
         asset,
-        updateApprovalBalance
+        updateApprovalBalance,
+        web3
       })
     }
   }
