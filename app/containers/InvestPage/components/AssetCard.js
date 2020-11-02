@@ -201,6 +201,7 @@ export default class AssetCard extends Component {
             <React.Fragment>
                 {isMobile ? (
                     <ActionDrawer
+                        {...this.props}
                         type="mint"
                         text="MINT"
                         data={data}
@@ -210,7 +211,7 @@ export default class AssetCard extends Component {
                     >
                         <Card 
                             isMobile={isMobile}
-                            // onClick={this.toggleMobileDrawer}
+                            onClick={this.toggleMobileDrawer}
                         >
                             <CardRow>
                                 <CardColumn

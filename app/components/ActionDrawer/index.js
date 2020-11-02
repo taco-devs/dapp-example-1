@@ -66,7 +66,7 @@ const InputSectionColumn = styled.div`
   display: flex;
   flex-direction: column;
   flex: ${props => props.flex || '1'};
-  padding: 0.5em 1em 0.25em 1em;
+  padding: ${props => props.padding || '0.5em 0.25em 0.25em 0.25em'};
   justify-content: space-around;
 `
 
@@ -112,6 +112,9 @@ const MaxButton = styled.div`
 const BalanceLabel = styled.b`
   color: #161d6b;
   font-size: 0.85em;
+  margin: ${props => props.margin || '0'};
+  text-align: ${props => props.align || 'left'};
+  letter-spacing: ${props => props.spacing || '0'};
 `
 
 const AssetLabel = styled.b`
@@ -126,11 +129,6 @@ const SelectorRow = styled.div`
   justify-content: space-around;
   border-radius: 5px;
   padding: 5px 0 5px 0;
-
-  &:hover {
-    background-color: #E8E8E8;
-    cursor: pointer;
-  }
 `
 
 const IconLogo = styled.img`
@@ -324,6 +322,7 @@ export default class ActionDrawer extends Component {
     componentDidMount = () => {
       const {type} = this.props;
       this.setState({ modal_type: type });
+      this.fetchBalance();
     }
     
     changeType = (modal_type) => {
@@ -348,6 +347,7 @@ export default class ActionDrawer extends Component {
       let withdrawal_fee;  
       let exchange_rate;   
       let total_reserve;  
+      let total_reserve_underlying;
       let g_balance;
       
       if (GContractInstance) {
@@ -355,7 +355,8 @@ export default class ActionDrawer extends Component {
         deposit_fee     = await GContractInstance.methods.depositFee().call();
         withdrawal_fee  = await GContractInstance.methods.withdrawalFee().call();
         exchange_rate   = await GContractInstance.methods.exchangeRate().call();
-        total_reserve   = await GContractInstance.methods.totalReserve().call(); 
+        total_reserve   = await GContractInstance.methods.totalReserve().call();
+        total_reserve_underlying = await GContractInstance.methods.totalReserveUnderlying().call();
         g_balance       = await GContractInstance.methods.balanceOf(address).call(); 
       }
   
@@ -375,7 +376,7 @@ export default class ActionDrawer extends Component {
         asset_allowance = await BaseContractInstance.methods.allowance(address, asset.gtoken_address).call();
       }
   
-      this.setState({total_supply, deposit_fee, withdrawal_fee, exchange_rate, total_reserve, underlying_balance, asset_balance, g_balance, isLoading: false, underlying_allowance, asset_allowance});
+      this.setState({total_supply, deposit_fee, withdrawal_fee, exchange_rate, total_reserve, total_reserve_underlying, underlying_balance, asset_balance, g_balance, isLoading: false, underlying_allowance, asset_allowance});
     }
   
     toggleModal = (modal_type) => {
@@ -767,6 +768,32 @@ export default class ActionDrawer extends Component {
         return Number(value_redeem * 1e8) * (withdrawal_fee / asset.base_decimals);
       }
     }
+
+
+    // Get current asset price
+    getPrice = (is_native, revert) => {
+      const { asset } = this.props; 
+      const {total_supply, total_reserve, total_reserve_underlying} = this.state;
+      if (!asset) return '-';
+
+      if (is_native) {
+        if (revert) {
+          let price = Math.round((total_reserve_underlying / asset.underlying_decimals) / (total_supply / asset.base_decimals) * 1000) / 1000;
+          return `${price} ${asset.native} = 1 ${asset.base_asset}`
+        } else {
+          let price = Math.round((total_supply / asset.base_decimals)  / (total_reserve_underlying / asset.underlying_decimals) * 1000) / 1000;
+          return `${price} ${asset.g_asset} = 1 ${asset.native}`
+        }
+      } else {
+        if (revert) {
+          let price = Math.round(total_reserve / total_supply * 1000) / 1000;
+          return `${price} ${asset.native} = 1 ${asset.base_asset}`
+        } else {
+          let price = Math.round(total_supply / total_reserve * 1000) / 1000;
+          return `${price} ${asset.g_asset} = 1 ${asset.base_asset}`
+        }
+      }
+    }
   
     abbreviateNumber = (value) => {
       var newValue = value;
@@ -787,7 +814,7 @@ export default class ActionDrawer extends Component {
 
     render() {
         const {type, asset, isMobileDrawerOpen, toggleMobileDrawer} = this.props;
-        const {modal_type, value, is_native} = this.state;
+        const {modal_type, is_native, value_base, value_native, value_redeem, total_supply, total_reserve, isLoading, deposit_fee, withdrawal_fee, total_native, total_base, total_base_redeem, total_native_redeem} = this.state;
         return (
             <div>
                 <Drawer.Drawer 
@@ -809,19 +836,50 @@ export default class ActionDrawer extends Component {
                           <InputSection>
                             <InputSectionColumn
                               flex="2"
+                              padding="0 0.25em 0 1em"
                             >
                               <BalanceRow>
-                                <BalanceLabel margin="0 0 0 5px">BALANCE:</BalanceLabel>
-                                <BalanceLabel margin="0 10px 0 10px">{this.showBalance(is_native)}</BalanceLabel>
+                                <BalanceLabel margin="0 5px 0 0">BALANCE:</BalanceLabel>
+                                <BalanceLabel margin="0 5px 0 5px">{this.showBalance(is_native)}</BalanceLabel>
                               </BalanceRow>
                               <InputRow>
                                 <AmountInput>
+                                {modal_type === 'mint' && is_native && (
                                   <StyledInput
-                                    value={value}
+                                    value={value_native}
+                                    disabled={isLoading}
                                     placeholder="0.0"
                                     type="number"
-                                    onChange={e => this.handleInputChange(e.target.value)}
+                                    onClick={e => e.stopPropagation()}
+                                    onChange={e => {
+                                      this.handleInputChange(e.target.value)
+                                    }}
                                   />
+                                )} 
+                                {modal_type === 'mint' && !is_native && (
+                                  <StyledInput
+                                    value={value_base}
+                                    placeholder="0.0"
+                                    disabled={isLoading}
+                                    type="number"
+                                    onClick={e => e.stopPropagation()}
+                                    onChange={e => {
+                                      this.handleInputChange(e.target.value)
+                                    }}
+                                  />
+                                )}
+                                {modal_type === 'redeem' && (
+                                  <StyledInput
+                                    value={value_redeem}
+                                    placeholder="0.0"
+                                    disabled={isLoading}
+                                    type="number"
+                                    onClick={e => e.stopPropagation()}
+                                    onChange={e => {
+                                      this.handleInputChange(e.target.value)
+                                    }}
+                                  />
+                                )} 
                                 </AmountInput>
                                 <MaxButton
                                   modal_type={modal_type}
@@ -832,12 +890,12 @@ export default class ActionDrawer extends Component {
                             </InputSectionColumn>
                             <InputSectionColumn
                               flex="1"
+                              padding="0 1em 0 0.25em"
                             >
                               <BalanceLabel style={{textAlign: 'right'}}>ASSET</BalanceLabel>
                               <SelectorRow>
                                 <IconLogo src={modal_type === 'mint' && is_native ? asset.native_img_url : asset.img_url} />
                                 <AssetLabel>{modal_type === 'mint' ? is_native ? asset.native : asset.base_asset : asset.g_asset}</AssetLabel>
-                                <Icon icon={chevronDown} />
                               </SelectorRow>
                             </InputSectionColumn>
                           </InputSection>            
@@ -857,12 +915,12 @@ export default class ActionDrawer extends Component {
                         </AssetTypeToggle>
                         <Summary>
                           <SummaryRow>
-                            <SummaryColumn>
+                            <SummaryColumn flex="1">
                               <PrimaryLabel>PRICE</PrimaryLabel>
                             </SummaryColumn>
-                            <SummaryColumn align="flex-end">
+                            <SummaryColumn align="flex-end" flex="2">
                               <SummaryRow>
-                                <PrimaryLabel margin="0 5px 0 5px">10.78 {asset.native} = 1 ETH</PrimaryLabel>
+                                <PrimaryLabel margin="0 5px 0 5px">~{this.getPrice(is_native)}</PrimaryLabel>
                                 {/* <HiSwitchHorizontal /> */}
                               </SummaryRow>
                             </SummaryColumn>
@@ -872,7 +930,7 @@ export default class ActionDrawer extends Component {
                               <PrimaryLabel>{asset.base_asset} SUPPLY</PrimaryLabel>
                             </SummaryColumn>
                             <SummaryColumn align="flex-end">
-                              {/* <PrimaryLabel>{asset.base_total_supply.toLocaleString('En-en')} {asset.base_asset}</PrimaryLabel> */}
+                              <PrimaryLabel>{total_supply && Math.round(total_supply / 1e8).toLocaleString('En-en')} {asset.base_asset}</PrimaryLabel>
                             </SummaryColumn>
                           </SummaryRow>
                           <SummaryRow>
@@ -880,34 +938,20 @@ export default class ActionDrawer extends Component {
                               <PrimaryLabel>{asset.g_asset} SUPPLY</PrimaryLabel>
                             </SummaryColumn>
                             <SummaryColumn align="flex-end">
-                              {/* <PrimaryLabel>{asset.total_supply.toLocaleString('En-en')} {asset.g_asset}</PrimaryLabel> */}
+                              <PrimaryLabel>{total_reserve && Math.round(total_reserve / 1e8).toLocaleString('En-en')} {asset.g_asset}</PrimaryLabel>
                             </SummaryColumn>
                           </SummaryRow>
                           <SummaryRow>
                             <SummaryColumn>
                               <SummaryRow>
-                                <PrimaryLabel margin="0 5px 0 0">BURNING FEE</PrimaryLabel>
-                                {/* <BsInfoCircleFill style={{color: '#BEBEBE' }} /> */}
+                                <PrimaryLabel margin="0 5px 0 0">FEE</PrimaryLabel>
                               </SummaryRow>
                             </SummaryColumn>
                             <SummaryColumn align="flex-end">
-                              {/* modal_type === 'mint' && <PrimaryLabel> {Math.round(this.calculateMintingFee() * 100) / 100} {asset.native}  ({(asset.minting_fee * 100).toFixed(2)}%)</PrimaryLabel> */}
-                              {/* modal_type === 'redeem' && <PrimaryLabel> {Math.round(this.calculateBurningFee() * 100) / 100} {asset.native}  ({(asset.burning_fee * 100).toFixed(2)}%)</PrimaryLabel> */}   
+                                {modal_type === 'mint' && <PrimaryLabel spacing="1px">{this.abbreviateNumber(this.parseNumber(this.calculateFee(), 1e18))} {is_native ? asset.native : asset.base_asset}  ({this.parseNumber(deposit_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}
+                                {modal_type === 'redeem' && <PrimaryLabel spacing="1px">{this.abbreviateNumber(this.parseNumber(this.calculateFee(), 1e18))} {asset.g_asset}  ({this.parseNumber(withdrawal_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}   
                             </SummaryColumn>
                           </SummaryRow>
-                          {is_native && (
-                            <SummaryRow>
-                              <SummaryColumn>
-                                <SummaryRow>
-                                  <PrimaryLabel margin="0 5px 0 0">EXCHANGE FEE</PrimaryLabel>
-                                  {/* <BsInfoCircleFill style={{color: '#BEBEBE' }} /> */}
-                                </SummaryRow>
-                              </SummaryColumn>
-                              <SummaryColumn align="flex-end">
-                                <PrimaryLabel>0.1 ETH</PrimaryLabel>
-                              </SummaryColumn>
-                            </SummaryRow>
-                          )}
                           <SummaryRow>
                             <SummaryColumn>
                               <SummaryRow>
@@ -916,8 +960,10 @@ export default class ActionDrawer extends Component {
                               </SummaryRow>
                             </SummaryColumn>
                             <SummaryColumn align="flex-end">
-                              {modal_type === 'mint' && <PrimaryLabel>{/* Math.round(this.calculateMintingTotal() * 100) / 100} {asset.g_asset}*/}</PrimaryLabel> }
-                              {modal_type === 'redeem' && <PrimaryLabel>{/* Math.round(this.calculateBurningTotal() * 100) / 100} {is_native ? asset.native : asset.base_asset */}</PrimaryLabel>}
+                              {modal_type === 'mint'&& is_native && <PrimaryLabel spacing="1px">{total_native ? this.parseNumber(total_native, 1e8).toLocaleString('en-En') : '-'} {asset.g_asset}</PrimaryLabel>}
+                              {modal_type === 'mint'&& !is_native && <PrimaryLabel spacing="1px">{total_base ? this.parseNumber(total_base, 1e8).toLocaleString('en-En') : '-'} {asset.g_asset}</PrimaryLabel>}
+                              {modal_type === 'redeem'&& is_native && <PrimaryLabel spacing="1px">{total_native_redeem ? this.parseNumber(total_native_redeem, asset.underlying_decimals).toLocaleString('en-En') : '-'} {asset.native}</PrimaryLabel>}
+                              {modal_type === 'redeem'&& !is_native && <PrimaryLabel spacing="1px">{total_base_redeem ? this.parseNumber(total_base_redeem, 1e8).toLocaleString('en-En') : '-'} {asset.base_asset}</PrimaryLabel>}
                             </SummaryColumn>
                           </SummaryRow>
                           <SummaryRow justify="center" flex="2">
