@@ -75,7 +75,7 @@ export default class AssetList extends Component {
 
     render() {
         const {currentOpenExtension} = this.state;
-        const {isMobile} = this.props;
+        const {isMobile, web3} = this.props;
         return (
             <AssetContainer isMobile={isMobile}>
                 <AssetHeader isMobile={isMobile}>
@@ -97,7 +97,8 @@ export default class AssetList extends Component {
                         </AssetHeaderColumn>
                     )}
                 </AssetHeader>
-                {this.showAvailableAssets(currentOpenExtension)}
+                {web3 && this.showAvailableAssets(currentOpenExtension)}
+                
             </AssetContainer>     
         )
     }

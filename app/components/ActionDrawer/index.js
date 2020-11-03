@@ -246,6 +246,7 @@ const SwitchSlider = styled.span`
   bottom: 0;
   background-color: ${props => {
     if (props.modal_type === 'mint') return '#00d395';
+    if (props.modal_type === 'redeem') return '#161d6b'; 
   }};
   -webkit-transition: .4s;
   transition: .4s;

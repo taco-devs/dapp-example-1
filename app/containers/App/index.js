@@ -57,6 +57,10 @@ const AppWrapper = styled.div`
   flex-direction: column;
 `;
 
+const Container = styled.div`
+  ${props => !props.connected && 'visibility: hidden;'}
+`
+
 const NetworkChainIds = {
   1:'eth',
   3:'ropsten',
@@ -257,53 +261,54 @@ class App extends React.Component {
         >
           <meta name="description" content="Liquidity DeFi Protocol" />
         </Helmet>
-        {connected ? (
-          <React.Fragment>
-            <Header
-              {...this.props}
-              {...this.state}
-              toggleModal={this.toggleModal}
-              resetApp={this.resetApp}
-            />
-            <Announcement />
-            <GrowthStats {...this.state} />
-            <Navbar />
-            <Switch>
-              <Route 
-                exact 
-                path="/" 
-                render={(props) => (
-                  <InvestPage 
-                    {...props}
-                    {...this.state}
-                  />
-                )}
-              />
-              <Route 
-                path="/balance" 
-                render={(props) => (
-                  <BalancePage 
-                    {...props}
-                    {...this.state}
-                  />
-                )}
-              />
-              <Route 
-                path="/transactions" 
-                render={(props) => (
-                  <TransactionsContainer 
-                    {...props}
-                    {...this.state}
-                  />
-                )}
-              />
-              <Route path="" component={NotFoundPage} />
-            </Switch>
-            <Footer />
-          </React.Fragment>
-        ) : (
+        { !connected &&
           <SplashScreen />
-        )}
+        }
+        <Container 
+          connected={connected}
+        >
+          <Header
+            {...this.props}
+            {...this.state}
+            toggleModal={this.toggleModal}
+            resetApp={this.resetApp}
+          />
+          <Announcement />
+          <GrowthStats {...this.state} />
+          <Navbar />
+          <Switch>
+            <Route 
+              exact 
+              path="/" 
+              render={(props) => (
+                <InvestPage 
+                  {...props}
+                  {...this.state}
+                />
+              )}
+            />
+            <Route 
+              path="/balance" 
+              render={(props) => (
+                <BalancePage 
+                  {...props}
+                  {...this.state}
+                />
+              )}
+            />
+            <Route 
+              path="/transactions" 
+              render={(props) => (
+                <TransactionsContainer 
+                  {...props}
+                  {...this.state}
+                />
+              )}
+            />
+            <Route path="" component={NotFoundPage} />
+          </Switch>
+          <Footer />  
+        </Container>      
         <GlobalStyle />
       </AppWrapper>
     );

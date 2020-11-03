@@ -9,6 +9,14 @@ import React from 'react';
 import styled from 'styled-components';
 import Loader from 'react-loader-spinner';
 
+const Splash = styled.div`
+  position: absolute:
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+`
+
 const SplashContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -27,15 +35,18 @@ const Logo = styled.img`
 class SplashScreen extends React.Component {
   render() {
     return (
-      <SplashContainer>
-        <Logo src={require('images/full_logo.png')}/>
-        <Loader
-          type="ThreeDots"
-          color='#00d395'
-          height={120}
-          width={120}
-        />
-      </SplashContainer>
+      <Splash>
+        <SplashContainer>
+          <Logo src={require('images/full_logo.png')}/>
+          <Loader
+            type="ThreeDots"
+            color='#00d395'
+            height={120}
+            width={120}
+          />
+        </SplashContainer>
+      </Splash>
+      
     )
   }
 }
