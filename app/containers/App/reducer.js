@@ -10,18 +10,19 @@
 import { fromJS } from 'immutable';
 import { SETUP_NETWORK, ADD_CURRENT_SWAP, DISMISS_SWAP,  ADD_CURRENT_APPROVAL, DISMISS_APPROVAL, TOGGLE_HIDE_BALANCES, TOGGLE_ADD_GRO } from './constants';
 
+
 const dummyswap = {
-  status: 'loading',
-  modal_type: 'redeem',
+  status: 'receipt',
+  modal_type: 'mint',
   from: 'gcDAI',
   to: 'DAI',
   sending: 10,
-  receiving: 200,
+  receiving: 400,
   fromDecimals: 1,
   toDecimals: 1,
   fromImage: 'https://s2.coinmarketcap.com/static/img/coins/64x64/5263.png',
   toImage: 'https://s2.coinmarketcap.com/static/img/coins/64x64/4943.png',
-  hash: 'hdksf'
+  hash: '0xD2C6dB857E3BaA87Fa15241181ed8bC2fBCB9E4C'
 }
 
 const dummyApproval = {
@@ -47,7 +48,8 @@ function appReducer(state = initialState, action) {
       localStorage.setItem('addGRO',!state.get('addGRO'));
       return state.set('addGRO', !state.get('addGRO'));
     case SETUP_NETWORK: 
-      return state.set('network', action.network);
+      return state
+        .set('network', action.network);
     case ADD_CURRENT_SWAP: 
       return state.set('currentSwap', action.swap);
     case DISMISS_SWAP: 

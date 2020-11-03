@@ -114,7 +114,9 @@ class InvestPage extends React.Component {
           </InvestContainer>
           {error && <ErrorMessage>{error}</ErrorMessage>}
         </Invest>
-        <ConfirmationModal {...this.props} />
+        {!isMobile && (
+          <ConfirmationModal {...this.props} />
+        )}
       </React.Fragment>
     );
   }

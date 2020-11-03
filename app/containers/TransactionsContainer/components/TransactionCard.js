@@ -225,8 +225,8 @@ export default class TransactionCard extends Component {
                                 { asset && transaction.action === 'mint' && (
                                     <TransactionContainer>
                                         <TransactionContainerColumn>
-                                            {transaction.type === 'base' && <TransactionLogo src={asset.img_url} />}
-                                            {transaction.type === 'underlying' && <TransactionLogo src={asset.native_img_url} />}
+                                            {transaction.type === 'base' && <TransactionLogo src={require(`images/tokens/${asset.img_url}`)} />}
+                                            {transaction.type === 'underlying' && <TransactionLogo src={require(`images/tokens/${asset.native_img_url}`)} />}
                                         </TransactionContainerColumn>
                                         {transaction.type === 'base' && (
                                             <TransactionContainerColumn>
@@ -264,8 +264,8 @@ export default class TransactionCard extends Component {
                                 { asset && transaction.action === 'redeem' && (
                                     <TransactionContainer>
                                         <TransactionContainerColumn>
-                                            {transaction.type === 'base' && <TransactionLogo src={asset.img_url} />}
-                                            {transaction.type === 'underlying' && <TransactionLogo src={asset.native_img_url} />}
+                                            {transaction.type === 'base' && <TransactionLogo src={require(`images/tokens/${asset.img_url}`)} />}
+                                            {transaction.type === 'underlying' && <TransactionLogo src={require(`images/tokens/${asset.native_img_url}`)} />}
                                         </TransactionContainerColumn>
                                         { transaction.type === 'base' && (
                                             <TransactionContainerColumn>

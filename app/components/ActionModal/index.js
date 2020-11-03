@@ -13,7 +13,6 @@ import { FormattedMessage } from 'react-intl';
 import debounce from 'lodash.debounce';
 import messages from './messages';
 import styled from 'styled-components';
-
 import { Icon } from 'react-icons-kit';
 import {info} from 'react-icons-kit/icomoon/info';
 
@@ -971,7 +970,7 @@ class ActionModal extends React.Component {
               >
                 <PrimaryLabel align="right">ASSET</PrimaryLabel>
                 <SelectorRow>
-                  <IconLogo src={modal_type === 'mint' ? is_native ? asset.native_img_url : asset.img_url : require(`images/tokens/${asset.gtoken_img_url}`)} />
+                  <IconLogo src={modal_type === 'mint' ? is_native ? require(`images/tokens/${asset.native_img_url}`) : require(`images/tokens/${asset.img_url}`) : require(`images/tokens/${asset.gtoken_img_url}`)} />
                   <AssetLabel>{modal_type === 'mint' ? is_native ? asset.native : asset.base_asset : asset.g_asset}</AssetLabel>
                  {/*  <FaChevronDown /> */}
                 </SelectorRow>
@@ -982,7 +981,7 @@ class ActionModal extends React.Component {
             onClick={e => e.stopPropagation()}
           >
             <SwitchBox modal_type={modal_type} onClick={e => e.stopPropagation()}>
-              <input type="checkbox" value={is_native} />
+              <input type="checkbox" checked={is_native} />
               <SwitchSlider className="slider" modal_type={modal_type} onClick={() => this.toggleNativeSelector()}>
                 <SwitchLabel is_native={is_native} modal_type={modal_type}>
                   <p>NATIVE</p>
@@ -1046,8 +1045,7 @@ class ActionModal extends React.Component {
                 {modal_type === 'mint'&& is_native && <PrimaryLabel spacing="1px">{total_native ? this.parseNumber(total_native, 1e8).toLocaleString('en-En') : '-'} {asset.g_asset}</PrimaryLabel>}
                 {modal_type === 'mint'&& !is_native && <PrimaryLabel spacing="1px">{total_base ? this.parseNumber(total_base, 1e8).toLocaleString('en-En') : '-'} {asset.g_asset}</PrimaryLabel>}
                 {modal_type === 'redeem'&& is_native && <PrimaryLabel spacing="1px">{total_native_redeem ? this.parseNumber(total_native_redeem, asset.underlying_decimals).toLocaleString('en-En') : '-'} {asset.native}</PrimaryLabel>}
-                {modal_type === 'redeem'&& !is_native && <PrimaryLabel spacing="1px">{total_base_redeem ? this.parseNumber(total_base_redeem, 1e8).toLocaleString('en-En') : '-'} {asset.base_asset}</PrimaryLabel>}
-                 
+                {modal_type === 'redeem'&& !is_native && <PrimaryLabel spacing="1px">{total_base_redeem ? this.parseNumber(total_base_redeem, 1e8).toLocaleString('en-En') : '-'} {asset.base_asset}</PrimaryLabel>} 
               </SummaryColumn>
             </SummaryRow>
             <SummaryRow justify="center" flex="2">

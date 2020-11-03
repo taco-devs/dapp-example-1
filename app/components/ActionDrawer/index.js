@@ -4,7 +4,7 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import styled from 'styled-components';
 import { Icon } from 'react-icons-kit';
-import {chevronDown} from 'react-icons-kit/fa/chevronDown'
+import {exchange} from 'react-icons-kit/fa/exchange'
 import debounce from 'lodash.debounce';
 import Loader from 'react-loader-spinner';
 import ApproveContainer from 'components/ApproveContainer';
@@ -96,6 +96,7 @@ const StyledInput = styled.input`
   font-size: 1.2em;
 `
 
+
 const MaxButton = styled.div`
   display: flex;
   flex-direction: row;
@@ -104,10 +105,16 @@ const MaxButton = styled.div`
   color: white;
   border-radius: 5px;
   flex: 1;
+  transition: background-color .4s ease;
   background-color: ${props => {
     if (props.modal_type === 'mint') return '#00d395';
     if (props.modal_type === 'redeem') return '#161d6b';
-  }}
+  }};
+
+  &:hover {
+    opacity: 0.85;
+    cursor: pointer;
+  }
 `
 
 const BalanceLabel = styled.b`
@@ -239,7 +246,6 @@ const SwitchSlider = styled.span`
   bottom: 0;
   background-color: ${props => {
     if (props.modal_type === 'mint') return '#00d395';
-    if (props.modal_type === 'redeem') return '#161d6b';
   }};
   -webkit-transition: .4s;
   transition: .4s;
@@ -265,8 +271,14 @@ const SwitchLabel = styled.div`
   justify-content: center;
   z-index: 99;
   color: ${props => {
-    if (props.modal_type === 'mint') return props.is_native ? '#00d395' : 'white';
-    if (props.modal_type === 'redeem') return props.is_native ? '#161d6b' : 'white';
+    if (props.modal_type === 'mint') {
+      if (props.value === props.is_native) return '#00d395'; 
+      return 'white';
+    } else {
+      if (props.value === props.is_native) return '#161d6b'; 
+      return 'white';
+    }
+    
   }};
   -webkit-transition: .4s;
   transition: .4s;
@@ -281,6 +293,76 @@ const BalanceRow = styled.div`
   justify-content: flex-start;
 `
 
+const SwapView = styled.div`
+  display: flex;
+  flex-direction: column;
+  background-color: ${props => {
+    if (props.type === 'mint') return '#00d395';
+    if (props.type === 'redeem') return '#161d6b';
+  }};
+  flex: 1;
+  height: calc(55vh - 260px);
+  padding: 2em 1.5em 1em 1.5em;
+  justify-content: center;
+  align-items: center;
+`
+
+const SwapContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 300px;
+  background-color: rgb(0,0,0, 0.10);
+  padding: 1em;
+  border-radius: 5px;
+`
+
+const SwapSection = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  height: ${props => props.height || '100%'};
+  margin: ${props => props.margin || '0'};
+`
+
+const SwapColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: ${props => props.flex || '1'};
+`
+
+const SwapLogo = styled.img`
+  height: 50px;
+  width: 50px;
+  background-color: white;
+  border-radius: 50%;
+`
+
+const StyledText = styled.p`
+  text-align: ${props => props.textAlign || 'center'};
+  width: 100px;
+  margin: ${props => props.margin || ' 0 5px 0 5px'};
+  font-size: ${props => props.size || '1em'};
+  letter-spacing: 1px;
+  color: ${props => {
+    if (props.modal_type === 'mint') return '#161d6b';
+    if (props.modal_type === 'redeem') return '#00d395';
+    return 'white';
+  }};
+`
+
+const StyledLink = styled.a`
+  text-align: ${props => props.textAlign || 'center'};
+  width: 100px;
+  margin: ${props => props.margin || ' 0 5px 0 5px'};
+  font-size: ${props => props.size || '1em'};
+  letter-spacing: 1px;
+  color: white;
+  text-decoration: underline;
+`
 
 const customStyles = {
   content : {
@@ -334,11 +416,9 @@ export default class ActionDrawer extends Component {
       this.fetchBalance();
     }
     
-    changeType = (modal_type) => {
-      this.setState({modal_type});
-    }
-    
     toggleNativeSelector = () => {
+      const {currentSwap} = this.props;
+      if (currentSwap) return;
       this.setState({is_native: !this.state.is_native})
     }
 
@@ -399,6 +479,8 @@ export default class ActionDrawer extends Component {
   
   
     changeType = (modal_type) => {
+      const {currentSwap} = this.props;
+      if (currentSwap) return;
       this.setState({modal_type});
     }
   
@@ -527,7 +609,7 @@ export default class ActionDrawer extends Component {
   
     parseNumber = (number, decimals) => {
       const float_number = number / decimals;
-      return Math.round(float_number * 10000) / 10000;
+      return Math.round(float_number * 100) / 100;
     }
   
     showBalance = (is_native) => {
@@ -702,7 +784,8 @@ export default class ActionDrawer extends Component {
     
     // Check if a button should be disabled
     isDisabled = () => {
-      const { asset } = this.props;
+      const { asset, currentSwap } = this.props;
+      if (currentSwap) return true;
       const {
         modal_type, is_native,
         value_base, value_native, value_redeem,
@@ -822,7 +905,7 @@ export default class ActionDrawer extends Component {
     }
 
     render() {
-        const {type, asset, isMobileDrawerOpen, toggleMobileDrawer} = this.props;
+        const {type, asset, isMobileDrawerOpen, toggleMobileDrawer, currentSwap} = this.props;
         const {modal_type, is_native, value_base, value_native, value_redeem, total_supply, total_reserve, isLoading, deposit_fee, withdrawal_fee, total_native, total_base, total_base_redeem, total_native_redeem} = this.state;
         return (
             <div>
@@ -892,6 +975,7 @@ export default class ActionDrawer extends Component {
                                 </AmountInput>
                                 <MaxButton
                                   modal_type={modal_type}
+                                  onClick={this.setMax}
                                 >
                                   MAX
                                 </MaxButton>
@@ -903,7 +987,7 @@ export default class ActionDrawer extends Component {
                             >
                               <BalanceLabel style={{textAlign: 'right'}}>ASSET</BalanceLabel>
                               <SelectorRow>
-                                <IconLogo src={modal_type === 'mint' && is_native ? asset.native_img_url : asset.img_url} />
+                                <IconLogo src={modal_type === 'mint' && is_native ? require(`images/tokens/${asset.native_img_url}`) : require(`images/tokens/${asset.img_url}`)} />
                                 <AssetLabel>{modal_type === 'mint' ? is_native ? asset.native : asset.base_asset : asset.g_asset}</AssetLabel>
                               </SelectorRow>
                             </InputSectionColumn>
@@ -911,101 +995,154 @@ export default class ActionDrawer extends Component {
                         </InputContainer>
                         <AssetTypeToggle>
                           <SwitchBox modal_type={modal_type}>
-                            <input type="checkbox" />
+                            <input type="checkbox" checked={is_native}/>
                             <SwitchSlider className="slider" modal_type={modal_type} onClick={() => this.toggleNativeSelector()}>
-                              <SwitchLabel is_native={is_native} modal_type={modal_type}>
-                                <p>NATIVE</p>
-                              </SwitchLabel>
-                              <SwitchLabel is_native={!is_native} modal_type={modal_type}>
+                              <SwitchLabel
+                                name="base"
+                                value={false}
+                                is_native={is_native} 
+                                modal_type={modal_type}
+                              >
                                 <p>ASSET</p>
+                              </SwitchLabel>
+                              <SwitchLabel
+                                name="native"
+                                value={true}
+                                is_native={is_native} 
+                                modal_type={modal_type}
+                              >
+                                <p>NATIVE</p>
                               </SwitchLabel>
                             </SwitchSlider>
                           </SwitchBox>
                         </AssetTypeToggle>
-                        <Summary>
-                          <SummaryRow>
-                            <SummaryColumn flex="1">
-                              <PrimaryLabel>PRICE</PrimaryLabel>
-                            </SummaryColumn>
-                            <SummaryColumn align="flex-end" flex="2.5">
-                              <SummaryRow>
-                                <PrimaryLabel margin="0 5px 0 5px">~{this.getPrice(is_native)}</PrimaryLabel>
-                                {/* <HiSwitchHorizontal /> */}
-                              </SummaryRow>
-                            </SummaryColumn>
-                          </SummaryRow>
-                          <SummaryRow>
-                            <SummaryColumn>
-                              <PrimaryLabel>{asset.base_asset} SUPPLY</PrimaryLabel>
-                            </SummaryColumn>
-                            <SummaryColumn align="flex-end">
-                              <PrimaryLabel>{total_supply && Math.round(total_supply / 1e8).toLocaleString('En-en')} {asset.base_asset}</PrimaryLabel>
-                            </SummaryColumn>
-                          </SummaryRow>
-                          <SummaryRow>
-                            <SummaryColumn>
-                              <PrimaryLabel>{asset.g_asset} SUPPLY</PrimaryLabel>
-                            </SummaryColumn>
-                            <SummaryColumn align="flex-end">
-                              <PrimaryLabel>{total_reserve && Math.round(total_reserve / 1e8).toLocaleString('En-en')} {asset.g_asset}</PrimaryLabel>
-                            </SummaryColumn>
-                          </SummaryRow>
-                          <SummaryRow>
-                            <SummaryColumn>
-                              <SummaryRow>
-                                <PrimaryLabel margin="0 5px 0 0">FEE</PrimaryLabel>
-                              </SummaryRow>
-                            </SummaryColumn>
-                            <SummaryColumn align="flex-end">
-                                {modal_type === 'mint' && <PrimaryLabel spacing="1px">{this.abbreviateNumber(this.parseNumber(this.calculateFee(), 1e18))} {is_native ? asset.native : asset.base_asset}  ({this.parseNumber(deposit_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}
-                                {modal_type === 'redeem' && <PrimaryLabel spacing="1px">{this.abbreviateNumber(this.parseNumber(this.calculateFee(), 1e18))} {asset.g_asset}  ({this.parseNumber(withdrawal_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}   
-                            </SummaryColumn>
-                          </SummaryRow>
-                          <SummaryRow>
-                            <SummaryColumn>
-                              <SummaryRow>
-                                <PrimaryLabel margin="0 5px 0 0">TOTAL</PrimaryLabel>
-                                {/* <BsInfoCircleFill style={{color: '#BEBEBE' }} /> */}
-                              </SummaryRow>
-                            </SummaryColumn>
-                            <SummaryColumn align="flex-end">
-                              {modal_type === 'mint'&& is_native && <PrimaryLabel spacing="1px">{total_native ? this.parseNumber(total_native, 1e8).toLocaleString('en-En') : '-'} {asset.g_asset}</PrimaryLabel>}
-                              {modal_type === 'mint'&& !is_native && <PrimaryLabel spacing="1px">{total_base ? this.parseNumber(total_base, 1e8).toLocaleString('en-En') : '-'} {asset.g_asset}</PrimaryLabel>}
-                              {modal_type === 'redeem'&& is_native && <PrimaryLabel spacing="1px">{total_native_redeem ? this.parseNumber(total_native_redeem, asset.underlying_decimals).toLocaleString('en-En') : '-'} {asset.native}</PrimaryLabel>}
-                              {modal_type === 'redeem'&& !is_native && <PrimaryLabel spacing="1px">{total_base_redeem ? this.parseNumber(total_base_redeem, 1e8).toLocaleString('en-En') : '-'} {asset.base_asset}</PrimaryLabel>}
-                            </SummaryColumn>
-                          </SummaryRow>
-                          <SummaryRow justify="center" flex="2">
-                          {modal_type === 'mint' &&  (
-                            <React.Fragment>
-                              {this.hasEnoughAllowance() ? (
-                                <ActionConfirmButton
-                                  modal_type={modal_type}
-                                  onClick={() => this.handleDeposit()}
-                                  disabled={this.isDisabled()}
-                                >
-                                  {this.isDisabled() ? 'NOT ENOUGH BALANCE' : 'CONFIRM MINT'}
-                                </ActionConfirmButton>
-                              ) : (
-                                <ApproveContainer 
-                                  {...this.props}
-                                  {...this.state}
-                                  updateApprovalBalance={this.updateApprovalBalance}
-                                />
-                              )}
-                            </React.Fragment>
-                          )}
-                          {modal_type === 'redeem' &&  (
-                            <ActionConfirmButton 
-                              modal_type={modal_type}
-                              onClick={() => this.handleRedeem()}
-                              disabled={this.isDisabled()}
-                            >
-                              {this.isDisabled() ? 'NOT ENOUGH BALANCE' : 'CONFIRM REDEEM'}
-                            </ActionConfirmButton>
-                          )}
-                          </SummaryRow>
-                        </Summary>  
+                        {currentSwap ? (
+                          <SwapView
+                            type={modal_type}
+                          >
+                            <SwapContainer> 
+                              <SwapSection>
+                                <SwapColumn>
+                                  <SwapLogo src={require(`images/tokens/${currentSwap.fromImage}`)}/>
+                                </SwapColumn>
+                                <SwapColumn flex="3">
+                                  <StyledText size="1.5em">{Math.round(currentSwap.sending / currentSwap.fromDecimals * 100) / 100}</StyledText>
+                                  <StyledText>{currentSwap.from}</StyledText>
+                                </SwapColumn>
+                              </SwapSection>
+                              <div style={{display: 'flex', justifyItems: 'center', height: '50px', alignItems: 'center', color: 'white'}} color="white">
+                                <Icon icon={exchange} size="1.5em" />
+                              </div>
+                              <SwapSection>
+                                <SwapColumn>
+                                  <SwapLogo src={require(`images/tokens/${currentSwap.toImage}`)}/>
+                                </SwapColumn>
+                                <SwapColumn flex="3">
+                                  <StyledText size="1.5em">{Math.round(currentSwap.receiving / currentSwap.toDecimals * 100) / 100}</StyledText>
+                                  <StyledText>{currentSwap.to}</StyledText>
+                                </SwapColumn>
+                              </SwapSection>
+                            </SwapContainer>
+                            {currentSwap.status === 'loading' && (
+                              <StyledText modal_type={currentSwap.modal_type} size="0.9em" margin="1em 0 0 0" style={{width: '250px'}}>Waiting for Confirmation</StyledText>
+                            )}
+                            {currentSwap.status === 'confirmed' && (
+                              <StyledText modal_type={currentSwap.modal_type} size="0.9em" margin="1em 0 0 0" style={{width: '250px'}}>Transaction Confirmed</StyledText>
+                            )}
+                            {currentSwap.status === 'receipt'  && (
+                              <StyledText modal_type={currentSwap.modal_type} size="0.9em" margin="1em 0 0 0" style={{width: '250px'}}>Transaction ID</StyledText>
+                            )}
+                            {(currentSwap.status === 'receipt' || currentSwap.status === 'confirmed')  && (
+                              <StyledLink href={`https://etherscan.io/tx/${currentSwap.hash}`} target="_blank" modal_type={currentSwap.modal_type} size="0.9em" margin="1em 0 0 0" style={{width: '250px'}}>{currentSwap.hash}</StyledLink>
+                            )}
+                          </SwapView>
+                        ) : (
+                          <Summary>
+                            <SummaryRow>
+                              <SummaryColumn flex="1">
+                                <PrimaryLabel>PRICE</PrimaryLabel>
+                              </SummaryColumn>
+                              <SummaryColumn align="flex-end" flex="2.5">
+                                <SummaryRow>
+                                  <PrimaryLabel margin="0 5px 0 5px">{this.getPrice(is_native)}</PrimaryLabel>
+                                  {/* <HiSwitchHorizontal /> */}
+                                </SummaryRow>
+                              </SummaryColumn>
+                            </SummaryRow>
+                            <SummaryRow>
+                              <SummaryColumn>
+                                <PrimaryLabel>{asset.base_asset} SUPPLY</PrimaryLabel>
+                              </SummaryColumn>
+                              <SummaryColumn align="flex-end">
+                                <PrimaryLabel>{total_supply && Math.round(total_supply / 1e8).toLocaleString('En-en')} {asset.base_asset}</PrimaryLabel>
+                              </SummaryColumn>
+                            </SummaryRow>
+                            <SummaryRow>
+                              <SummaryColumn>
+                                <PrimaryLabel>{asset.g_asset} SUPPLY</PrimaryLabel>
+                              </SummaryColumn>
+                              <SummaryColumn align="flex-end">
+                                <PrimaryLabel>{total_reserve && Math.round(total_reserve / asset.base_decimals).toLocaleString('En-en')} {asset.g_asset}</PrimaryLabel>
+                              </SummaryColumn>
+                            </SummaryRow>
+                            <SummaryRow>
+                              <SummaryColumn flex="1">
+                                <SummaryRow>
+                                  <PrimaryLabel margin="0 5px 0 0">FEE</PrimaryLabel>
+                                </SummaryRow>
+                              </SummaryColumn>
+                              <SummaryColumn align="flex-end" flex="3">
+                                  {modal_type === 'mint' && <PrimaryLabel spacing="1px">{this.parseNumber(this.calculateFee(), 1e18).toLocaleString('en-En')} {is_native ? asset.native : asset.base_asset}  ({this.parseNumber(deposit_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}
+                                  {modal_type === 'redeem' && <PrimaryLabel spacing="1px">{this.parseNumber(this.calculateFee(), 1e18).toLocaleString('en-En')} {asset.g_asset}  ({this.parseNumber(withdrawal_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}   
+                              </SummaryColumn>
+                            </SummaryRow>
+                            <SummaryRow>
+                              <SummaryColumn flex="1">
+                                <SummaryRow>
+                                  <PrimaryLabel margin="0 5px 0 0">TOTAL</PrimaryLabel>
+                                  {/* <BsInfoCircleFill style={{color: '#BEBEBE' }} /> */}
+                                </SummaryRow>
+                              </SummaryColumn>
+                              <SummaryColumn align="flex-end" flex="3">
+                                {modal_type === 'mint'&& is_native && <PrimaryLabel spacing="1px">{total_native ? this.parseNumber(total_native, 1e8).toLocaleString('en-En') : '-'} {asset.g_asset}</PrimaryLabel>}
+                                {modal_type === 'mint'&& !is_native && <PrimaryLabel spacing="1px">{total_base ? this.parseNumber(total_base, 1e8).toLocaleString('en-En') : '-'} {asset.g_asset}</PrimaryLabel>}
+                                {modal_type === 'redeem'&& is_native && <PrimaryLabel spacing="1px">{total_native_redeem ? this.parseNumber(total_native_redeem, asset.underlying_decimals).toLocaleString('en-En') : '-'} {asset.native}</PrimaryLabel>}
+                                {modal_type === 'redeem'&& !is_native && <PrimaryLabel spacing="1px">{total_base_redeem ? this.parseNumber(total_base_redeem, 1e8).toLocaleString('en-En') : '-'} {asset.base_asset}</PrimaryLabel>}
+                              </SummaryColumn>
+                            </SummaryRow>
+                            <SummaryRow justify="center" flex="2">
+                            {modal_type === 'mint' &&  (
+                              <React.Fragment>
+                                {this.hasEnoughAllowance() ? (
+                                  <ActionConfirmButton
+                                    modal_type={modal_type}
+                                    onClick={() => this.handleDeposit()}
+                                    disabled={this.isDisabled()}
+                                  >
+                                    {this.isDisabled() ? 'NOT ENOUGH BALANCE' : 'CONFIRM MINT'}
+                                  </ActionConfirmButton>
+                                ) : (
+                                  <ApproveContainer 
+                                    {...this.props}
+                                    {...this.state}
+                                    updateApprovalBalance={this.updateApprovalBalance}
+                                  />
+                                )}
+                              </React.Fragment>
+                            )}
+                            {modal_type === 'redeem' &&  (
+                              <ActionConfirmButton 
+                                modal_type={modal_type}
+                                onClick={() => this.handleRedeem()}
+                                disabled={this.isDisabled()}
+                              >
+                                {this.isDisabled() ? 'NOT ENOUGH BALANCE' : 'CONFIRM REDEEM'}
+                              </ActionConfirmButton>
+                            )}
+                            </SummaryRow>
+                          </Summary>
+                        )}
+                          
                         <ModalHeader>
                           <ModalHeaderOption
                             active={modal_type === 'mint'}

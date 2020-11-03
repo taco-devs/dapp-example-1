@@ -5,6 +5,7 @@ import {
 
 import request from 'utils/request'
 import NetworkData from 'contracts';
+import {isMobile} from 'react-device-detect';
 
 import { APPROVE_TOKEN, GET_TOKENS_REQUEST, GET_TOKEN_STATS_REQUEST, MINT_GTOKEN_FROM_CTOKEN, MINT_GTOKEN_FROM_UNDERLYING, REDEEM_GTOKEN_TO_CTOKEN, REDEEM_GTOKEN_TO_UNDERLYING } from './constants'
 import { 
@@ -89,10 +90,12 @@ const deposit = async (ContractInstance, _cost, address, asset, web3, functions)
         )
 
         // Timeout to autoclose the modal in 5s
+        
+        let timeout = isMobile ? 1000 : 5000;
         setTimeout(() => {
           connectionStatusChannel.put(functions.dismissSwap());
           connectionStatusChannel.put(functions.getBalances(address, web3));
-        }, 5000)
+        }, timeout)
     })
     .on("confirmation", (confirmation) => {
       // connectionStatusChannel.put(functions.dismissSwap()); 
@@ -491,7 +494,6 @@ function* redeemGTokenToCTokenSaga(params) {
       });
 
   } catch (error) {
-    console.log(error);
     const jsonError = yield error.response ? error.response.json() : error;
     yield put(dismissSwap());
     yield toggle();
