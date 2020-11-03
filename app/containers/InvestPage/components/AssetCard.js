@@ -172,7 +172,7 @@ export default class AssetCard extends Component {
         const yesterday = tokenDailyDatas[tokenDailyDatas.length - 1];
 
         const increase = ((today.avgPrice / yesterday.avgPrice) - 1) * 100;
-        return Math.round(increase * 1000) / 1000;
+        return Math.round(increase * 100) / 100;
     }
 
     // Format the numbers for K, M, B
@@ -242,7 +242,7 @@ export default class AssetCard extends Component {
                                     flex="0.9"
                                 >
                                 <PrimaryLabel>{this.calculateAvgAPY()}% AVG</PrimaryLabel>
-                                <SecondaryLabel>{/* this.calculate7DAPY()*/}- 7D</SecondaryLabel>
+                                <SecondaryLabel>{this.calculate7DAPY()}% 7D</SecondaryLabel>
                                 </CardColumn>
                             </CardRow>
                             
@@ -281,7 +281,7 @@ export default class AssetCard extends Component {
                                 direction="column"
                             >
                                 <PrimaryLabel>{this.calculateAvgAPY()}% AVG</PrimaryLabel>
-                                <SecondaryLabel>{/* this.calculate7DAPY() */}- 7D</SecondaryLabel>
+                                <SecondaryLabel>{this.calculate7DAPY()}% 7D</SecondaryLabel>
                             </CardColumn>
                             <CardColumn 
                                 direction="row"

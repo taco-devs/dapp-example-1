@@ -262,7 +262,7 @@ class App extends React.Component {
           <meta name="description" content="Liquidity DeFi Protocol" />
         </Helmet>
         { !connected &&
-          <SplashScreen />
+          <SplashScreen connected={connected}/>
         }
         <Container 
           connected={connected}

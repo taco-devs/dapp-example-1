@@ -321,7 +321,7 @@ function* getTokensSaga(params) {
         countTokenDailyDatas
         cumulativeDailyChange
         tokenDailyDatas (
-          first: 7
+          first: 8
           orderBy: id
           orderDirection: desc
         ) {
