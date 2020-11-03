@@ -5,6 +5,7 @@ import messages from './messages';
 import styled from 'styled-components';
 
 import { Icon } from 'react-icons-kit';
+import {logout} from 'react-icons-kit/iconic/logout';
 import {ic_menu} from 'react-icons-kit/md/ic_menu'
 import {lineChart} from 'react-icons-kit/fa/lineChart'
 import {ic_settings} from 'react-icons-kit/md/ic_settings'
@@ -73,6 +74,7 @@ const BalanceContainer = styled.div`
   border-radius: 5px;
   color: black;
   padding: 0.5em 1em 0.5em 1em;
+  flex: ${props => props.flex || '1'};
 `
 
 const AddressContainer = styled.div`
@@ -241,11 +243,14 @@ export default class MenuDrawer extends Component {
     
         return network_id;
     }
+
+    
     
 
     render() {
         const {address, GrowTokenInstance} = this.props;
         const {open, balance, active} = this.state;
+        console.log(this.props);
 
         if (GrowTokenInstance && !balance) {
             this.getBalance(GrowTokenInstance);
@@ -282,15 +287,20 @@ export default class MenuDrawer extends Component {
                                         </div>
                                         <NetworkLabel>Connected ( {this.connectedNetwork()} )</NetworkLabel>
                                     </NetworkColumn>
-                                    <NetworkColumn>
-                                        <Icon icon={ic_settings} size="1.5em" style={{color: 'white'}} />
+                                    <NetworkColumn
+                                        onClick={() => {
+                                            this.toggle();
+                                            this.props.resetApp();
+                                        }}
+                                    >
+                                        <Icon icon={logout} size="1.25em" style={{color: 'white'}} />
                                     </NetworkColumn>
                                 </NetworkRow>
                                 <WalletContainer>
                                     <BalanceContainer>
                                         {balance && `${balance} GRO`}
                                     </BalanceContainer>
-                                    <AddressContainer>
+                                    <AddressContainer flex="1.5">
                                         {address && this.parseAddress(address)}
                                     </AddressContainer>
                                 </WalletContainer>
