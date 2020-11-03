@@ -20,5 +20,5 @@ export const DISMISS_SWAP = 'boilerplate/App/DISMISS_SWAP';
 export const ADD_CURRENT_APPROVAL = 'boilerplate/App/ADD_CURRENT_APPROVAL';
 export const DISMISS_APPROVAL = 'boilerplate/App/DISMISS_APPROVAL';
 
-export const TOGGLE_HIDE_BALANCES = 'boilerplate/App/DISMISS_APPROVAL';
+export const TOGGLE_HIDE_BALANCES = 'boilerplate/App/TOGGLE_HIDE_BALANCES';
 export const TOGGLE_ADD_GRO = 'boilerplate/App/TOGGLE_ADD_GRO';

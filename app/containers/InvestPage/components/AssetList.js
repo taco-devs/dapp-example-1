@@ -97,7 +97,7 @@ export default class AssetList extends Component {
                         </AssetHeaderColumn>
                     )}
                 </AssetHeader>
-                {web3 && this.showAvailableAssets(currentOpenExtension)}
+                {this.showAvailableAssets(currentOpenExtension)}
                 
             </AssetContainer>     
         )

@@ -149,10 +149,11 @@ const deposit_underlying = async (ContractInstance, _cost, address, asset, web3,
         )
 
         // Timeout to autoclose the modal in 5s
+        let timeout = isMobile ? 1000 : 5000;
         setTimeout(() => {
           connectionStatusChannel.put(functions.dismissSwap());
           connectionStatusChannel.put(functions.getBalances(address, web3));
-        }, 5000)
+        }, timeout)
     })
     .on("confirmation", (confirmation) => {
       // connectionStatusChannel.put(functions.dismissSwap()); 
@@ -205,10 +206,11 @@ const withdraw = async (ContractInstance, _cost, address, asset, web3, functions
         )
 
         // Timeout to autoclose the modal in 5s
+        let timeout = isMobile ? 1000 : 5000;
         setTimeout(() => {
           connectionStatusChannel.put(functions.dismissSwap());
           connectionStatusChannel.put(functions.getBalances(address, web3));
-        }, 5000)
+        }, timeout)
     })
     .on("confirmation", (confirmation) => {
       // connectionStatusChannel.put(functions.dismissSwap()); 
@@ -261,10 +263,11 @@ const withdraw_underlying = async (ContractInstance, _cost, address, asset, web3
         )
 
         // Timeout to autoclose the modal in 5s
+        let timeout = isMobile ? 1000 : 5000;
         setTimeout(() => {
           connectionStatusChannel.put(functions.dismissSwap());
           connectionStatusChannel.put(functions.getBalances(address, web3));
-        }, 5000)
+        }, timeout)
     })
     .on("confirmation", (confirmation) => {
       // connectionStatusChannel.put(functions.dismissSwap()); 
@@ -277,9 +280,8 @@ const withdraw_underlying = async (ContractInstance, _cost, address, asset, web3
 // Approve the user to send tokens
 const approve = async (Contract, asset, total_supply, address, web3, functions) => {
   let stored_hash;
-  const {gas, gasPrice} = await getGasInfo(Contract.methods.approve, [asset.gtoken_address, total_supply], address, web3);
 
-  return Contract.methods.approve(asset.gtoken_address, total_supply).send({ from: address, gas, gasPrice })
+  return Contract.methods.approve(asset.gtoken_address, total_supply).send({ from: address })
     .on("transactionHash", (hash) => {
         stored_hash = hash;
         connectionStatusChannel.put(

@@ -906,8 +906,11 @@ export default class ActionDrawer extends Component {
     }
 
     render() {
-        const {type, asset, isMobileDrawerOpen, toggleMobileDrawer, currentSwap} = this.props;
+        const {type, asset, isMobileDrawerOpen, toggleMobileDrawer, currentSwap, web3} = this.props;
         const {modal_type, is_native, value_base, value_native, value_redeem, total_supply, total_reserve, isLoading, deposit_fee, withdrawal_fee, total_native, total_base, total_base_redeem, total_native_redeem} = this.state;
+        if (web3 && !total_supply) {
+          this.fetchBalance();
+        }
         return (
             <div>
                 <Drawer.Drawer 

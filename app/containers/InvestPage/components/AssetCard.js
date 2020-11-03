@@ -194,7 +194,7 @@ export default class AssetCard extends Component {
     }
 
     render() {
-        const {asset, data, isMobile, asset_key, currentOpenExtension} = this.props;
+        const {asset, data, isMobile, asset_key, currentOpenExtension, web3} = this.props;
         const {isMobileDrawerOpen} = this.state;
         
         return (
@@ -211,7 +211,10 @@ export default class AssetCard extends Component {
                     >
                         <Card 
                             isMobile={isMobile}
-                            onClick={this.toggleMobileDrawer}
+                            onClick={() => {
+                                if (!web3) return alert('Please connect your wallet to interact with this asset');
+                                this.toggleMobileDrawer();
+                            }}
                         >
                             <CardRow>
                                 <CardColumn
