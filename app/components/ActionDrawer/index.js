@@ -4,7 +4,8 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import styled from 'styled-components';
 import { Icon } from 'react-icons-kit';
-import {exchange} from 'react-icons-kit/fa/exchange'
+import {exchange} from 'react-icons-kit/fa/exchange';
+import {chevronCircleLeft} from 'react-icons-kit/fa/chevronCircleLeft';
 import debounce from 'lodash.debounce';
 import Loader from 'react-loader-spinner';
 import ApproveContainer from 'components/ApproveContainer';
@@ -23,6 +24,12 @@ const ActionRow = styled.div`
   flex-direction: row;
   align-items: center;
   padding: 1em 1em 0.5em 1em;
+`
+
+const ActionCol = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 `
 
 const ModalHeader = styled.div`
@@ -925,8 +932,10 @@ export default class ActionDrawer extends Component {
                     >
                       <Container>
                         <ActionRow>
-                          {/* <AiOutlineArrowLeft style={{margin: '0 5px 0 5px'}} onClick={() => toggleMobileDrawer()}/> */}
-                          <PrimaryLabel onClick={() => toggleMobileDrawer()}>RETURN</PrimaryLabel>
+                          <ActionCol onClick={() => toggleMobileDrawer()}>
+                            <Icon icon={chevronCircleLeft} style={{margin: '-2.5px 5px 0 5px', color: '#161d6b'}} /> 
+                            <PrimaryLabel>RETURN</PrimaryLabel>
+                          </ActionCol>
                         </ActionRow>
                         <InputContainer>
                           <InputSection>
