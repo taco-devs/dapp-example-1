@@ -155,17 +155,19 @@ class GrowthDashboard extends React.Component {
     render () {
     const {tvl, tvl_history} = this.props;
     const data = this.parseTVLData(tvl_history);
+    const growth = isMobile ? 'TVL' : 'GROWTH TVL';
+    const value = tvl ? this.parseTVL(tvl.totalValueLockedUSD) : '-';
     return (
       <GrowthContainer>
         <GrowthDashboardHeader>
-          <FormattedMessage 
+          {/* <FormattedMessage 
             {...messages.tvl} 
             values={{
               growth: isMobile ? 'TVL' : 'GROWTH TVL', 
               value: tvl ? `$ ${this.parseTVL(tvl.totalValueLockedUSD)} USD` : '-'
             }}
-          />
-          {/* <FormattedMessage {...messages.more} /> */}
+          /> */}
+          <span>{growth} ( <span style={{letterSpacing: '2.5px'}}>$ {value} USD</span> )</span>
         </GrowthDashboardHeader>
         <GrowthDashboardStats>
           {data && data.length > 0 && (
