@@ -15,7 +15,7 @@
  *    }
  */
 
-import { LOAD_REPOS, LOAD_REPOS_SUCCESS, LOAD_REPOS_ERROR, SETUP_NETWORK, ADD_CURRENT_SWAP, DISMISS_SWAP, ADD_CURRENT_APPROVAL, DISMISS_APPROVAL, TOGGLE_HIDE_BALANCES, TOGGLE_ADD_GRO } from './constants';
+import { LOAD_REPOS, LOAD_REPOS_SUCCESS, LOAD_REPOS_ERROR, SETUP_NETWORK, ADD_CURRENT_SWAP, DISMISS_SWAP, ADD_CURRENT_APPROVAL, DISMISS_APPROVAL, TOGGLE_HIDE_BALANCES, TOGGLE_ADD_GRO, TOGGLE_HIDE_STATS } from './constants';
 
 /**
  * Load the repositories, this action starts the request saga
@@ -100,5 +100,11 @@ export function toggleHideBalances() {
 export function toggleAddGRO() {
   return {
     type: TOGGLE_ADD_GRO,
+  };
+}
+
+export function toggleHideStats() {
+  return {
+    type: TOGGLE_HIDE_STATS,
   };
 }

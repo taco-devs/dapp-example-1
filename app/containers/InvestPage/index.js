@@ -57,6 +57,12 @@ const ErrorMessage = styled.b`
   color: #E56B70;
 `
 
+const Title = styled.p`
+  display: flex-direction;
+  justify-content: center;
+  color: white;
+  text-align: center;
+`
 
 class InvestPage extends React.Component {
 
@@ -87,6 +93,7 @@ class InvestPage extends React.Component {
     return (
       <React.Fragment>
         <Invest isMobile={isMobile}>
+          {isMobile && <Title>ASSETS</Title>}
           <InvestHeader 
             {...this.props} 
             isMobile={isMobile}

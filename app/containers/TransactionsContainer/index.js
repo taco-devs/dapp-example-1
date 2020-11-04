@@ -57,6 +57,13 @@ const InfoMessage = styled.b`
   color: white;
 `
 
+const Title = styled.p`
+  display: flex-direction;
+  justify-content: center;
+  color: white;
+  text-align: center;
+`
+
 class TransactionsContainer extends React.Component {
 
   componentDidMount = () => {
@@ -84,6 +91,7 @@ class TransactionsContainer extends React.Component {
     }
     return (
       <React.Fragment>
+        {isMobile && <Title>TRANSACTIONS</Title>}
         <TransactionsSection>
           {transactions && (
             <TransactionsHeader 

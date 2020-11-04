@@ -103,11 +103,6 @@ export default class TransactionsList extends Component {
         return (
             <TransactionsContainer isMobile={isMobile}>
                 <TransactionsHeader isMobile={isMobile}>
-                    {isMobile && (
-                        <TransactionsHeaderColumn>
-                            <p>Transactions</p>
-                        </TransactionsHeaderColumn>
-                    )}
                     {!isMobile && (
                         <TransactionsHeaderColumn margin="0 0 0 0" flex="1.5">
                             <p>DATE</p>

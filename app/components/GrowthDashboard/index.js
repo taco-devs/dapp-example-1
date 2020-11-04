@@ -72,6 +72,7 @@ const GrowthContainer = styled.div`
 `
 const GrowthDashboardHeader = styled.div`
   display: flex;
+  font-size: ${props => props.isMobile ? '0.85em' : '1em'}
   flex-direction: row;
   justify-content: space-between;
   padding: 0.5em 0.5em 0 0.5em;
@@ -152,7 +153,7 @@ class GrowthDashboard extends React.Component {
 
 
     render () {
-    const {isMobile, tvl, tvl_history} = this.props;
+    const {tvl, tvl_history} = this.props;
     const data = this.parseTVLData(tvl_history);
     return (
       <GrowthContainer>

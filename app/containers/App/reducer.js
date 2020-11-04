@@ -8,7 +8,7 @@
  */
 
 import { fromJS } from 'immutable';
-import { SETUP_NETWORK, ADD_CURRENT_SWAP, DISMISS_SWAP,  ADD_CURRENT_APPROVAL, DISMISS_APPROVAL, TOGGLE_HIDE_BALANCES, TOGGLE_ADD_GRO } from './constants';
+import { SETUP_NETWORK, ADD_CURRENT_SWAP, DISMISS_SWAP,  ADD_CURRENT_APPROVAL, DISMISS_APPROVAL, TOGGLE_HIDE_BALANCES, TOGGLE_ADD_GRO, TOGGLE_HIDE_STATS } from './constants';
 
 
 const dummyswap = {
@@ -35,7 +35,8 @@ export const initialState = fromJS({
   currentSwap: null,
   currentApproval: null,
   hideBalances: localStorage.getItem('hideBalances') ? JSON.parse(localStorage.getItem('hideBalances')) : false,
-  addGRO: localStorage.getItem('addGRO') ? JSON.parse(!localStorage.getItem('addGRO')) : true
+  hideStats: localStorage.getItem('hideStats') ? JSON.parse(localStorage.getItem('hideStats')) : false,
+  addGRO: localStorage.getItem('addGRO') ? JSON.parse(!localStorage.getItem('addGRO')) : true,
 });
 
 
@@ -47,6 +48,9 @@ function appReducer(state = initialState, action) {
     case TOGGLE_ADD_GRO: 
       localStorage.setItem('addGRO',!state.get('addGRO'));
       return state.set('addGRO', !state.get('addGRO'));
+    case TOGGLE_HIDE_STATS: 
+      localStorage.setItem('hideStats',!state.get('hideStats'));
+      return state.set('hideStats', !state.get('hideStats'));
     case SETUP_NETWORK: 
       return state
         .set('network', action.network);

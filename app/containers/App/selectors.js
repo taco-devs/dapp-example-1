@@ -41,10 +41,18 @@ const makeSelectAddGRO = () =>
     globalState => globalState.get('addGRO'),
   );
 
+// Toggle hide stats
+const makeSelectHideStats = () =>
+  createSelector(
+    selectGlobal,
+    globalState => globalState.get('hideStats'),
+  );
+
 export {
   makeSelectCurrrentNetwork, 
   makeSelectCurrrentSwap,
   makeSelectCurrrentApproval,
   makeSelectHideBalances,
-  makeSelectAddGRO
+  makeSelectAddGRO,
+  makeSelectHideStats
 };

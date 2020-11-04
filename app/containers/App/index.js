@@ -38,8 +38,8 @@ import { getChainData } from '../../utils/utilities';
 import NetworkData from 'contracts';
 
 import reducer from './reducer';
-import { setupNetwork } from './actions'
-import { makeSelectCurrrentNetwork, makeSelectHideBalances } from './selectors';
+import { setupNetwork, toggleHideStats } from './actions'
+import { makeSelectCurrrentNetwork, makeSelectHideBalances, makeSelectHideStats } from './selectors';
 
 import GlobalStyle from '../../global-styles';
 
@@ -261,7 +261,10 @@ class App extends React.Component {
               resetApp={this.resetApp}
             />
             <Announcement />
-            <GrowthStats {...this.state} />
+            <GrowthStats 
+              {...this.props}
+              {...this.state}
+            />
             <Navbar />
             <Switch>
               <Route 
@@ -310,10 +313,12 @@ const withReducer = injectReducer({ key: 'global', reducer });
 const mapStateToProps = createStructuredSelector({
   network: makeSelectCurrrentNetwork(),
   hideBalances: makeSelectHideBalances(),
+  hideStats: makeSelectHideStats(),
 });
 
 function mapDispatchToProps(dispatch) {
   return {
+    toggleHideStats: () => dispatch(toggleHideStats()),
     setupNetwork: (network) => dispatch(setupNetwork(network))
   };
 }

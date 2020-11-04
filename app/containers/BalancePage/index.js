@@ -58,6 +58,12 @@ const ErrorMessage = styled.b`
   color: #E56B70;
 `
 
+const Title = styled.p`
+  display: flex-direction;
+  justify-content: center;
+  color: white;
+  text-align: center;
+`
 
 class BalancePage extends React.Component {
 
@@ -91,6 +97,7 @@ class BalancePage extends React.Component {
     const assets = this.assetKeys(Network);
     return (
       <Balance>
+        {isMobile && <Title>BALANCE</Title>}
         {balances && (
           <BalanceHeader  
             {...this.state}
