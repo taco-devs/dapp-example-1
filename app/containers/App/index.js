@@ -9,7 +9,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import styled from 'styled-components';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
@@ -59,6 +59,7 @@ const AppWrapper = styled.div`
 
 const Container = styled.div`
   ${props => !props.connected && 'visibility: hidden;'}
+  ${props => !props.connected && 'height: 0;'}
 `
 
 const NetworkChainIds = {
@@ -221,21 +222,6 @@ class App extends React.Component {
           infuraId: '9619f128da304b1c99b821758dc58bb5' // process.env.REACT_APP_INFURA_ID
         }
       },
-      /* torus: {
-        package: Torus
-      },
-      fortmatic: {
-        package: Fortmatic,
-        options: {
-          key: process.env.REACT_APP_FORTMATIC_KEY
-        }
-      },
-      authereum: {
-        package: Authereum
-      },
-      unilogin: {
-        package: UniLogin
-      } */
     };
     return providerOptions;
   };
@@ -253,6 +239,7 @@ class App extends React.Component {
 
   render () {
     const {connected} = this.state;
+    const {location} = this.props;
     return (
       <AppWrapper>
         <Helmet
@@ -261,54 +248,55 @@ class App extends React.Component {
         >
           <meta name="description" content="Liquidity DeFi Protocol" />
         </Helmet>
-        { !connected &&
+        { !connected ? (
           <SplashScreen connected={connected}/>
-        }
-        <Container 
-          connected={connected}
-        >
-          <Header
-            {...this.props}
-            {...this.state}
-            toggleModal={this.toggleModal}
-            resetApp={this.resetApp}
-          />
-          <Announcement />
-          <GrowthStats {...this.state} />
-          <Navbar />
-          <Switch>
-            <Route 
-              exact 
-              path="/" 
-              render={(props) => (
-                <InvestPage 
-                  {...props}
-                  {...this.state}
-                />
-              )}
+        ) : (
+          <Container 
+            connected={connected}
+          >
+            <Header
+              {...this.props}
+              {...this.state}
+              toggleModal={this.toggleModal}
+              resetApp={this.resetApp}
             />
-            <Route 
-              path="/balance" 
-              render={(props) => (
-                <BalancePage 
-                  {...props}
-                  {...this.state}
-                />
-              )}
-            />
-            <Route 
-              path="/transactions" 
-              render={(props) => (
-                <TransactionsContainer 
-                  {...props}
-                  {...this.state}
-                />
-              )}
-            />
-            <Route path="" component={NotFoundPage} />
-          </Switch>
-          <Footer />  
-        </Container>      
+            <Announcement />
+            <GrowthStats {...this.state} />
+            <Navbar />
+            <Switch>
+              <Route 
+                exact 
+                path="/" 
+                render={(props) => (
+                  <InvestPage 
+                    {...props}
+                    {...this.state}
+                  />
+                )}
+              />
+              <Route 
+                path="/balance" 
+                render={(props) => (
+                  <BalancePage 
+                    {...props}
+                    {...this.state}
+                  />
+                )}
+              />
+              <Route 
+                path="/transactions" 
+                render={(props) => (
+                  <TransactionsContainer 
+                    {...props}
+                    {...this.state}
+                  />
+                )}
+              />
+              <Route path="" component={NotFoundPage} />
+            </Switch>
+            <Footer />  
+          </Container>      
+        )}
         <GlobalStyle />
       </AppWrapper>
     );
@@ -334,6 +322,7 @@ const withConnect = connect(
   mapStateToProps,
   mapDispatchToProps,
 );
+
 
 export default compose(
     withReducer,

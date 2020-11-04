@@ -5,9 +5,11 @@ import messages from './messages';
 import styled from 'styled-components';
 
 import { Icon } from 'react-icons-kit';
+import {lineChart} from 'react-icons-kit/fa/lineChart';
+import {exchange} from 'react-icons-kit/fa/exchange';
+import {suitcase} from 'react-icons-kit/fa/suitcase';
 import {logout} from 'react-icons-kit/iconic/logout';
 import {ic_menu} from 'react-icons-kit/md/ic_menu'
-import {lineChart} from 'react-icons-kit/fa/lineChart'
 import {ic_settings} from 'react-icons-kit/md/ic_settings'
 
 import {Link} from 'react-router-dom';
@@ -250,7 +252,6 @@ export default class MenuDrawer extends Component {
     render() {
         const {address, GrowTokenInstance} = this.props;
         const {open, balance, active} = this.state;
-        console.log(this.props);
 
         if (GrowTokenInstance && !balance) {
             this.getBalance(GrowTokenInstance);
@@ -317,39 +318,28 @@ export default class MenuDrawer extends Component {
                                             </StyledMessage>
                                         </MenuTab>
                                     </StyledLink>
-                                    {/* <StyledLink to="/vote">
-                                        <MenuTab
-                                            active={active === '/vote'}
-                                            onClick={() => this.selectActive('/vote')}
-                                        >
-                                            <FaVoteYea />
-                                            <StyledMessage>
-                                            <FormattedMessage {...messages.vote} />
-                                            </StyledMessage>
-                                        </MenuTab>
-                                        </StyledLink>
-                                        <StyledLink to="/transactions">
+                                    <StyledLink to="/transactions">
                                         <MenuTab
                                             active={active === '/transactions'}
                                             onClick={() => this.selectActive('/transactions')}
                                         >
-                                            <BiTransfer />
+                                            <Icon icon={exchange} />
                                             <StyledMessage>
                                             <FormattedMessage {...messages.transactions} />
                                             </StyledMessage>
                                         </MenuTab>
-                                        </StyledLink>
-                                        <StyledLink to="/balance">
+                                    </StyledLink>
+                                    <StyledLink to="/balance">
                                         <MenuTab
                                             active={active === '/balance'}
                                             onClick={() => this.selectActive('/balance')}
                                         >
-                                            <MdAccountBalanceWallet />
+                                            <Icon icon={suitcase} />
                                             <StyledMessage>
                                             <FormattedMessage {...messages.balance} />
                                             </StyledMessage>
                                         </MenuTab>
-                                    </StyledLink> */}
+                                    </StyledLink>
                                 </Menu>
                             </StyledDrawerContainer>
                         </MaskContainer>

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import styled from 'styled-components';
 import TransactionsCard from './TransactionCard';
+import {isMobile} from 'react-device-detect';
 /* import BalanceCard from './BalanceCard';
 import GroBalanceCard from './GroBalanceCard'; */
 
@@ -99,19 +100,29 @@ export default class TransactionsList extends Component {
 
 
     render() {
-        const {isMobile} = this.props;
         return (
             <TransactionsContainer isMobile={isMobile}>
                 <TransactionsHeader isMobile={isMobile}>
-                    <TransactionsHeaderColumn margin="0 0 0 0" flex="1.5">
-                        <p>DATE</p>
-                    </TransactionsHeaderColumn>
-                    <TransactionsHeaderColumn>
-                        <p>FROM</p>
-                    </TransactionsHeaderColumn>
-                    <TransactionsHeaderColumn>
-                        <p>TO</p>
-                    </TransactionsHeaderColumn>
+                    {isMobile && (
+                        <TransactionsHeaderColumn>
+                            <p>Transactions</p>
+                        </TransactionsHeaderColumn>
+                    )}
+                    {!isMobile && (
+                        <TransactionsHeaderColumn margin="0 0 0 0" flex="1.5">
+                            <p>DATE</p>
+                        </TransactionsHeaderColumn>
+                    )}
+                    {!isMobile && (
+                        <TransactionsHeaderColumn>
+                            <p>FROM</p>
+                        </TransactionsHeaderColumn>
+                    )}
+                    {!isMobile && (
+                        <TransactionsHeaderColumn>
+                            <p>TO</p>
+                        </TransactionsHeaderColumn>
+                    )}
                     {!isMobile && (
                         <TransactionsHeaderColumn>
                             <p>ACTIONS</p>
