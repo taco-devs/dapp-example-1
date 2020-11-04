@@ -9,8 +9,8 @@ const Card = styled.div`
     flex-direction: column;
     background-color: #21262b;
     border-radius: 5px;
-    height: ${props => props.isOpen ? '100%' : '65px'};
-    font-size: ${props => props.isMobile ? '0.75em' : '1em'};
+    height: ${props => (props.isOpen || props.isMobile) ? '100%' : '65px'};
+    font-size: ${props => props.isMobile ? '0.85em' : '1em'};
     margin: ${props => props.isMobile ? '0.25em 0 0.25em 0' : '0.5em 2em 0.5em 2em'};
     -webkit-box-shadow: 0px 0px 5px 5px rgba(0,0,149,0.75);
     -moz-box-shadow: 0px 0px 5px 5px rgba(0,211,149,0.75);
@@ -169,45 +169,41 @@ export default class GroBalanceCard extends Component {
         return (
             <React.Fragment>
                 {isMobile ? (
-                    <div>
-                    {/* <ActionDrawer
-                        type="mint"
-                        text="MINT"
-                        data={data}
-                        asset={asset}
-                        toggleMobileDrawer={this.toggleMobileDrawer}
-                        isMobileDrawerOpen={isMobileDrawerOpen}
+                    <Card 
+                        isMobile={isMobile}
+                        isOpen={currentOpenExtension === asset_key}
                     >
-                        <Card 
-                            isMobile={isMobile}
-                            onClick={this.toggleMobileDrawer}
-                        >
-                            <CardRow>
-                                <CardColumn
-                                    direction="row"
-                                    align="center"
-                                    justify="flex-start"
-                                    margin="0 0 0 1em"
-                                >
-                                    <AssetLogo src={asset.img_url} isMobile={isMobile} />
-                                    <PrimaryLabel>{asset.g_asset} {!isMobile && '/'} {asset.base_asset}</PrimaryLabel>
-                                </CardColumn>
-                                <CardColumn 
-                                    direction="column"
-                                >
-                                    <PrimaryLabel>{asset.tvl}</PrimaryLabel>
-                                    <SecondaryLabel>{asset.total_supply.toLocaleString('En-en')} {asset.g_asset}</SecondaryLabel>
-                                </CardColumn>
-                                <CardColumn 
-                                    direction="column"
-                                >
-                                    <PrimaryLabel>{asset.apy_avg} AVG</PrimaryLabel>
-                                    <SecondaryLabel>{asset.apy_7days} 7D</SecondaryLabel>
-                                </CardColumn>
-                            </CardRow>  
-                        </Card>
-                    </ActionDrawer> */}
-                    </div>
+                        <CardRow>
+                            <CardColumn
+                                direction="row"
+                                align="center"
+                                justify="flex-start"
+                                margin="0 0 0 1em"
+                            >
+                                <AssetLogo src="https://s2.coinmarketcap.com/static/img/coins/64x64/6718.png" isMobile={isMobile} />
+                                <PrimaryLabel>GRO</PrimaryLabel>
+                            </CardColumn>
+                            <CardColumn align="flex-start">
+                                <SecondaryLabel>{hideBalances ? 'PERCENTAGE' : 'HOLDINGS'}</SecondaryLabel>
+                                <PrimaryLabel>{hideBalances ? addGRO ? `${this.getPercentage()} %` : '-' : this.getBalance(balances)}</PrimaryLabel>
+                            </CardColumn>
+                        </CardRow>
+                        <CardRow>
+                            <CardColumn align="flex-start">
+                                <SecondaryLabel>PRICE</SecondaryLabel>
+                                <PrimaryLabel>${this.getGroPrice(balances, eth_price)} USD</PrimaryLabel>
+                            </CardColumn>
+                            <CardColumn align="flex-start">
+                                <SecondaryLabel>VALUE</SecondaryLabel>
+                                {hideBalances ? (
+                                    <PrimaryLabel>***** USD</PrimaryLabel>
+                                ) : (
+                                    <PrimaryLabel>${this.getTotalPrice(balances, eth_price)} USD</PrimaryLabel>
+                                )}
+                                
+                            </CardColumn>
+                        </CardRow>
+                    </Card>
                 ) : (
                     <Card 
                         isMobile={isMobile}

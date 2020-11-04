@@ -105,18 +105,26 @@ export default class BalanceList extends Component {
         return (
             <BalanceContainer isMobile={isMobile}>
                 <BalanceHeader isMobile={isMobile}>
-                    <BalanceHeaderColumn margin="0 0 0 1em">
-                        <p>ASSET</p>
-                    </BalanceHeaderColumn>
-                    <BalanceHeaderColumn>
-                        <p>HOLDINGS</p>
-                    </BalanceHeaderColumn>
-                    <BalanceHeaderColumn>
-                        <p>PRICE</p>
-                    </BalanceHeaderColumn>
-                    <BalanceHeaderColumn>
+                    {isMobile && (
+                        <BalanceHeaderColumn>
+                            <p>HOLDINGS</p>
+                        </BalanceHeaderColumn>
+                    )}
+                    {!isMobile && (
+                        <BalanceHeaderColumn>
+                            <p>HOLDINGS</p>
+                        </BalanceHeaderColumn>
+                    )}
+                    {!isMobile && (
+                        <BalanceHeaderColumn>
+                            <p>PRICE</p>
+                        </BalanceHeaderColumn>
+                    )}
+                    {!isMobile && (
+                        <BalanceHeaderColumn>
                         <p>VALUE</p>
                     </BalanceHeaderColumn>
+                    )}
                     {!isMobile && (
                         <BalanceHeaderColumn>
                             <p>ACTIONS</p>

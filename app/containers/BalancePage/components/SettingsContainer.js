@@ -1,6 +1,7 @@
 import React, { Component } from 'react'; 
 import styled from 'styled-components';
 import Switch from 'rc-switch';
+import {isMobile} from 'react-device-detect';
 
 const StyledMenu = styled.div`
     font-size: 0.85em;
@@ -10,7 +11,14 @@ const StyledMenu = styled.div`
     color: white;
     align-items: center;
     background-color: rgba(255, 255, 255, .05);
-    height: ${props => props.open ? '80px' : '0'};
+    height: ${props => {
+        if (props.isMobile) {
+            return props.open ? '100%' : '0';
+        } else {
+            return props.open ? '80px' : '0';
+        }
+        
+    }};
     ${props => props.open && 'padding: 0 0 0.75em 0;'}
     border-radius: 0 5px 5px 5px;
     transition: height 0.5s;
@@ -22,7 +30,7 @@ const StyledMenu = styled.div`
 
 const StyledSettingsRow = styled.div`
     display: flex;
-    flex-direction: row;
+    flex-direction: ${props => props.isMobile ? 'column' : 'row'};
 `
 
 const SettingColumn = styled.div`
@@ -117,9 +125,11 @@ export default class SettingsContainer extends Component {
     render() {
         const {open, hideBalances, addGRO} = this.props;
         return (
-            <StyledMenu open={open}>
+            <StyledMenu open={open} isMobile={isMobile}>
                 { open && (
-                    <StyledSettingsRow>
+                    <StyledSettingsRow
+                        isMobile={isMobile}
+                    >
                         <SettingColumn>
                             <SettingLabel>DISPLAY TYPE</SettingLabel>
                             <SwitchBox  modal_type="mint" onClick={e => e.stopPropagation()}>

@@ -9,8 +9,8 @@ const Card = styled.div`
     flex-direction: column;
     background-color: white;
     border-radius: 5px;
-    height: ${props => props.isOpen ? '100%' : '65px'};
-    font-size: ${props => props.isMobile ? '0.75em' : '1em'};
+    height: ${props => (props.isOpen || props.isMobile )? '100%' : '65px'};
+    font-size: ${props => props.isMobile ? '0.85em' : '1em'};
     margin: ${props => props.isMobile ? '0.25em 0 0.25em 0' : '0.5em 2em 0.5em 2em'};
     -webkit-box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
     -moz-box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
@@ -76,7 +76,7 @@ export default class BalanceCard extends Component {
 
     parseNumber = (number, decimals) => {
         const float_number = number / decimals;
-        return Math.round(float_number * 10000) / 10000;
+        return Math.round(float_number * 100) / 100;
     }
 
     gTokenToBase = (asset) => {
@@ -148,45 +148,51 @@ export default class BalanceCard extends Component {
         return (
             <React.Fragment>
                 {isMobile ? (
-                    <div>
-                    {/* <ActionDrawer
-                        type="mint"
-                        text="MINT"
-                        data={data}
-                        asset={asset}
-                        toggleMobileDrawer={this.toggleMobileDrawer}
-                        isMobileDrawerOpen={isMobileDrawerOpen}
+                    <Card 
+                        isMobile={isMobile}
+                        isOpen={currentOpenExtension === asset_key}
                     >
-                        <Card 
-                            isMobile={isMobile}
-                            onClick={this.toggleMobileDrawer}
-                        >
-                            <CardRow>
-                                <CardColumn
-                                    direction="row"
-                                    align="center"
-                                    justify="flex-start"
-                                    margin="0 0 0 1em"
-                                >
-                                    <AssetLogo src={asset.img_url} isMobile={isMobile} />
-                                    <PrimaryLabel>{asset.g_asset} {!isMobile && '/'} {asset.base_asset}</PrimaryLabel>
-                                </CardColumn>
-                                <CardColumn 
-                                    direction="column"
-                                >
-                                    <PrimaryLabel>{asset.tvl}</PrimaryLabel>
-                                    <SecondaryLabel>{asset.total_supply.toLocaleString('En-en')} {asset.g_asset}</SecondaryLabel>
-                                </CardColumn>
-                                <CardColumn 
-                                    direction="column"
-                                >
-                                    <PrimaryLabel>{asset.apy_avg} AVG</PrimaryLabel>
-                                    <SecondaryLabel>{asset.apy_7days} 7D</SecondaryLabel>
-                                </CardColumn>
-                            </CardRow>  
-                        </Card>
-                    </ActionDrawer> */}
-                    </div>
+                        <CardRow>
+                            <CardColumn
+                                direction="row"
+                                align="center"
+                                justify="flex-start"
+                                margin="0 0 0 1em"
+                            >
+                                <AssetLogo src={require(`images/tokens/${asset.gtoken_img_url}`)} isMobile={isMobile} />
+                                <PrimaryLabel>{asset.g_asset}</PrimaryLabel>
+                            </CardColumn>
+                            <CardColumn flex="1" align="flex-start">
+                                {asset.balance && (
+                                    <React.Fragment>
+                                        <SecondaryLabel>
+                                            {hideBalances ? 'PERCENTAGE' : 'HOLDINGS'}
+                                        </SecondaryLabel>
+                                        <PrimaryLabel>
+                                            {hideBalances ? `${this.getPercentage()} %` : this.parseNumber(asset.web3_balance, 1e8).toLocaleString('En-en')}
+                                        </PrimaryLabel>
+                                    </React.Fragment>
+                                    
+                                )}
+                                
+                                
+                            </CardColumn>
+                        </CardRow>
+                        <CardRow>
+                            <CardColumn align="flex-start" flex="1">
+                                <PrimaryLabel>${Math.round(asset.base_price_usd * 100000) / 100000} USD</PrimaryLabel>
+                                <SecondaryLabel>{Math.round(asset.total_reserve / asset.total_supply * 10000) / 10000} {asset.base_asset}</SecondaryLabel>
+                            </CardColumn>
+                            <CardColumn flex="1" align="flex-start">
+                                <SecondaryLabel>VALUE</SecondaryLabel>
+                                {hideBalances ? (
+                                    <PrimaryLabel>***** USD</PrimaryLabel>
+                                ) : (
+                                    <PrimaryLabel>${(Math.round(this.parseNumber(asset.web3_balance, 1e8) * asset.base_price_usd * 100) / 100).toLocaleString('En-en')} USD</PrimaryLabel>
+                                )}
+                            </CardColumn>
+                        </CardRow>
+                    </Card>
                 ) : (
                     <Card 
                         isMobile={isMobile}
