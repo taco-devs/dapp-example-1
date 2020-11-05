@@ -34,9 +34,10 @@ export function searchAssets(search) {
 }
 
 // GET TOKEN REQUEST
-export function getTokens() {
+export function getTokens(dateRange) {
   return {
     type: GET_TOKENS_REQUEST,
+    dateRange
   }
 }
 

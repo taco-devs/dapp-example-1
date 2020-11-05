@@ -308,8 +308,9 @@ const approve = async (Contract, asset, total_supply, address, web3, functions) 
 }
 
 function* getTokensSaga(params) {
-  const {payload} = params;
-  
+  const {dateRange} = params;
+
+  const {today_date, last_week_date} = dateRange;  
   const query = `
     {
       tokens {
@@ -320,12 +321,16 @@ function* getTokensSaga(params) {
         totalReserve
         depositFee
         withdrawalFee
+        listingDate
         countTokenDailyDatas
         cumulativeDailyChange
         tokenDailyDatas (
-          first: 8
           orderBy: id
           orderDirection: desc
+          where: {
+            date_lt: ${today_date},
+            date_gte: ${last_week_date}
+          }
         ) {
           id
           txCount

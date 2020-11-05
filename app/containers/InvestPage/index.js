@@ -78,7 +78,14 @@ class InvestPage extends React.Component {
 
   handleGetTokens = () => {
     const {getTokens} = this.props;
-    getTokens();
+
+    const today_date = Math.round(new Date().getTime() / 1000);
+    
+    let last_week = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    last_week.setHours(0,0,0,0);
+    const last_week_date = Math.round(last_week.getTime() / 1000);
+
+    getTokens({today_date, last_week_date});
   }
 
   render () {
@@ -164,7 +171,7 @@ function mapDispatchToProps(dispatch) {
     addCurrentApproval: (approval) => dispatch(addCurrentApproval(approval)),
     dismissApproval: () => dispatch(dismissApproval()),
     // Invest
-    getTokens: () => dispatch(getTokens()),
+    getTokens: (dateRange) => dispatch(getTokens(dateRange)),
     changePage: (pagination) => dispatch(changePage(pagination)),
     searchAssets: (search) => dispatch(searchAssets(search)),
     mintGTokenFromCToken: (payload) => dispatch(mintGTokenFromCToken(payload)),

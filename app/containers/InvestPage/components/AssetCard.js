@@ -149,10 +149,20 @@ export default class AssetCard extends Component {
 
         if (!token) return '-';
 
-        const {tokenDailyDatas} = token;
-        if (!token) return '-';
+        // Calculate the delta from listing date to today
+        const SECONDS_IN_DAY = 86400;
+        let TODAY = new Date();
+        TODAY = new Date(TODAY.getTime() + TODAY.getTimezoneOffset() * 60000);
+        TODAY.setHours(0,0,0,0);
+        const TODAY_DATE = Math.round(TODAY.getTime() / 1000);
+        
+        let FIRST_DAY = new Date(token.listingDate * 1000);
+        FIRST_DAY.setHours(0,0,0,0);
+        const FIRST_DATE = Math.round(FIRST_DAY.getTime() / 1000);
 
-        const increase = (token.cumulativeDailyChange / token.countTokenDailyDatas) * 100 * 365;
+        const dayDelta = (TODAY_DATE - FIRST_DATE) / SECONDS_IN_DAY;
+
+        const increase = (token.cumulativeDailyChange / dayDelta) * 100 * 365;
         return Math.round(increase * 100) / 100;
     }
 
@@ -166,7 +176,6 @@ export default class AssetCard extends Component {
         if (!token) return '-';
 
         const {tokenDailyDatas} = token;
-        if (!token) return '-';
 
         const today = tokenDailyDatas[0];
         const yesterday = tokenDailyDatas[tokenDailyDatas.length - 1];
