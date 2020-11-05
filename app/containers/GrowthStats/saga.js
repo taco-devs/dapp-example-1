@@ -61,6 +61,7 @@ const BALANCES = (address) => {
           totalReserve
           depositFee
           withdrawalFee
+          listingDate
           countTokenDailyDatas
           cumulativeDailyChange
         }
@@ -153,13 +154,28 @@ const fetch_balances = async (available_assets, user_balances, web3, address) =>
       if (Number(balance.amount) > 0) {
         liquidation_price = await ContractInstance.methods.calcWithdrawalCostFromShares(web3_balance, balance.token.totalReserve, balance.token.totalSupply, balance.token.withdrawalFee).call();
       }
+      
+      // Calculate the delta from listing date to today
+      const SECONDS_IN_DAY = 86400;
+      let TODAY = new Date();
+      TODAY = new Date(TODAY.getTime() + TODAY.getTimezoneOffset() * 60000);
+      TODAY.setHours(0,0,0,0);
+      const TODAY_DATE = Math.round(TODAY.getTime() / 1000);
+      
+      let FIRST_DAY = new Date(balance.token.listingDate * 1000);
+      FIRST_DAY.setHours(0,0,0,0);
+      const FIRST_DATE = Math.round(FIRST_DAY.getTime() / 1000);
+
+      const dayDelta = (TODAY_DATE - FIRST_DATE) / SECONDS_IN_DAY;
+      
+      const apy = balance && balance.token ? (balance.token.cumulativeDailyChange / dayDelta * 100 * 365) : 1;
 
       balances.push({
         name: balance.token.symbol,
         base: asset.base_asset,
         underlying: asset.native,
         gtoken_address: balance.token.id,
-        apy: balance && balance.token ? (balance.token.cumulativeDailyChange / balance.token.countTokenDailyDatas * 100 * 365) : 1,
+        apy,
         web3_balance: web3_balance,
         balance: Number(balance.amount),
         withdrawal_fee: balance.token.withdrawalFee,
