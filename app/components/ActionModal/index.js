@@ -334,8 +334,14 @@ const SwitchLabel = styled.div`
   justify-content: center;
   z-index: 99;
   color: ${props => {
-    if (props.modal_type === 'mint') return props.is_native ? '#00d395' : 'white';
-    if (props.modal_type === 'redeem') return props.is_native ? '#161d6b' : 'white';
+    if (props.modal_type === 'mint') {
+      if (props.value === props.is_native) return '#00d395'; 
+      return 'white';
+    } else {
+      if (props.value === props.is_native) return '#161d6b'; 
+      return 'white';
+    }
+    
   }};
   -webkit-transition: .4s;
   transition: .4s;
@@ -839,7 +845,7 @@ class ActionModal extends React.Component {
         var suffixes = ["", "K", "M", "B","T"];
         var suffixNum = Math.floor( (""+value).length/3 );
         var shortValue = '';
-        for (var precision = 2; precision >= 1; precision--) {
+        for (var precision = 2; precision >=  1; precision--) {
             shortValue = parseFloat( (suffixNum != 0 ? (value / Math.pow(1000,suffixNum) ) : value).toPrecision(precision));
             var dotLessShortValue = (shortValue + '').replace(/[^a-zA-Z 0-9]+/g,'');
             if (dotLessShortValue.length <= 2) { break; }
@@ -983,11 +989,19 @@ class ActionModal extends React.Component {
             <SwitchBox modal_type={modal_type} onClick={e => e.stopPropagation()}>
               <input type="checkbox" checked={is_native} />
               <SwitchSlider className="slider" modal_type={modal_type} onClick={() => this.toggleNativeSelector()}>
-                <SwitchLabel is_native={is_native} modal_type={modal_type}>
-                  <p>NATIVE</p>
-                </SwitchLabel>
-                <SwitchLabel is_native={!is_native} modal_type={modal_type}>
+                <SwitchLabel 
+                  value={false}
+                  is_native={is_native} 
+                  modal_type={modal_type}
+                >
                   <p>ASSET</p>
+                </SwitchLabel>
+                <SwitchLabel 
+                  value={true}
+                  is_native={is_native} 
+                  modal_type={modal_type}
+                >
+                  <p>NATIVE</p>
                 </SwitchLabel>
               </SwitchSlider>
             </SwitchBox>

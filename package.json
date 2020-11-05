@@ -2,7 +2,7 @@
   "name": "growth-defi-dapp",
   "version": "0.1.6",
   "description": "GrowthDefi UI",
-  "homepage": "https://app.growthdefi.com",
+  "homepage": ".",
   "repository": {
     "type": "git",
     "url": "git://github.com/react-boilerplate/react-boilerplate.git"

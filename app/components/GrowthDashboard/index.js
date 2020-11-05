@@ -175,8 +175,11 @@ class GrowthDashboard extends React.Component {
 }
 
   parseTVLData = (tvl_history) => {
+    try {
+
     if (!tvl_history) return [];
     if (tvl_history.length < 1) return [];
+
     const SECONDS_IN_DAY = 86400;
     let TODAY = new Date();
     TODAY = new Date(TODAY.getTime() + TODAY.getTimezoneOffset() * 60000);
@@ -208,7 +211,7 @@ class GrowthDashboard extends React.Component {
           y_value = day_data.cumulativeTotalValueLockedUSD;
       } else {
           x_axis_label = moment(tomorrow_timestamp * 1000).utc(0).format('MMM DD');
-          y_value = tvl_history[current_days - 1].cumulativeTotalValueLockedUSD;
+          y_value = tvl_history[current_days -1] ? tvl_history[current_days - 1].cumulativeTotalValueLockedUSD : 0;
       }
 
       chart_data[current_days] = {x_axis_label, y_value};
@@ -216,6 +219,10 @@ class GrowthDashboard extends React.Component {
     }
     
     return chart_data;
+    } catch (e) {
+      console.log(e);
+      return [];
+    }
   }
 
   getMax = (tvl_history) => {
