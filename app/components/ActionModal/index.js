@@ -15,10 +15,16 @@ import messages from './messages';
 import styled from 'styled-components';
 import { Icon } from 'react-icons-kit';
 import {info} from 'react-icons-kit/icomoon/info';
+import {exchange} from 'react-icons-kit/fa/exchange'
 
 import ApproveContainer from 'components/ApproveContainer';
 import Loader from 'react-loader-spinner';
 
+import ModalHeader from './ModalHeader';
+import AmountInput from './AmountInput';
+import CalcToggle from './CalcToggle';
+import SelectedAsset from './SelectedAsset';
+import AssetTypeToggle from './AssetTypeToggle';
 
 const ActionButton = styled.div`
   display: flex; 
@@ -68,27 +74,6 @@ const ActionButton = styled.div`
   } 
 }
 `
-const ModalHeader = styled.div`
-  display: flex;
-  flex-direction: row;
-  height: 70px;
-`
-
-const ModalHeaderOption = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  background-color: ${props => props.active ? props.defaultColor : 'white'};
-  color: ${props => props.active ? 'white' : props.defaultColor};
-  transition: background-color .4s ease;
-
-  &:hover {
-    cursor: pointer;
-    opacity: 0.75;
-  }
-`
 
 const InputContainer = styled.div`
   display: flex; 
@@ -123,22 +108,15 @@ const PrimaryLabel = styled.b`
   letter-spacing: ${props => props.spacing || '0'};∫
 `
 
-const TotalLabel = styled.p`
-  color: #161d6b;
-  opacity: 0.75; 
-  font-size: 0.85em;
-  margin: ${props => props.margin || '0'};
-`
-
 const InputRow = styled.div`
   display: flex;
   flex-direction: row;
 `
 
-const AmountInput = styled.div`
+/* const AmountInput = styled.div`
   display: flex;
   flex: 3;
-`
+` */
 
 const StyledInput = styled.input`
   width: 100%;
@@ -176,34 +154,6 @@ const BalanceLabel = styled.b`
 const AssetLabel = styled.b`
   color: #161d6b;
   font-size: 0.85em;
-`
-
-/* const SelectorRow = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-around;
-  border-radius: 5px;
-  padding: 5px 0 5px 0;
-
-  &:hover {
-    background-color: #E8E8E8;
-    cursor: pointer;
-  }
-` */ 
-
-const SelectorRow = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-around;
-  border-radius: 5px;
-  padding: 5px 0 5px 0;
-`
-
-const IconLogo = styled.img`
-  height: 25px;
-  width: 25px;
 `
 
 const Summary = styled.div`
@@ -258,95 +208,6 @@ const ActionConfirmButton = styled.div`
   }
 `
 
-const AssetTypeToggle = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  height: 50px;
-`
-
-const SwitchBox = styled.label`
-  position: relative;
-  display: inline-block;
-  width: 150px;
-  height: 34px;
-
-  input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-
-  input:checked + .slider {
-    background-color: ${props => {
-      if (props.modal_type === 'mint') return '#00d395';
-      if (props.modal_type === 'redeem') return '#161d6b';
-    }};
-  }
-
-  input:focus + .slider {
-    box-shadow: 0 0 1px #2196F3;
-  }
-
-  input:checked + .slider:before {
-    -webkit-transform: translateX(73px);
-    -ms-transform: translateX(73px);
-    transform: translateX(73px);
-  }
-  
-`
-
-const SwitchSlider = styled.span`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: ${props => {
-    if (props.modal_type === 'mint') return '#00d395';
-    if (props.modal_type === 'redeem') return '#161d6b';
-  }};
-  -webkit-transition: .4s;
-  transition: .4s;
-  border-radius: 5px;
-
-  &:before {
-    border-radius: 5px;
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 70px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    -webkit-transition: .4s;
-    transition: .4s;
-  }
-`
-
-const SwitchLabel = styled.div`
-  display: flex;
-  flex: 1;
-  justify-content: center;
-  z-index: 99;
-  color: ${props => {
-    if (props.modal_type === 'mint') {
-      if (props.value === props.is_native) return '#00d395'; 
-      return 'white';
-    } else {
-      if (props.value === props.is_native) return '#161d6b'; 
-      return 'white';
-    }
-    
-  }};
-  -webkit-transition: .4s;
-  transition: .4s;
-  font-size: 0.85em;
-`
 
 const BalanceRow = styled.div`
   display: flex;
@@ -354,6 +215,7 @@ const BalanceRow = styled.div`
   width: 100%;
   justify-content: flex-start;
 `
+
 
 const customStyles = {
   content : {
@@ -380,9 +242,15 @@ class ActionModal extends React.Component {
     show: false,
     isLoading: false,
     modal_type: 'mint',
+    // Calc from Cost
     value_base: '',
     value_native: '',
     value_redeem: '',
+    // Calc from Shares
+    shares_value_base: '',
+    shares_value_native: '',
+    shares_value_base_redeem: '',
+    shares_value_native_redeem: '',
     is_native: true,
     underlying_balance: null,
     asset_balance: null,
@@ -399,6 +267,7 @@ class ActionModal extends React.Component {
     underlying_conversion: null,
     underlying_allowance: null,
     asset_allowance: null,
+    calcFromCost: true,
   }
 
   componentDidMount = () => {
@@ -458,35 +327,16 @@ class ActionModal extends React.Component {
     }
   }
 
+  handleChange = (name, value) => {
+      this.setState({[name]: value});
+  }
+
+  handleMultiChange = (newState) => {
+    this.setState({...newState});
+  }
 
   changeType = (modal_type) => {
     this.setState({modal_type});
-  }
-
-  handleInputChange = (value) => {
-    const {modal_type, is_native} = this.state;
-    
-    if (value < 0) {
-      this.setState({value: 0});
-    } else {
-
-      // Route total logic
-      if (modal_type === 'mint') {
-        this.calculateMintingTotal(value);
-
-        // Route native field
-        if (is_native) {
-          this.setState({value_native: value})
-        } else {
-          this.setState({value_base: value});
-        }
-      } 
-    
-      if (modal_type === 'redeem') {
-        this.calculateBurningTotal(value, true);
-        this.setState({value_redeem: value})
-      }
-    }
   }
 
   calculateBurningFee = () => {
@@ -511,75 +361,6 @@ class ActionModal extends React.Component {
       return web3.utils.toWei(value, 'mwei');
     }
   }
-
-  calculateMintingTotal = debounce(async (value) => {
-    const { web3, asset } = this.props;
-    const { modal_type, is_native, total_reserve, total_supply, exchange_rate, deposit_fee} = this.state;
-
-    const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
-
-
-    // Handle 0 value transactions
-    if (!value || value.length <= 0) {
-      this.setState({
-        real_fee: null,
-        total: null,
-      })
-    }
-
-    // Calculate the total to mint
-    if (modal_type === 'mint') {
-      if (is_native) {
-        const netShares = this.getWei(value, asset.underlying_decimals);
-        const underlying_conversion = await GContractInstance.methods.calcCostFromUnderlyingCost(netShares, exchange_rate).call();
-        const result = await GContractInstance.methods.calcDepositSharesFromCost(underlying_conversion, total_reserve, total_supply, deposit_fee).call();
-        const {_netShares, _feeShares} = result;
-        this.setState({
-          real_fee: _feeShares,
-          total_native: _netShares,
-        });
-  
-      } else {
-        // CTokens only have 8 decimals 
-        // NOTE: Standarized to gwei by converting it to 1e9 because .toWei() doesn't handle 1e8
-        const _cost = this.getWei(value, 1e8)
-        const result = await GContractInstance.methods.calcDepositSharesFromCost(_cost, total_reserve, total_supply, deposit_fee).call();
-        const {_netShares, _feeShares} = result;
-        this.setState({
-          real_fee: _feeShares,
-          total_base: _netShares,
-        })
-      }
-    }
-
-  }, 250);
-
-  calculateBurningTotal = debounce(async (value) => {
-    const { web3, asset } = this.props;
-    const { modal_type, is_native, total_reserve, total_supply, exchange_rate, withdrawal_fee} = this.state;
-  
-    // Handle 0 value transactions
-    if (!value || value.length <= 0) {
-      this.setState({
-        real_fee: null,
-        total: null,
-      })
-    }
-
-    const netShares = this.getWei(value, 1e8);
-  
-    const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
-    const result = await GContractInstance.methods.calcWithdrawalCostFromShares(netShares, total_reserve, total_supply, withdrawal_fee).call();
-    const rate = await GContractInstance.methods.calcUnderlyingCostFromCost(result._cost, exchange_rate).call();
-    const {_cost, _feeShares} = result;
-    this.setState({
-      real_fee: _feeShares,
-      total_native_cost_redeem: netShares,
-      total_base_redeem: _cost,
-      total_native_redeem: rate,
-    });
-
-  }, 250)
 
   toggleNativeSelector = () => {
     this.setState({is_native: !this.state.is_native})
@@ -616,33 +397,6 @@ class ActionModal extends React.Component {
       }
 
       
-  }
-
-  setMax = () => {
-    const { asset } = this.props;
-    const {modal_type, is_native, underlying_balance, asset_balance, g_balance, deposit_fee} = this.state;
-    
-    if (modal_type === 'mint') {
-      if (is_native) {
-        const SAFE_MARGIN = 0.0001 * asset.underlying_decimals;
-        if ((Number(underlying_balance) / asset.underlying_decimals) < 0.01) return;
-        const value_native = ((underlying_balance - SAFE_MARGIN) / asset.underlying_decimals);
-        this.setState({value_native});
-        this.handleInputChange(value_native)
-      } else {
-        if ((Number(asset_balance) / 1e8) < 0.01) return;
-        const value_base = asset_balance / 1e8;
-        this.setState({value_base});
-        this.handleInputChange(value_base)
-      }
-    }
-
-    if (modal_type === 'redeem') {
-      if ((Number(g_balance) / 1e8) < 0.01) return;
-      const value_redeem = g_balance / 1e8;
-      this.setState({value_redeem});
-      this.calculateBurningTotal(value_redeem);
-    }
   }
 
   handleDeposit = async () => {
@@ -839,6 +593,7 @@ class ActionModal extends React.Component {
     }
   }
 
+  // Helper method to parse big numbers
   abbreviateNumber = (value) => {
     var newValue = value;
     if (value >= 1000) {
@@ -858,7 +613,7 @@ class ActionModal extends React.Component {
 
   render () {
     const {type, asset, address} = this.props;
-    const {show, isLoading, modal_type, value_base, value_native, is_native, total_supply, total_reserve, deposit_fee, total_base, total_native, value_redeem, total_native_redeem, total_base_redeem, withdrawal_fee } = this.state;
+    const {show, isLoading, modal_type, value_base, value_native, is_native, total_supply, total_reserve, deposit_fee, total_base, total_native, value_redeem, total_native_redeem, total_base_redeem, withdrawal_fee, calcFromCost } = this.state;
     return (
       <div
         onClick={(e) => {
@@ -889,29 +644,10 @@ class ActionModal extends React.Component {
           contentLabel="Example Modal"
         >
           <ModalHeader 
-            onClick={e => e.stopPropagation()}
-          >
-            <ModalHeaderOption
-              active={modal_type === 'mint'}
-              defaultColor="#00d395"
-              onClick={(e) => {
-                e.stopPropagation();
-                this.changeType('mint')
-              }} 
-            >
-              <p>MINT</p>
-            </ModalHeaderOption>
-            <ModalHeaderOption
-              active={modal_type === 'redeem'}
-              defaultColor="#161d6b"
-              onClick={(e) => {
-                e.stopPropagation();
-                this.changeType('redeem')
-              }} 
-            >
-              <p>REDEEM</p>
-            </ModalHeaderOption>
-          </ModalHeader>
+            {...this.props}
+            {...this.state}
+            handleChange={this.handleChange}
+          />
           <InputContainer
             onClick={e => e.stopPropagation()}
           >
@@ -924,102 +660,38 @@ class ActionModal extends React.Component {
                   <BalanceLabel margin="0 10px 0 10px">{this.showBalance(is_native)}</BalanceLabel>
                 </BalanceRow>
                 <InputRow>
-                  <AmountInput>
-                    {modal_type === 'mint' && is_native && (
-                      <StyledInput
-                        value={value_native}
-                        disabled={isLoading}
-                        placeholder="0.0"
-                        type="number"
-                        onClick={e => e.stopPropagation()}
-                        onChange={e => {
-                          this.handleInputChange(e.target.value)
-                        }}
-                      />
-                    )} 
-                    {modal_type === 'mint' && !is_native && (
-                      <StyledInput
-                        value={value_base}
-                        placeholder="0.0"
-                        disabled={isLoading}
-                        type="number"
-                        onClick={e => e.stopPropagation()}
-                        onChange={e => {
-                          this.handleInputChange(e.target.value)
-                        }}
-                      />
-                    )}
-                    {modal_type === 'redeem' && (
-                      <StyledInput
-                        value={value_redeem}
-                        placeholder="0.0"
-                        disabled={isLoading}
-                        type="number"
-                        onClick={e => e.stopPropagation()}
-                        onChange={e => {
-                          this.handleInputChange(e.target.value)
-                        }}
-                      />
-                    )} 
-                    
-                  </AmountInput>
-                  <MaxButton
-                    modal_type={modal_type}
-                    onClick={() => this.setMax()}
-                  > 
-                    MAX
-                  </MaxButton>
+                  <AmountInput 
+                    {...this.props}
+                    {...this.state}
+                    handleChange={this.handleChange}
+                    handleMultiChange={this.handleMultiChange}
+                    getWei={this.getWei}
+                  />
                 </InputRow>
               </InputSectionColumn>
               <InputSectionColumn
                 flex="1"
               >
-                <PrimaryLabel align="right">ASSET</PrimaryLabel>
-                <SelectorRow>
-                  <IconLogo src={modal_type === 'mint' ? is_native ? require(`images/tokens/${asset.native_img_url}`) : require(`images/tokens/${asset.img_url}`) : require(`images/tokens/${asset.gtoken_img_url}`)} />
-                  <AssetLabel>{modal_type === 'mint' ? is_native ? asset.native : asset.base_asset : asset.g_asset}</AssetLabel>
-                 {/*  <FaChevronDown /> */}
-                </SelectorRow>
+                <CalcToggle 
+                  {...this.props}
+                  {...this.state}
+                  handleChange={this.handleChange}
+                />
+                <SelectedAsset 
+                  {...this.props}
+                  {...this.state}
+                />
               </InputSectionColumn>
             </InputSection>            
           </InputContainer>
-          <AssetTypeToggle
-            onClick={e => e.stopPropagation()}
-          >
-            <SwitchBox modal_type={modal_type} onClick={e => e.stopPropagation()}>
-              <input type="checkbox" checked={is_native} />
-              <SwitchSlider className="slider" modal_type={modal_type} onClick={() => this.toggleNativeSelector()}>
-                <SwitchLabel 
-                  value={false}
-                  is_native={is_native} 
-                  modal_type={modal_type}
-                >
-                  <p>ASSET</p>
-                </SwitchLabel>
-                <SwitchLabel 
-                  value={true}
-                  is_native={is_native} 
-                  modal_type={modal_type}
-                >
-                  <p>NATIVE</p>
-                </SwitchLabel>
-              </SwitchSlider>
-            </SwitchBox>
-          </AssetTypeToggle>
+          <AssetTypeToggle 
+            {...this.props}
+            {...this.state}
+            handleChange={this.handleChange}
+          />
           <Summary
             onClick={e => e.stopPropagation()}
           >
-            {/* <SummaryRow>
-              <SummaryColumn>
-                <PrimaryLabel>PRICE</PrimaryLabel>
-              </SummaryColumn>
-              <SummaryColumn align="flex-end">
-                <SummaryRow>
-                  <PrimaryLabel margin="0 5px 0 5px">10.78 {asset.native} = 1 ETH</PrimaryLabel>
-                  <HiSwitchHorizontal />
-                </SummaryRow>
-              </SummaryColumn>
-            </SummaryRow> */}
             <SummaryRow>
               <SummaryColumn>
                 <PrimaryLabel>{asset.base_asset} RESERVE</PrimaryLabel>
