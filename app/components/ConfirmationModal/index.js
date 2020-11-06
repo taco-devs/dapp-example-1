@@ -84,6 +84,8 @@ const StyledText = styled.p`
 const StyledLogo = styled.img`
   height: 50px;
   width: auto;
+  background-color: white;
+  border-radius: 50%;
 `
 
 const StyledTitle = styled.h3`
@@ -234,12 +236,7 @@ class ConfirmationModal extends React.Component {
                     {currentSwap && (
                       <DataBodyRow shadow>
                         <DataBodyColumn align="right">
-                          {currentSwap && currentSwap.modal_type === 'redeem' && (
-                            <StyledLogo src={require(`images/tokens/${currentSwap.fromImage}`)}/>
-                          )}
-                          {currentSwap && currentSwap.modal_type === 'mint' && (
-                            <StyledLogo src={currentSwap.fromImage}/>
-                          )}
+                          <StyledLogo src={require(`images/tokens/${currentSwap.fromImage}`)}/>
                         </DataBodyColumn>
                         <DataBodyColumn flex="3" margin="0 1.5em 0 0">
                           <StyledText size="1.2em" modal_type={currentSwap.modal_type}>{this.parseNumber(currentSwap.sending, currentSwap.fromDecimals)}</StyledText>
@@ -253,13 +250,7 @@ class ConfirmationModal extends React.Component {
                           <StyledText>{currentSwap.to}</StyledText>
                         </DataBodyColumn>
                         <DataBodyColumn align="left">
-                          {currentSwap && currentSwap.modal_type === 'mint' && (
-                            <StyledLogo src={require(`images/tokens/${currentSwap.toImage}`)}/>
-                          )}
-                          {currentSwap && currentSwap.modal_type === 'redeem' && (
-                            <StyledLogo src={currentSwap.toImage}/>
-                          )}
-                          
+                          <StyledLogo src={require(`images/tokens/${currentSwap.toImage}`)}/>
                         </DataBodyColumn>
                       </DataBodyRow>
                     )}
