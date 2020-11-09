@@ -13,6 +13,10 @@ export default defineMessages({
     id: `${scope}.header`,
     defaultMessage: 'INVEST',
   },
+  swap: {
+    id: `${scope}.swap`,
+    defaultMessage: 'SWAP',
+  },
   vote: {
     id: `${scope}.vote`,
     defaultMessage: 'VOTE',

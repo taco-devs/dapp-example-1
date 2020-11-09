@@ -70,7 +70,7 @@ const StyledIcon = ({Icon}) => {
     `
 }
 
-export default class InvestHeader extends Component {
+export default class SwapHeader extends Component {
 
     showPagination = () => {
         const {pagination, assets, search} = this.props;
@@ -127,7 +127,7 @@ export default class InvestHeader extends Component {
                     <SearchContainer isMobile={isMobile}>
                         <Icon icon={ic_search} size="1.5em" style={{margin: isMobile ? '0 8px 0 8px' : '0 15px 0 15px'}} />
                         <StyledSearchBox 
-                            placeholder={isMobile ? "FILTER ASSETS" : "FILTER BY TOKEN OR PROTOCOL"}
+                            placeholder="FILTER BY POOL"
                             value={search}
                             onChange={(e) => this.handleSearch(e.target.value)}
                         />

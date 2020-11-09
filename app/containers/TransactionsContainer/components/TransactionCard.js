@@ -189,7 +189,9 @@ export default class TransactionCard extends Component {
                                 margin="0 0 0 0.5em"
                             >
                                 <PrimaryLabel>{timestamp && moment(timestamp * 1000).format('MMMM DD YYYY, LT')}</PrimaryLabel>
-                                <SecondaryLabel>#{transaction.block}</SecondaryLabel>
+                                {timestamp && (
+                                    <SecondaryLabel>#{transaction.block}</SecondaryLabel>
+                                )}
                             </CardColumn>
                             <CardColumn 
                                 flex="1"

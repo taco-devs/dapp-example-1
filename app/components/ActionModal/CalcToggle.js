@@ -20,7 +20,7 @@ const ToggleCalcContainer = styled.div`
   justify-content: flex-end;
 `
 
-const ToggleButton = styled.div`
+/* const ToggleButton = styled.div`
   display: flex;
   flex-direction: row;
   align-content: center;
@@ -31,7 +31,16 @@ const ToggleButton = styled.div`
   &:hover {
     cursor: pointer;
     background-color: #E8E8E8;
-  }
+  } 
+`*/
+
+const ToggleButton = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  justify-content: flex-end;
+  padding: 2px 3px 2px 3px;
+  border-radius: 5px;
 `
 
 export default class CalcToggle extends Component {
@@ -46,14 +55,14 @@ export default class CalcToggle extends Component {
         return (
             <ToggleCalcContainer>
                 <ToggleButton
-                    onClick={this.handleToggleCalc}
+                    //onClick={this.handleToggleCalc}
                 >
                     {calcFromCost ? (
                         <PrimaryLabel align="right">SEND</PrimaryLabel>
                     ) : (
                         <PrimaryLabel align="right">RECEIVE</PrimaryLabel>
                     )}
-                    <Icon icon={exchange} style={{color: '#161d6b', margin: '-3px 0 0 5px'}}/>
+                    {/* <Icon icon={exchange} style={{color: '#161d6b', margin: '-3px 0 0 5px'}}/> */}
                 </ToggleButton>
             </ToggleCalcContainer>
         )

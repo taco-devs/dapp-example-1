@@ -18,7 +18,7 @@ const BalanceRow = styled.div`
 export default class Balance extends Component {
 
     showBalance = (is_native) => {
-        const { asset, underlying_balance, asset_balance, g_balance, modal_type } = this.props;
+        const { asset, underlying_balance, asset_balance, g_balance, modal_type, calcFromCost } = this.props;
         if (!underlying_balance || !asset_balance || !g_balance ) return (
           <Loader
             type="TailSpin"
@@ -29,6 +29,7 @@ export default class Balance extends Component {
         );
   
         if (modal_type === 'mint') {
+        
           if (is_native) {
             return (underlying_balance / asset.underlying_decimals).toFixed(2);
           } else {
@@ -42,7 +43,7 @@ export default class Balance extends Component {
     }
 
     render() {
-        const {is_native} = this.props;
+        const {is_native, calcFromCost} = this.props;
         return (
             <BalanceRow>
                 <BalanceLabel>BALANCE:</BalanceLabel>

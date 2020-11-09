@@ -13,6 +13,7 @@ import messages from './messages';
 import styled from 'styled-components';
 
 import { Icon } from 'react-icons-kit';
+import {list} from 'react-icons-kit/fa/list'
 import {lineChart} from 'react-icons-kit/fa/lineChart';
 import {exchange} from 'react-icons-kit/fa/exchange';
 import {suitcase} from 'react-icons-kit/fa/suitcase';
@@ -117,6 +118,19 @@ class Navbar extends React.Component {
               </StyledMessage>
             </NavbarTab>
           </StyledLink>
+          <StyledLink to="/swap"
+            onClick={() => this.selectActive('/swap')}
+          >
+            <NavbarTab 
+              active={active === '/swap'}
+              onClick={() => this.selectActive('/swap')}
+            >
+              <Icon icon={exchange} style={{margin: '-3px 0 0 0'}}/>
+              <StyledMessage>
+                <FormattedMessage {...messages.swap} />
+              </StyledMessage>
+            </NavbarTab>
+          </StyledLink>
         </NavbarColumn>
         <NavbarColumn justify="flex-end">
           {/* <StyledLink to="/vote">
@@ -137,7 +151,7 @@ class Navbar extends React.Component {
               active={active === '/transactions'}
               onClick={() => this.selectActive('/transactions')}
             >
-              <Icon icon={exchange} style={{margin: '-3px 0 0 0'}}/>
+              <Icon icon={list} style={{margin: '-3px 0 0 0'}}/>
               <StyledMessage>
                 <FormattedMessage {...messages.transactions} />
               </StyledMessage>
