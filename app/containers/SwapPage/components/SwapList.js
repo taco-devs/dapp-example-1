@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-//import AssetCard from './AssetCard';
+import SwapCard from './SwapCard';
 import styled from 'styled-components';
 
 const AssetContainer = styled.div`
@@ -31,10 +31,10 @@ export default class SwapList extends Component {
         currentOpenExtension: null,
     }
 
-    /* showAvailableAssets = (currentOpenExtension) => {
+    showAvailableAssets = (currentOpenExtension) => {
         const {assets, pagination, Network, search} = this.props;
         if (!assets || !Network) return;
-        const assets_per_page = 10;
+        /* const assets_per_page = 10;
         const slice_start = pagination * assets_per_page;
         const slice_end = (pagination + 1) * assets_per_page;
         const page_assets = 
@@ -44,18 +44,18 @@ export default class SwapList extends Component {
                     if (search.length < 1) return true;
                     return `g${asset_key}`.toUpperCase().indexOf(search.toUpperCase()) > -1;
                 })
-                .slice(slice_start, slice_end);
-        return page_assets.map((asset_key) => (
-            <AssetCard  
+                .slice(slice_start, slice_end);*/
+
+        return assets.map((asset_key) => (
+            <SwapCard  
                 {...this.props} 
                 asset_key={asset_key}
                 currentOpenExtension={currentOpenExtension}
                 asset={Network.available_assets[asset_key]} 
-                toggleExtension={this.toggleExtension}
             />
             )
         )
-    } */
+    } 
 
 
     toggleExtension = (asset) => {
@@ -95,8 +95,7 @@ export default class SwapList extends Component {
                         </AssetHeaderColumn>
                     )}
                 </AssetHeader>
-                {/* this.showAvailableAssets(currentOpenExtension) */}
-                
+                {this.showAvailableAssets(currentOpenExtension)}
             </AssetContainer>     
         )
     }

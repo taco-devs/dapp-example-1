@@ -17,7 +17,9 @@ import injectReducer from 'utils/injectReducer';
 import makeSelectSwapPage from './selectors';
 import reducer from './reducer';
 import saga from './saga';
+import { getPools } from './actions';
 import messages from './messages';
+import NetworkData from 'contracts';
 import styled from 'styled-components';
 
 import { SwapHeader, SwapList } from './components';
@@ -44,7 +46,21 @@ const SwapContainer = styled.div`
 
 class SwapPage extends React.Component {
 
+  componentDidMount = () => {
+    const {getPools} = this.props;
+    getPools();
+  }
+
+  /* Parse the assets */
+  assetKeys = (Network) => {
+    if (!Network || !Network.available_assets) return [];
+    return Object.keys(Network.available_assets);
+  }
+
   render() {
+    const {network} = this.props;
+    const Network = network ? NetworkData[network] : NetworkData['eth'];
+    const assets = this.assetKeys(Network);
     return (
       <div>
         <Helmet>
@@ -57,6 +73,8 @@ class SwapPage extends React.Component {
             <SwapList 
               {...this.props}
               {...this.state}
+              assets={assets}
+              Network={Network}
             />
           </SwapContainer>
         </Swap>
@@ -80,7 +98,7 @@ const mapStateToProps = createStructuredSelector({
 
 function mapDispatchToProps(dispatch) {
   return {
-    dispatch,
+    getPools: () => dispatch(getPools()),
   };
 }
 

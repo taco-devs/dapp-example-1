@@ -118,7 +118,7 @@ class Navbar extends React.Component {
               </StyledMessage>
             </NavbarTab>
           </StyledLink>
-          <StyledLink to="/swap"
+          {/* <StyledLink to="/swap"
             onClick={() => this.selectActive('/swap')}
           >
             <NavbarTab 
@@ -130,7 +130,7 @@ class Navbar extends React.Component {
                 <FormattedMessage {...messages.swap} />
               </StyledMessage>
             </NavbarTab>
-          </StyledLink>
+          </StyledLink> */}
         </NavbarColumn>
         <NavbarColumn justify="flex-end">
           {/* <StyledLink to="/vote">

@@ -211,7 +211,8 @@ class GrowthDashboard extends React.Component {
           y_value = day_data.cumulativeTotalValueLockedUSD;
       } else {
           x_axis_label = moment(tomorrow_timestamp * 1000).utc(0).format('MMM DD');
-          y_value = tvl_history[current_days -1] ? tvl_history[current_days - 1].cumulativeTotalValueLockedUSD : 0;
+          // y_value = tvl_history[current_days -1] ? tvl_history[current_days - 1].cumulativeTotalValueLockedUSD : 0;
+          y_value = tvl_history[current_days -1] ? tvl_history[current_days - 1].cumulativeTotalValueLockedUSD : chart_data[current_days - 1].y_value;
       }
 
       chart_data[current_days] = {x_axis_label, y_value};

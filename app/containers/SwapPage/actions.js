@@ -4,10 +4,22 @@
  *
  */
 
-import { DEFAULT_ACTION } from './constants';
+import { GET_POOLS_REQUEST } from './constants';
 
-export function defaultAction() {
+export function getPools() {
   return {
-    type: DEFAULT_ACTION,
+    type: GET_POOLS_REQUEST,
+  };
+}
+
+export function getPoolsSuccess() {
+  return {
+    type: GET_POOLS_REQUEST,
+  };
+}
+
+export function getPoolsError() {
+  return {
+    type: GET_POOLS_REQUEST,
   };
 }
