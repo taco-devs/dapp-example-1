@@ -21,6 +21,7 @@ const get_query = (pools) =>  {
       finalized
       publicSwap
       swapFee
+      totalSwapVolume
       totalWeight
       tokensList
       tokens {
@@ -36,6 +37,18 @@ const get_query = (pools) =>  {
 `
 }
 
+const tokens_query = `
+    {
+      tokens {
+        id
+        name
+        symbol
+        totalSupply
+        totalReserve
+      }
+    }
+  `
+
 function* getPoolsSaga() {
 
   try { 
@@ -46,6 +59,15 @@ function* getPoolsSaga() {
     const Network = NetworkData[network];
 
     if (Network) {
+
+      // query the tokens
+      const tokens_options = {
+        method: 'POST',
+        body: JSON.stringify({query: tokens_query})
+      }
+
+      // Call the growth graph
+      const tokens_response = yield call(request, process.env.GROWTH_GRAPH_URL, tokens_options);
 
       // Get the pair pools
       const pools = Object.keys(Network.available_assets).map(asset => Network.available_assets[asset].liquidity_pool_address);
@@ -60,8 +82,8 @@ function* getPoolsSaga() {
 
       const response = yield call(request, 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer', options);
 
-      if (response && response.data) {
-        console.log(response.data);
+      if (response && tokens_response && response.data && tokens_response.data) {
+        yield put(getPoolsSuccess(response.data.pools, tokens_response.data.tokens))
       } 
       
     }

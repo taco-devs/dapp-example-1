@@ -1,25 +1,20 @@
 import { createSelector } from 'reselect';
-import { initialState } from './reducer';
 
-/**
- * Direct selector to the swapPage state domain
- */
+const selectSwaps = state => state.swapPage;
 
-const selectSwapPageDomain = state => state.swapPage || initialState;
-
-/**
- * Other specific selectors
- */
-
-/**
- * Default selector used by SwapPage
- */
-
-const makeSelectSwapPage = () =>
-  createSelector(
-    selectSwapPageDomain,
-    substate => substate,
+const makeSelectPools = () =>
+  createSelector(selectSwaps, swapsState => {
+      return swapsState.get('pools')
+    }
   );
 
-export default makeSelectSwapPage;
-export { selectSwapPageDomain };
+const makeSelectTokens = () =>
+  createSelector(selectSwaps, swapsState => {
+      return swapsState.get('tokens')
+    }
+  );
+
+export { 
+  makeSelectPools,
+  makeSelectTokens
+};

@@ -14,9 +14,10 @@ import { compose } from 'redux';
 
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
-import makeSelectSwapPage from './selectors';
+import { makeSelectPools, makeSelectTokens } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
+import { makeSelectPrices, makeSelectEthPrice, makeSelectBalances } from '../GrowthStats/selectors';
 import { getPools } from './actions';
 import messages from './messages';
 import NetworkData from 'contracts';
@@ -93,7 +94,11 @@ SwapPage.propTypes = {
 };
 
 const mapStateToProps = createStructuredSelector({
-  swapPage: makeSelectSwapPage(),
+  balances: makeSelectBalances(),
+  pools: makeSelectPools(),
+  tokens: makeSelectTokens(),
+  prices: makeSelectPrices(),
+  ethPrice: makeSelectEthPrice(),
 });
 
 function mapDispatchToProps(dispatch) {

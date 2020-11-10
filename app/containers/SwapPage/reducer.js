@@ -1,20 +1,32 @@
 /*
  *
- * SwapPage reducer
+ * TransactionsContainer reducer
  *
  */
-import produce from 'immer';
-import { DEFAULT_ACTION } from './constants';
+import { fromJS } from 'immutable';
+import { 
+  GET_POOLS_REQUEST, GET_POOLS_ERROR, GET_POOLS_SUCCESS
+} from './constants';
 
-export const initialState = {};
+export const initialState = fromJS({
+  pools: null,
+  tokens: null,
+});
 
-/* eslint-disable default-case, no-param-reassign */
-const swapPageReducer = (state = initialState, action) =>
-  produce(state, (/* draft */) => {
-    switch (action.type) {
-      case DEFAULT_ACTION:
-        break;
-    }
-  });
 
-export default swapPageReducer;
+function swapsReducer(state = initialState, action) {
+  switch (action.type) {
+    case GET_POOLS_REQUEST: 
+      return state
+    case GET_POOLS_SUCCESS: 
+      return state
+        .set('pools', action.pools)
+        .set('tokens', action.tokens);
+    case GET_POOLS_ERROR: 
+      return state
+    default:
+      return state;
+  }
+}
+
+export default swapsReducer;

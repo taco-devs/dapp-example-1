@@ -80,14 +80,17 @@ export default class SwapList extends Component {
                     {/* !isMobile && (
                         <AssetHeaderColumn flex="0.5"/>
                     ) */}
-                    <AssetHeaderColumn margin="0 0 0 1em">
+                    <AssetHeaderColumn flex="1.75" margin="0 0 0 1em">
                         <p>POOL</p>
                     </AssetHeaderColumn>
-                    <AssetHeaderColumn flex="1.25">
+                    <AssetHeaderColumn flex="1">
                         <p>LIQUIDITY</p>
                     </AssetHeaderColumn>
                     <AssetHeaderColumn>
-                        <p>VOLUME</p>
+                        <p>24H VOLUME</p>
+                    </AssetHeaderColumn>
+                    <AssetHeaderColumn>
+                        <p>24H FEES</p>
                     </AssetHeaderColumn>
                     {!isMobile && (
                         <AssetHeaderColumn flex="1.25">

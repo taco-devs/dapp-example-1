@@ -41,10 +41,6 @@ const CardColumn = styled.div`
     margin: ${props => props.margin || '0'};
 `
 
-const AssetLogo = styled.img`
-    width: ${props => props.isMobile ? '40px' : '50px'};
-    height: auto;
-`
 
 const PrimaryLabel = styled.p`
     color: #161d6b;
@@ -98,6 +94,64 @@ export default class SwapCard extends Component {
         isMobileDrawerOpen: false,
     }
 
+    getGRORate = (gro) => {
+        const {ethPrice, balances} = this.props;
+        
+        if (!balances) return 0;
+
+        const GROPrice = balances.find(balance => balance.name === 'GRO');
+
+        return ethPrice / GROPrice.price_eth * gro.balance;
+    }
+
+    getGTokenRate = (gtoken_pool) => {
+        const {prices, tokens} = this.props;
+        const {markets} = prices;
+
+        if (!markets || !tokens)  return null;
+        
+        const symbol = gtoken_pool.symbol.substring(1);
+        
+        const gToken = tokens.find(token => token.symbol.toUpperCase() === gtoken_pool.symbol.toUpperCase());
+        const gToken_market = markets.find(market => market.symbol.toUpperCase() === symbol.toUpperCase());
+
+        const gTokenPrice = gToken.totalReserve / gToken.totalSupply;
+        const basePrice = gToken_market.exchangeRate * gToken_market.underlyingPriceUSD;
+
+        return gTokenPrice * basePrice * gtoken_pool.balance;
+    }
+
+    // Get Liquidity
+    getLiquidity = () => {
+        const {asset, pools, prices, ethPrice} = this.props;
+
+        if (!pools || !prices || !ethPrice) return '-';
+        if (pools.length < 1 || prices.length < 1) return '-';
+
+        // Search by id
+        const pool = pools.find(pool => pool.id === asset.liquidity_pool_address);
+        
+        const GROLiquidity = this.getGRORate(pool.tokens[0]);
+        const GTokenLiquidty = this.getGTokenRate(pool.tokens[1]);
+
+        const TotalLiquidity = Math.round(GROLiquidity + GTokenLiquidty);
+
+        return `$ ${TotalLiquidity.toLocaleString('en-En')} USD`;
+    }
+    
+    // Get Volume
+    getVolume = () => {
+        const {asset, pools, prices, ethPrice} = this.props;
+
+        if (!pools || !prices || !ethPrice) return '-';
+        if (pools.length < 1 || prices.length < 1) return '-';
+
+        // Search by id
+        const pool = pools.find(pool => pool.id === asset.liquidity_pool_address);
+
+        return `$ ${Math.round(pool.totalSwapVolume)} USD`;
+    }
+
     // Format the numbers for K, M, B
     abbreviateNumber = (value) => {
         var newValue = value;
@@ -139,7 +193,7 @@ export default class SwapCard extends Component {
                                 align="center"
                                 justify="flex-start"
                                 margin="0 0 0 1em"
-                                flex="1"
+                                flex="1.75"
                             >                           
                                       
                                 <PoolLogo 
@@ -153,18 +207,26 @@ export default class SwapCard extends Component {
                             </CardColumn>
                             <CardColumn 
                                 direction="column"
+                                
                             >
-                                {/* <PrimaryLabel>{this.getMarketSize()}</PrimaryLabel>
-                                <SecondaryLabel>{this.getSupply()} {asset.g_asset}</SecondaryLabel> */}
+                                <PrimaryLabel>{this.getLiquidity()}</PrimaryLabel>
+                                {/*<SecondaryLabel>{this.getSupply()} {asset.g_asset}</SecondaryLabel> */}
                             </CardColumn>
                             <CardColumn 
                                 direction="column"
                             >
-                                {/* <PrimaryLabel>{this.calculateAvgAPY()}% AVG</PrimaryLabel>
-                                <SecondaryLabel>{this.calculate7DAPY()}% 7D</SecondaryLabel> */}
+                                <PrimaryLabel>{this.getVolume()}</PrimaryLabel>
+                                {/*<SecondaryLabel>{this.calculate7DAPY()}% 7D</SecondaryLabel> */}
+                            </CardColumn>
+                            <CardColumn 
+                                direction="column"
+                            >
+                                <PrimaryLabel>{this.getVolume()}</PrimaryLabel>
+                                {/*<SecondaryLabel>{this.calculate7DAPY()}% 7D</SecondaryLabel> */}
                             </CardColumn>
                             <CardColumn 
                                 direction="row"
+                                flex="1.25"
                             >
                                {/*  <ActionModal 
                                     {...this.props}

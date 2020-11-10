@@ -4,7 +4,7 @@
  *
  */
 
-import { GET_POOLS_REQUEST } from './constants';
+import { GET_POOLS_REQUEST, GET_POOLS_SUCCESS, GET_POOLS_ERROR } from './constants';
 
 export function getPools() {
   return {
@@ -12,14 +12,17 @@ export function getPools() {
   };
 }
 
-export function getPoolsSuccess() {
+export function getPoolsSuccess(pools, tokens) {
   return {
-    type: GET_POOLS_REQUEST,
+    type: GET_POOLS_SUCCESS,
+    pools,
+    tokens
   };
 }
 
-export function getPoolsError() {
+export function getPoolsError(error) {
   return {
-    type: GET_POOLS_REQUEST,
+    type: GET_POOLS_ERROR,
+    error
   };
 }
