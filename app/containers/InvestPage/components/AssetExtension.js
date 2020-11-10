@@ -160,6 +160,7 @@ export default class AssetExtension extends Component {
         const TODAY_DATE = Math.round(TODAY.getTime() / 1000);
         const FIRST_DAY = TODAY_DATE - (seconds_in_day * 30);
 
+
         // Chart Array
         let chart_data = new Array(30);
         let current_days = 0;
@@ -177,8 +178,13 @@ export default class AssetExtension extends Component {
             if (day_data) {
                 x_axis_label = moment(day_data.date * 1000).utc(0).format('MMM DD');
 
-                if (day_data.mintTotalReceived > 0 && day_data.mintTotalSent > 0) {
-                    y_value = Math.round(day_data.avgPrice * 10000) / 10000;
+                const check_activity = (
+                    day_data.mintTotalReceived > 0 || 
+                    day_data.redeemTotalReceived > 0 
+                )
+
+                if (check_activity) {
+                    y_value = Math.ceil(day_data.avgPrice * 10000) / 10000;
                 } else {
                     y_value = chart_data[current_days - 1].y_value;
                 }
@@ -190,10 +196,12 @@ export default class AssetExtension extends Component {
                     y_value = 0;
                 }
             }
-
+            
             chart_data[current_days] = {x_axis_label, y_value};
             current_days++;
         }
+
+        console.log(chart_data);
 
         return chart_data;
     }

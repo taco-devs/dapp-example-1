@@ -36,7 +36,7 @@ export const initialState = fromJS({
   currentApproval: null,
   hideBalances: localStorage.getItem('hideBalances') ? JSON.parse(localStorage.getItem('hideBalances')) : false,
   hideStats: localStorage.getItem('hideStats') ? JSON.parse(localStorage.getItem('hideStats')) : false,
-  addGRO: localStorage.getItem('addGRO') ? JSON.parse(!localStorage.getItem('addGRO')) : true,
+  addGRO: localStorage.getItem('addGRO') ? JSON.parse(localStorage.getItem('addGRO')) : true,
 });
 
 

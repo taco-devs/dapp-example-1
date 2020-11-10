@@ -93,7 +93,7 @@ export default class SwapList extends Component {
                         <p>24H FEES</p>
                     </AssetHeaderColumn>
                     {!isMobile && (
-                        <AssetHeaderColumn flex="1.25">
+                        <AssetHeaderColumn>
                             <p>ACTIONS</p>
                         </AssetHeaderColumn>
                     )}

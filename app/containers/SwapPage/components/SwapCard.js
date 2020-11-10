@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
+import SwapModal from 'components/SwapModal';
 import PoolLogo from './PoolLogo';
 import { Icon } from 'react-icons-kit';
 import {areaChart} from 'react-icons-kit/fa/areaChart'
@@ -151,6 +152,19 @@ export default class SwapCard extends Component {
 
         return `$ ${Math.round(pool.totalSwapVolume)} USD`;
     }
+    
+    // Get Volume
+    getFees = () => {
+        const {asset, pools, prices, ethPrice} = this.props;
+
+        if (!pools || !prices || !ethPrice) return '-';
+        if (pools.length < 1 || prices.length < 1) return '-';
+
+        // Search by id
+        const pool = pools.find(pool => pool.id === asset.liquidity_pool_address);
+
+        return `$ ${Math.round(pool.totalSwapVolume)} USD`;
+    }
 
     // Format the numbers for K, M, B
     abbreviateNumber = (value) => {
@@ -226,16 +240,15 @@ export default class SwapCard extends Component {
                             </CardColumn>
                             <CardColumn 
                                 direction="row"
-                                flex="1.25"
                             >
-                               {/*  <ActionModal 
+                                <SwapModal 
                                     {...this.props}
                                     type="mint"
-                                    text="MINT"
+                                    text="SWAP"
                                     data={data}
                                     asset={asset}
                                 />
-                                <ActionModal 
+                                {/* <ActionModal 
                                     {...this.props}
                                     type="redeem"
                                     text="REDEEM"

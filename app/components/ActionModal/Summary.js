@@ -99,7 +99,7 @@ export default class Summary extends Component {
 
     parseNumber = (number, decimals) => {
         const float_number = number / decimals;
-        return Math.round(float_number * 10000) / 10000;
+        return Math.round(float_number * 100) / 100;
     }
 
     // Check for allowance 
