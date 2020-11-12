@@ -3,6 +3,11 @@ import styled from 'styled-components';
 import debounce from 'lodash.debounce';
 import BPool from 'contracts/Interop/Bpool.json';
 
+const BalanceLabel = styled.b`
+  color: #161d6b;
+  text-align: ${props => props.align || 'left'};
+  margin: ${props => props.margin || '0'};
+`
 
 const InputSection = styled.div`
   display: flex; 
@@ -87,24 +92,7 @@ export default class SwapInputIn extends Component {
 
     componentDidMount = () => {
       this.getBalance();
-      this.getCurrentRate();
     }
-
-    getCurrentRate = async () => {
-      const {assetIn, assetOut, web3, liquidity_pool_address, Network, handleMultipleChange} = this.props;
-      const BPoolInstance = await new web3.eth.Contract(BPool, liquidity_pool_address);
-      
-      if (assetIn === 'GRO') {
-        const inputAsset = Network.growth_token;
-        const outputAsset = Network.available_assets[assetOut];
-
-        const spotPrice_rate = await BPoolInstance.methods.getSpotPrice(inputAsset.address, outputAsset.gtoken_address).call();
-        const spotPrice = (1 * 1e18) / (spotPrice_rate / 1e18) / 1e8;
-        
-        handleMultipleChange({spotPrice, spotPrice_rate});
-      }
-    }
-
     
     getBalance = async () => {
       const {assetIn, web3, address, Network, handleMultipleChange} = this.props;
@@ -114,6 +102,13 @@ export default class SwapInputIn extends Component {
         const result = await GContractInstance.methods.balanceOf(address).call();
         handleMultipleChange({
           balanceIn: result / 1e18,
+        })
+      } else {
+        const asset = Network.available_assets[assetIn];
+        const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+        const result = await GContractInstance.methods.balanceOf(address).call();
+        handleMultipleChange({
+          balanceIn: result / 1e8,
         })
       }
     }
@@ -127,6 +122,12 @@ export default class SwapInputIn extends Component {
           return {
             name: assetIn,
             img: asset.img_url
+          }
+        } else {
+          const asset = Network.available_assets[assetIn];
+          return {
+            name: asset.g_asset,
+            img: asset.gtoken_img_url,
           }
         }
       }
@@ -165,10 +166,10 @@ export default class SwapInputIn extends Component {
           <InputSection>
             <InputRow>
               <InputSectionColumn align="flex-start">
-                BALANCE: {this.parseBalance(balanceIn)}
+                <BalanceLabel>BALANCE: {this.parseBalance(balanceIn)}</BalanceLabel>
               </InputSectionColumn>
               <InputSectionColumn align="flex-end">
-                FROM
+                <BalanceLabel>FROM</BalanceLabel>
               </InputSectionColumn>
             </InputRow>
             <InputRow>

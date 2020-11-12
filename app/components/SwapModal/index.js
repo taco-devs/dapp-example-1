@@ -78,20 +78,48 @@ const customStyles = {
   }
 };
 
+const initialState =  {
+  balanceIn: null,
+  balanceOut: null,
+  amountInput: null,
+  amountOutput: null,
+  spotPrice: null,
+  spotPrice_rate: null,
+  allowance: true,
+}
+
 class SwapModal extends React.Component {
 
   state = {
-    balanceIn: null,
-    balanceOut: null,
-    amountInput: null,
-    amountOutput: null,
-    spotPrice: null,
-    spotPrice_rate: null,
+    ...initialState
   }
 
   handleMultipleChange = (values) => {
     this.setState({...values})
   }
+
+  hasEnoughAllowance = async () => {
+    const {assetIn, Network, address, liquidity_pool_address, web3} = this.props;
+
+    if (!assetIn) return;
+     
+    // Check if its trying to change GRO
+    if (assetIn === 'GRO') {
+        const asset = Network.growth_token;
+        const GContractInstance = await new web3.eth.Contract(asset.abi, asset.address);
+        const allowance = await GContractInstance.methods.allowance(address, liquidity_pool_address).call();
+        this.setState({
+            allowance: allowance > 0,
+        })
+    } else {
+        const asset = Network.available_assets[assetIn];
+        const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+        const allowance = await GContractInstance.methods.allowance(address, liquidity_pool_address).call();
+        this.setState({
+            allowance: allowance > 0,
+        })
+    }
+  } 
 
   render () {
     const {type, show} = this.props;
@@ -99,14 +127,17 @@ class SwapModal extends React.Component {
       <div
         onClick={(e) => {
           e.stopPropagation();
-          this.props.toggleModal()
+          this.setState({...initialState})
+          this.props.toggleModal(null, null, null)
         }}
       >
         <Modal
           isOpen={show}
           // onAfterOpen={afterOpenModal}
           onRequestClose={(e) => {
-            this.props.toggleModal(type);
+            e.stopPropagation()
+            this.setState({...initialState})
+            this.props.toggleModal(null, null, null);
           }}
           style={customStyles}
           contentLabel="Example Modal"
@@ -116,6 +147,7 @@ class SwapModal extends React.Component {
               {...this.props}
               {...this.state}
               handleMultipleChange={this.handleMultipleChange}
+              hasEnoughAllowance={this.hasEnoughAllowance}
             />
             <SwapSummary 
               {...this.props}

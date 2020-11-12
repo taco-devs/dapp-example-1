@@ -2,6 +2,11 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import debounce from 'lodash.debounce';
 
+const BalanceLabel = styled.b`
+  color: #161d6b;
+  text-align: ${props => props.align || 'left'};
+  margin: ${props => props.margin || '0'};
+`
 
 const InputSection = styled.div`
   display: flex; 
@@ -93,14 +98,19 @@ export default class SwapInputOut extends Component {
     getBalance = async () => {
         const {assetOut, web3, address, Network, handleMultipleChange} = this.props;
         if (assetOut === 'GRO') {
-
+          const asset = Network.growth_token;
+          const GContractInstance = await new web3.eth.Contract(asset.abi, asset.address);
+          const result = await GContractInstance.methods.balanceOf(address).call();
+          handleMultipleChange({
+            balanceOut: result / 1e18,
+          })
         } else {
-            const asset = Network.available_assets[assetOut];
-            const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
-            const result = await GContractInstance.methods.balanceOf(address).call();
-            handleMultipleChange({
-                balanceOut: result / 1e8,
-            })
+          const asset = Network.available_assets[assetOut];
+          const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+          const result = await GContractInstance.methods.balanceOf(address).call();
+          handleMultipleChange({
+              balanceOut: result / 1e8,
+          })
         }
     }
 
@@ -109,7 +119,11 @@ export default class SwapInputOut extends Component {
         const {assetOut, Network} = this.props;
         if (assetOut) {
             if (assetOut === 'GRO') {
-                return null;
+              const asset = Network.growth_token;
+              return {
+                name: assetOut,
+                img: asset.img_url
+              }
             } else {
                 const asset = Network.available_assets[assetOut];
                 return {
@@ -146,7 +160,7 @@ export default class SwapInputOut extends Component {
           <InputSection>
             <InputRow>
                 <InputSectionColumn align="flex-start">
-                BALANCE: {this.parseBalance(balanceOut)}
+                <BalanceLabel>BALANCE: {this.parseBalance(balanceOut)}</BalanceLabel> 
                 </InputSectionColumn>
                 <InputSectionColumn align="flex-end">
                     TO

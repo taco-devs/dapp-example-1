@@ -64,30 +64,9 @@ const ActionConfirmButton = styled.div`
 
 export default class SwapSummary extends Component {
 
-    state = {
-        allowance: true,
-    }
-
-    componentDidMount = () => {
-        this.hasEnoughAllowance();
-    }
-
-    hasEnoughAllowance = async () => {
-        const {assetIn, Network, asset, address, liquidity_pool_address, web3} = this.props;
-        
-        // Check if its trying to change GRO
-        if (assetIn === 'GRO') {
-            const asset = Network.growth_token;
-            const GContractInstance = await new web3.eth.Contract(asset.abi, asset.address);
-            const allowance = await GContractInstance.methods.allowance(address, liquidity_pool_address).call();
-            this.setState({
-                allowance: allowance > 0,
-            })
-        }
-    }
-
     toggleAllowance = () => {
-        this.setState({allowance: true});
+        const {handleMultipleChange} = this.props;
+        handleMultipleChange({allowance: true});
     }
 
     isDisabled = () => {
@@ -131,48 +110,99 @@ export default class SwapSummary extends Component {
 
     // Refactor to support different trade states
     swap = async () => {
-        const {amountInput, amountOutput, assetOut, Network, asset, address, liquidity_pool_address, web3, spotPrice_rate} = this.props;
+        const {amountInput, amountOutput, assetIn, assetOut, Network, asset, address, liquidity_pool_address, web3, spotPrice_rate} = this.props;
 
         const SLIPPAGE = 0.1;
-
-        const _currentAssetIn = Network.growth_token;
-        const _currentAssetOut = Network.available_assets[assetOut];
- 
         const BPoolInstance = await new web3.eth.Contract(BPool, liquidity_pool_address);
 
-        // Parse Numbers
-        const tokenAmountIn = this.getWei(amountInput, 1e18);
-        const minAmountOut = this.getWei(amountOutput * (1 - SLIPPAGE),  1e8);
-        const maxPrice = this.getWei(spotPrice_rate / 1e18 * 1.1, 1e18);
+        if (assetIn === 'GRO') {
+            const _currentAssetIn = Network.growth_token;
+            const _currentAssetOut = Network.available_assets[assetOut];
 
-        // Get Gas info
-        const {gas, gasPrice} = await this.getGasInfo(
-                BPoolInstance.methods.swapExactAmountIn,
-                [
-                    _currentAssetIn.address, // tokenIn
-                    tokenAmountIn,
-                    _currentAssetOut.gtoken_address, // tokenOut
-                    minAmountOut,
-                    maxPrice
-                ],
-                address,
-                web3,
+
+            // Parse Numbers
+            const tokenAmountIn = this.getWei(amountInput, 1e18);
+            const minAmountOut = this.getWei(amountOutput * (1 - SLIPPAGE),  1e8);
+            const maxPrice = this.getWei(spotPrice_rate / 1e18 * 1.1, 1e18);
+
+            // Get Gas info
+            const {gas, gasPrice} = await this.getGasInfo(
+                    BPoolInstance.methods.swapExactAmountIn,
+                    [
+                        _currentAssetIn.address, // tokenIn
+                        tokenAmountIn,
+                        _currentAssetOut.gtoken_address, // tokenOut
+                        minAmountOut,
+                        maxPrice
+                    ],
+                    address,
+                    web3,
+                )
+
+            
+            await BPoolInstance.methods.swapExactAmountIn(
+                _currentAssetIn.address, // tokenIn
+                tokenAmountIn,
+                _currentAssetOut.gtoken_address, // tokenOut
+                minAmountOut,
+                maxPrice
             )
-
+            .send({from: address, gas, gasPrice: gasPrice * 2});
         
-        await BPoolInstance.methods.swapExactAmountIn(
-            _currentAssetIn.address, // tokenIn
-            tokenAmountIn,
-            _currentAssetOut.gtoken_address, // tokenOut
-            minAmountOut,
-            maxPrice
-        )
-        .send({from: address, gas, gasPrice: gasPrice * 2});
+        } else {
+            const _currentAssetOut = Network.growth_token;
+            const _currentAssetIn = Network.available_assets[assetIn];
+    
+            // Parse Numbers
+            const tokenAmountIn = this.getWei(amountInput, 1e8);
+            const minAmountOut = this.getWei(amountOutput * (1 - SLIPPAGE),  1e18);
+            const maxPrice = this.getWei(spotPrice_rate / 1e8 * 1.1, 1e8);
+
+            // Get Gas info
+            const {gas, gasPrice} = await this.getGasInfo(
+                    BPoolInstance.methods.swapExactAmountIn,
+                    [
+                        _currentAssetIn.gtoken_address, // tokenIn
+                        tokenAmountIn,
+                        _currentAssetOut.address, // tokenOut
+                        minAmountOut,
+                        maxPrice
+                    ],
+                    address,
+                    web3,
+                )
+
+            
+            await BPoolInstance.methods.swapExactAmountIn(
+                _currentAssetIn.gtoken_address, // tokenIn
+                tokenAmountIn,
+                _currentAssetOut.address, // tokenOut
+                minAmountOut,
+                maxPrice
+            )
+            .send({from: address, gas, gasPrice: gasPrice * 2});
+        } 
+    }
+
+    getExchangeRate = (reverse) => {
+        const {assetIn, assetOut, spotPrice} = this.props;
+
+        if (!spotPrice) return '-';
+
+        if (reverse) {
+            return '-';
+        } else {
+            if (assetIn === 'GRO') {
+                return `1 ${assetIn} = ${Math.round(spotPrice * 100) / 100} ${assetOut}`;
+            } else {
+                return `1 ${assetIn} = ${Math.round(spotPrice * 100000) / 100000} ${assetOut}`;
+            }
+        }
     }
 
     render() {
-        const {assetIn, assetOut, spotPrice} = this.props;
-        const {allowance} = this.state;
+
+        const {allowance} = this.props;
         return (
             <SummarySection>
                 <SummaryRow>
@@ -188,7 +218,7 @@ export default class SwapSummary extends Component {
                         <PrimaryLabel>EXCHANGE RATE</PrimaryLabel>
                     </SummaryColumn>
                     <SummaryColumn align="flex-end">
-                        <PrimaryLabel>1 {assetIn} = {Math.round(spotPrice * 100) / 100} {assetOut}</PrimaryLabel>
+                        <PrimaryLabel>{this.getExchangeRate()}</PrimaryLabel>
                     </SummaryColumn>
                 </SummaryRow>
                 <SummaryRow>

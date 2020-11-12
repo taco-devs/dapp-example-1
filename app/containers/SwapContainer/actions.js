@@ -4,7 +4,7 @@
  *
  */
 
-import { APPROVE_TOKENS_REQUEST, APPROVE_TOKENS_SUCCESS, APPROVE_TOKENS_SUCCESS } from './constants';
+import { APPROVE_TOKENS_REQUEST, APPROVE_TOKENS_SUCCESS } from './constants';
 
 export function approveTokens() {
   return {

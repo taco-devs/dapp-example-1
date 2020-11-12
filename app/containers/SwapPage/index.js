@@ -59,6 +59,10 @@ class SwapPage extends React.Component {
     const {getPools} = this.props;
     getPools();
   }
+
+  reverseAssets = (assets) => {
+    this.setState({...assets});
+  }
   
   // Toggle Modal
   toggleModal = (assetIn, assetOut, liquidity_pool_address) => {
@@ -105,6 +109,7 @@ class SwapPage extends React.Component {
           Network={Network}
           show={showSwapModal}
           toggleModal={this.toggleModal}
+          reverseAssets={this.reverseAssets}
         />
       </div>
     );
