@@ -174,9 +174,9 @@ export default class SwapCard extends Component {
 
     // Get Liquidity
     getLiquidity = () => {
-        const {asset, pools, prices, ethPrice} = this.props;
+        const {asset, pools, prices, ethPrice, balances} = this.props;
 
-        if (!pools || !prices || !ethPrice) return '-';
+        if (!pools || !prices || !balances || !ethPrice) return '-';
         if (pools.length < 1 || prices.length < 1) return '-';
 
         // Search by id

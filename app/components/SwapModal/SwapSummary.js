@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
+import BPool from 'contracts/Interop/Bpool.json';
 import ApproveSwapContainer from 'components/ApproveSwapContainer';
 
 const PrimaryLabel = styled.b`
@@ -64,7 +65,7 @@ const ActionConfirmButton = styled.div`
 export default class SwapSummary extends Component {
 
     state = {
-        allowance: false,
+        allowance: true,
     }
 
     componentDidMount = () => {
@@ -90,7 +91,83 @@ export default class SwapSummary extends Component {
     }
 
     isDisabled = () => {
+        const {balanceIn, amountInput} = this.props;
+        if (Number(balanceIn) < Number(amountInput)) return true;
         return false;
+    }
+
+    getGasInfo = async (method, values, address, web3) => {
+        try {
+            const SAFE_MULTIPLIER = 1.15;
+            const gas = await method(...values).estimateGas({from: address});
+            const gasPrice = await web3.eth.getGasPrice();
+            
+            return {gas, gasPrice};
+        } catch(e) {
+            console.log(e);
+            return {
+                gas: null, 
+                gasPrice: null
+            }
+        }
+    }
+
+    getWei = (value_number, decimals) => {
+        const {web3} = this.props;
+        if (decimals === 1e18) {
+          const value = value_number.toString();
+          return web3.utils.toWei(value);
+        }
+        if (decimals === 1e8) {
+          // Horrible hack to avoid precision error on js
+          const raw_value = (Math.round(value_number * 10) / 100).toString()
+          return web3.utils.toWei(raw_value, 'gwei');
+        }
+        if (decimals === 1e6) {
+          const value = value_number.toString();
+          return web3.utils.toWei(value, 'mwei');
+        }
+    }
+
+    // Refactor to support different trade states
+    swap = async () => {
+        const {amountInput, amountOutput, assetOut, Network, asset, address, liquidity_pool_address, web3, spotPrice_rate} = this.props;
+
+        const SLIPPAGE = 0.1;
+
+        const _currentAssetIn = Network.growth_token;
+        const _currentAssetOut = Network.available_assets[assetOut];
+ 
+        const BPoolInstance = await new web3.eth.Contract(BPool, liquidity_pool_address);
+
+        // Parse Numbers
+        const tokenAmountIn = this.getWei(amountInput, 1e18);
+        const minAmountOut = this.getWei(amountOutput * (1 - SLIPPAGE),  1e8);
+        const maxPrice = this.getWei(spotPrice_rate / 1e18 * 1.1, 1e18);
+
+        // Get Gas info
+        const {gas, gasPrice} = await this.getGasInfo(
+                BPoolInstance.methods.swapExactAmountIn,
+                [
+                    _currentAssetIn.address, // tokenIn
+                    tokenAmountIn,
+                    _currentAssetOut.gtoken_address, // tokenOut
+                    minAmountOut,
+                    maxPrice
+                ],
+                address,
+                web3,
+            )
+
+        
+        await BPoolInstance.methods.swapExactAmountIn(
+            _currentAssetIn.address, // tokenIn
+            tokenAmountIn,
+            _currentAssetOut.gtoken_address, // tokenOut
+            minAmountOut,
+            maxPrice
+        )
+        .send({from: address, gas, gasPrice: gasPrice * 2});
     }
 
     render() {
@@ -119,7 +196,10 @@ export default class SwapSummary extends Component {
                         {allowance ? (
                             <ActionConfirmButton
                                 modal_type="mint"
-                                onClick={() => this.handleDeposit()}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    this.swap();
+                                }}
                                 disabled={this.isDisabled()}
                             >
                                 {this.isDisabled() ? 'NOT ENOUGH BALANCE' : 'CONFIRM SWAP'}

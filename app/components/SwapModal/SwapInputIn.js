@@ -101,7 +101,7 @@ export default class SwapInputIn extends Component {
         const spotPrice_rate = await BPoolInstance.methods.getSpotPrice(inputAsset.address, outputAsset.gtoken_address).call();
         const spotPrice = (1 * 1e18) / (spotPrice_rate / 1e18) / 1e8;
         
-        handleMultipleChange({spotPrice});
+        handleMultipleChange({spotPrice, spotPrice_rate});
       }
     }
 

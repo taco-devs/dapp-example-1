@@ -86,6 +86,7 @@ class SwapModal extends React.Component {
     amountInput: null,
     amountOutput: null,
     spotPrice: null,
+    spotPrice_rate: null,
   }
 
   handleMultipleChange = (values) => {
