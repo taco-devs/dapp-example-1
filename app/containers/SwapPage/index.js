@@ -24,6 +24,7 @@ import NetworkData from 'contracts';
 import styled from 'styled-components';
 
 import { SwapHeader, SwapList } from './components';
+import SwapContainer from '../SwapContainer';
 
 const Swap = styled.div`
   display: flex;
@@ -32,7 +33,7 @@ const Swap = styled.div`
   align-items: center;
 `
 
-const SwapContainer = styled.div`
+const SwapWrapper = styled.div`
   display: flex;
   flex-direction: row;
   height: 100%;
@@ -47,9 +48,26 @@ const SwapContainer = styled.div`
 
 class SwapPage extends React.Component {
 
+  state = {
+    showSwapModal: false,
+    assetIn: null,
+    assetOut: null,
+    liquidity_pool_address: null,
+  }
+
   componentDidMount = () => {
     const {getPools} = this.props;
     getPools();
+  }
+  
+  // Toggle Modal
+  toggleModal = (assetIn, assetOut, liquidity_pool_address) => {
+    this.setState({
+      showSwapModal: !this.state.showSwapModal,
+      assetIn, 
+      assetOut,
+      liquidity_pool_address
+    });
   }
 
   /* Parse the assets */
@@ -59,6 +77,7 @@ class SwapPage extends React.Component {
   }
 
   render() {
+    const { showSwapModal } = this.state;
     const {network} = this.props;
     const Network = network ? NetworkData[network] : NetworkData['eth'];
     const assets = this.assetKeys(Network);
@@ -70,16 +89,23 @@ class SwapPage extends React.Component {
         </Helmet>
         <Swap>
           <SwapHeader />
-          <SwapContainer>
+          <SwapWrapper>
             <SwapList 
               {...this.props}
               {...this.state}
               assets={assets}
               Network={Network}
+              toggleModal={this.toggleModal}
             />
-          </SwapContainer>
+          </SwapWrapper>
         </Swap>
-        
+        <SwapContainer 
+          {...this.props} 
+          {...this.state}
+          Network={Network}
+          show={showSwapModal}
+          toggleModal={this.toggleModal}
+        />
       </div>
     );
   }  

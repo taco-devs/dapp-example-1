@@ -10,7 +10,8 @@ const assets = {
         growth_token: {
             ticker: 'GRO',
             abi: GrowToken,
-            address: '0x09e64c2b61a5f1690ee6fbed9baf5d6990f8dfd0'
+            address: '0x09e64c2b61a5f1690ee6fbed9baf5d6990f8dfd0',
+            img_url: 'gro.png',
         },
         available_assets: {
             gcDAI: {

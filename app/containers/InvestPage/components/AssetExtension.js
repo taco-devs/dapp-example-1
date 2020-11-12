@@ -196,12 +196,11 @@ export default class AssetExtension extends Component {
                     y_value = 0;
                 }
             }
-            
+
             chart_data[current_days] = {x_axis_label, y_value};
             current_days++;
         }
 
-        console.log(chart_data);
 
         return chart_data;
     }

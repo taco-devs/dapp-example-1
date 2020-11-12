@@ -17,56 +17,15 @@ import { Icon } from 'react-icons-kit';
 import {info} from 'react-icons-kit/icomoon/info';
 import {exchange} from 'react-icons-kit/fa/exchange'
 
+import SwapSection from './SwapSection';
+import SwapSummary from './SwapSummary';
+
 import Loader from 'react-loader-spinner';
 
-
-const ActionButton = styled.div`
-  display: flex; 
-  flex-direction: row;
-  justify-content: center;
-  font-size: 0.85em;
-
-  ${props => {
-    if (props.type === 'mint') {
-      return `
-        background-color: #00d395;
-        border-color: #00d395;
-        border-width: 3px;
-        border-style: solid;
-        margin: 0 0.5em  0 0.5em;
-        padding: 0.5em 1em 0.5em 1em;
-        color: white;
-        border-radius: 5px;
-        min-width: 100px;
-      
-        &:hover {
-          cursor: pointer;
-          background-color: white;
-          color: #00d395;
-        }
-      `
-    } 
-    if (props.type === 'redeem') {
-      return `
-        background-color: white;
-        border-color: #161d6b;
-        border-width: 3px;
-        border-style: solid;
-        margin: 0 0.5em 0 0.5em ;
-        padding: 0.5em 0 0.5em 0;
-        color: #161d6b;
-        border-radius: 5px;
-        min-width: 100px;
-      
-        &:hover {
-          cursor: pointer;
-          background-color: #161d6b;
-          color: white;
-        }
-      `
-    }
-  } 
-}
+const Swapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 `
 
 const InputContainer = styled.div`
@@ -112,7 +71,7 @@ const customStyles = {
     padding: 0,
     borderRadius: '5px',
     width: '450px',
-    height: '550px',
+    height: '500px',
   },
   overlay: {
     backgroundColor: 'rgb(0,0,0, 0.50)'
@@ -122,46 +81,46 @@ const customStyles = {
 class SwapModal extends React.Component {
 
   state = {
-    show: false,
+    balanceIn: null,
+    balanceOut: null,
+    amountInput: null,
+    amountOutput: null,
+    spotPrice: null,
   }
 
-  toggleModal = () => {
-    this.setState({show: !this.state.show});
+  handleMultipleChange = (values) => {
+    this.setState({...values})
   }
 
   render () {
-    const {type, address} = this.props;
-    const {show, is_native } = this.state;
+    const {type, show} = this.props;
     return (
       <div
         onClick={(e) => {
           e.stopPropagation();
-          if (!address) return alert('Please connect a wallet');
-          this.setState({is_native: true});
-          this.toggleModal()
+          this.props.toggleModal()
         }}
       >
-        <ActionButton
-          address={address}
-          type={type}
-          onClick={(e) => {
-            e.stopPropagation();
-            if (!address) return alert('Please connect your wallet');
-            this.toggleModal()
-          }}
-        >
-          {this.props.text}
-        </ActionButton>
         <Modal
           isOpen={show}
           // onAfterOpen={afterOpenModal}
           onRequestClose={(e) => {
-            this.toggleModal(type);
+            this.props.toggleModal(type);
           }}
           style={customStyles}
           contentLabel="Example Modal"
         >
-          
+          <Swapper>
+            <SwapSection
+              {...this.props}
+              {...this.state}
+              handleMultipleChange={this.handleMultipleChange}
+            />
+            <SwapSummary 
+              {...this.props}
+              {...this.state}
+            />
+          </Swapper>
         </Modal>
       </div>
     );

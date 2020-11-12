@@ -43,14 +43,6 @@ const Swapper = styled.div`
 
 class SwapContainer extends React.Component {
 
-  state = {
-    show: false
-  }
-
-  toggleContainer = () => {
-    this.setState({show: !this.state.show});
-  }
-
   render() {
     return (
       <SwapModal 

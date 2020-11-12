@@ -5,6 +5,56 @@ import PoolLogo from './PoolLogo';
 import { Icon } from 'react-icons-kit';
 import {areaChart} from 'react-icons-kit/fa/areaChart'
 
+
+const ActionButton = styled.div`
+  display: flex; 
+  flex-direction: row;
+  justify-content: center;
+  font-size: 0.85em;
+
+  ${props => {
+    if (props.type === 'mint') {
+      return `
+        background-color: #00d395;
+        border-color: #00d395;
+        border-width: 3px;
+        border-style: solid;
+        margin: 0 0.5em  0 0.5em;
+        padding: 0.5em 1em 0.5em 1em;
+        color: white;
+        border-radius: 5px;
+        min-width: 100px;
+      
+        &:hover {
+          cursor: pointer;
+          background-color: white;
+          color: #00d395;
+        }
+      `
+    } 
+    if (props.type === 'redeem') {
+      return `
+        background-color: white;
+        border-color: #161d6b;
+        border-width: 3px;
+        border-style: solid;
+        margin: 0 0.5em 0 0.5em ;
+        padding: 0.5em 0 0.5em 0;
+        color: #161d6b;
+        border-radius: 5px;
+        min-width: 100px;
+      
+        &:hover {
+          cursor: pointer;
+          background-color: #161d6b;
+          color: white;
+        }
+      `
+    }
+  } 
+}
+`
+
 const Card = styled.div`
     display: flex;
     flex-direction: column;
@@ -166,6 +216,20 @@ export default class SwapCard extends Component {
         return `$ ${Math.round(pool.totalSwapVolume)} USD`;
     }
 
+    // Handle Input asset
+    handleToggleModal = () => {
+        const {asset, toggleModal} = this.props;
+        
+        // TO CHANGE
+        // Set initial asset to GRO
+        const assetIn = 'GRO';
+        const assetOut = asset.g_asset;
+        const {liquidity_pool_address} = asset;
+
+        // Toggle
+        toggleModal(assetIn, assetOut, liquidity_pool_address);
+    }
+
     // Format the numbers for K, M, B
     abbreviateNumber = (value) => {
         var newValue = value;
@@ -197,7 +261,7 @@ export default class SwapCard extends Component {
                         isMobile={isMobile}
                         isOpen={false}
                         onClick={(e) => {
-                            e.stopPropagation()
+                            e.stopPropagation();
                             this.handleToggleExtension(asset_key)
                         }}
                     >
@@ -214,7 +278,7 @@ export default class SwapCard extends Component {
                                     asset={asset}
                                 />
                                 <SwapTitle>
-                                  <PrimaryLabel>GRO {!isMobile && '/'} {asset.g_asset}</PrimaryLabel>  
+                                  <PrimaryLabel>GRO {'/'} {asset.g_asset}</PrimaryLabel>  
                                   <SecondaryLabel>Balancer</SecondaryLabel>
                                 </SwapTitle>
                                 
@@ -241,23 +305,15 @@ export default class SwapCard extends Component {
                             <CardColumn 
                                 direction="row"
                             >
-                                <SwapModal 
-                                    {...this.props}
+                                <ActionButton
                                     type="mint"
-                                    text="SWAP"
-                                    data={data}
-                                    asset={asset}
-                                />
-                                {/* <ActionModal 
-                                    {...this.props}
-                                    type="redeem"
-                                    text="REDEEM"
-                                    data={data}
-                                    asset={asset}
-                                />
-                                <ChartButton>
-                                    <Icon icon={areaChart} style={{color: '#00d395', margin: '-5px 0 0 0'}} size="1.5em"/>
-                                </ChartButton> */}  
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        this.handleToggleModal();
+                                    }}
+                                    >
+                                        SWAP
+                                </ActionButton>
                             </CardColumn>
                         </CardRow>
                     </Card>

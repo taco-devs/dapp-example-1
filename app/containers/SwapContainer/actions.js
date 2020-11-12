@@ -4,10 +4,22 @@
  *
  */
 
-import { DEFAULT_ACTION } from './constants';
+import { APPROVE_TOKENS_REQUEST, APPROVE_TOKENS_SUCCESS, APPROVE_TOKENS_SUCCESS } from './constants';
 
-export function defaultAction() {
+export function approveTokens() {
   return {
-    type: DEFAULT_ACTION,
+    type: APPROVE_TOKENS_REQUEST,
+  };
+}
+
+export function approveTokensSuccess() {
+  return {
+    type: APPROVE_TOKENS_REQUEST,
+  };
+}
+
+export function approveTokensError() {
+  return {
+    type: APPROVE_TOKENS_REQUEST,
   };
 }
