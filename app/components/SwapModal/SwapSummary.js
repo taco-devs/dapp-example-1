@@ -283,7 +283,7 @@ export default class SwapSummary extends Component {
 
     render() {
 
-        const {allowance, swapType} = this.props;
+        const {allowance, swapType, assetIn, assetOut} = this.props;
         return (
             <SummarySection>
                 <SummaryRow>
@@ -307,7 +307,7 @@ export default class SwapSummary extends Component {
                         <PrimaryLabel>{swapType === 'SEND' ? 'MIN RECEIVED' : 'MAX SENT'}</PrimaryLabel>
                     </SummaryColumn>
                     <SummaryColumn align="flex-end">
-                        <PrimaryLabel spacing="1.5px">{this.getExchangeAmount()}</PrimaryLabel>
+                        <PrimaryLabel spacing="1.5px">{this.getExchangeAmount()} {swapType === 'SEND' ? assetOut : assetIn}</PrimaryLabel>
                     </SummaryColumn>
                 </SummaryRow>
                 <SummaryRow>
