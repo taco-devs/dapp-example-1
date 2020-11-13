@@ -71,7 +71,7 @@ const customStyles = {
     padding: 0,
     borderRadius: '5px',
     width: '450px',
-    height: '500px',
+    height: '550px',
   },
   overlay: {
     backgroundColor: 'rgb(0,0,0, 0.50)'
@@ -86,6 +86,7 @@ const initialState =  {
   spotPrice: null,
   spotPrice_rate: null,
   allowance: true,
+  swapType: 'SEND'
 }
 
 class SwapModal extends React.Component {

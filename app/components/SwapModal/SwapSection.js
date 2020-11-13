@@ -5,6 +5,7 @@ import SwapInputSection from './SwapInputSection';
 const SwapSectionContainer = styled.div`
     display: flex;
     flex-direction: column;
+    align-items: center;
     flex: 2;
 `
 

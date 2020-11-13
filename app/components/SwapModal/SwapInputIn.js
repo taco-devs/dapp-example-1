@@ -144,7 +144,8 @@ export default class SwapInputIn extends Component {
       
       handleMultipleChange({
         amountInput,
-        amountOutput
+        amountOutput,
+        swapType: 'SEND'
       });
     }
 
