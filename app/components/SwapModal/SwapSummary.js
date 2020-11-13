@@ -62,6 +62,20 @@ const ActionConfirmButton = styled.div`
   }
 `
 
+const initialState =  {
+    balanceIn: null,
+    balanceOut: null,
+    amountInput: null,
+    amountOutput: null,
+    spotPrice: null,
+    spotPrice_rate: null,
+    hash: null,
+    allowance: true,
+    status: 'INPUT', //  INPUT -> APPROVE -> LOADING -> [Close the Modal]
+    swapType: 'SEND'
+  }
+  
+
 export default class SwapSummary extends Component {
 
     state = {
@@ -128,10 +142,11 @@ export default class SwapSummary extends Component {
         await BPoolInstance.methods.swapExactAmountIn(...args)
             .send({from: address, gas, gasPrice: gasPrice * 2})
             .on("transactionHash", (hash) => {
-                
+                handleMultipleChange({status: 'LOADING', hash});
             })
             .on("receipt",  (tx) => {
-                // Send the confirmation receipt
+                handleMultipleChange({...initialState});
+                this.props.toggleModal(null, null, null);
             })
             .on("confirmation", (confirmation) => {
               
@@ -158,10 +173,12 @@ export default class SwapSummary extends Component {
         await BPoolInstance.methods.swapExactAmountOut(...args)
             .send({from: address, gas, gasPrice: gasPrice * 2})
             .on("transactionHash", (hash) => {
-                
+                handleMultipleChange({status: 'LOADING', hash});
             })
             .on("receipt",  (tx) => {
                 // Send the confirmation receipt
+                handleMultipleChange({...initialState});
+                this.props.toggleModal(null, null, null);
             })
             .on("confirmation", (confirmation) => {
               

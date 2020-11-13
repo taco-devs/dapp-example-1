@@ -50,6 +50,19 @@ const StyledText = styled.p`
   }};
 `
 
+const CustomLink = styled.a`
+    color: ${props => {
+      if (props.color === 'blue') return '#161d6b';
+      if (props.color === 'green') return '#00d395';
+    }};
+    text-decoration: none;
+
+    &:hover {
+      cursor: pointer;
+      color: black;
+    }
+`
+
 export default class SwapApproveSection extends Component {
 
     getImageName = (asset) => {
@@ -66,8 +79,14 @@ export default class SwapApproveSection extends Component {
         return Math.round(amount / decimals * roundFactor) / roundFactor;
     }
 
+    parseHash = (address) => {
+        const front_tail = address.substring(0,10);
+        const end_tail = address.substring(address.length - 10, address.length);
+        return `${front_tail}...${end_tail}`; 
+      }
+
     render() {
-        const {assetIn, assetOut, amountInput, amountOutput} = this.props;
+        const {assetIn, assetOut, amountInput, amountOutput, hash} = this.props;
         return (
             <StyledWrapper>
                 <StyledRow>
@@ -117,6 +136,24 @@ export default class SwapApproveSection extends Component {
                         </StyledText>
                     </StyledColumn>
                 </StyledRow>
+                {hash && (
+                    <StyledRow
+                        style={{margin: '1.5em 0 0 0'}}
+                    >
+                        <StyledColumn>
+                            <StyledText>Transaction Submitted</StyledText>
+                            <CustomLink
+                                onClick={e => e.stopPropagation()}
+                                color="blue"
+                                href={`https://etherscan.io/tx/${hash}`}
+                                target="_blank"
+                            >
+                                {this.parseHash(hash)}
+                            </CustomLink>
+                        </StyledColumn>
+                        
+                    </StyledRow>
+                )}
             </StyledWrapper>
         )
     }

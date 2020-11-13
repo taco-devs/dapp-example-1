@@ -18,9 +18,10 @@ export default class SwapSection extends Component {
                 {status === 'INPUT' && (
                     <SwapInputSection {...this.props} />
                 )}
-                {status === 'APPROVE' && (
+                {(status === 'APPROVE' || status === 'LOADING') && (
                     <SwapApproveSection {...this.props} />
                 )}
+                
             </SwapSectionContainer>
         )
     }
