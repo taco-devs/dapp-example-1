@@ -152,6 +152,7 @@ class SwapModal extends React.Component {
             <SwapSummary 
               {...this.props}
               {...this.state}
+              handleMultipleChange={this.handleMultipleChange}
             />
           </Swapper>
         </Modal>

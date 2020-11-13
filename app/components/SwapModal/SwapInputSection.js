@@ -39,9 +39,9 @@ export default class SwapInputSection extends Component {
     }
 
     invertAssets = async () => {
-        const { assetIn, assetOut, balanceIn, balanceOut, handleMultipleChange, hasEnoughAllowance, reverseAssets } = this.props;
+        const { assetIn, assetOut, balanceIn, balanceOut, handleMultipleChange, hasEnoughAllowance, updateParent } = this.props;
 
-        await reverseAssets({
+        await updateParent({
             assetIn: assetOut,
             assetOut: assetIn,
         })

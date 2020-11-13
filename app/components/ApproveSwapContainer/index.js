@@ -81,14 +81,40 @@ class ApproveContainer extends React.Component {
     hash: null,
   }
   
-  handleApprove = async () => {
-    const { web3, Network, assetIn, assetOut, liquidity_pool_address, address, toggleAllowance } = this.props;
 
+  getGasInfo = async (method, values, address, web3) => {
+    try {
+        const gas = await method(...values).estimateGas({from: address});
+        const gasPrice = await web3.eth.getGasPrice();
+        
+        return {gas, gasPrice};
+    } catch(e) {
+        console.log(e);
+        return {
+            gas: null, 
+            gasPrice: null
+        }
+    }
+}
+
+  handleApprove = async () => {
+    const { web3, Network, assetIn, assetOut, liquidity_pool_address, address, handleMultipleChange } = this.props;
+    
     if (assetIn === 'GRO') {
       const GContractInstance = await new web3.eth.Contract(Network.growth_token.abi, Network.growth_token.address);
       const totalSupply = await GContractInstance.methods.totalSupply().call();
 
-      await GContractInstance.methods.approve(liquidity_pool_address, totalSupply).send({from: address})
+      const {gas, gasPrice} = await this.getGasInfo(
+        GContractInstance.methods.approve,
+        [
+          liquidity_pool_address, 
+          totalSupply
+        ], 
+        address, 
+        web3
+      )
+
+      await GContractInstance.methods.approve(liquidity_pool_address, totalSupply).send({from: address, gas, gasPrice})
         .on("transactionHash", (hash) => {
           this.setState({
             status: 'RECEIPT',
@@ -97,17 +123,53 @@ class ApproveContainer extends React.Component {
       })
       .on("receipt",  (tx) => {
           // Send the confirmation receipt
-          toggleAllowance();
+          handleMultipleChange({allowance: true});
       })
       .on("confirmation", (confirmation) => {
-        // toggleAllowance();
+        handleMultipleChange({allowance: true});
       })
       .on("error", () => {
         this.setState({status: 'NOT_APPROVED'});
       });
+    
+    } else {
+
+      const asset = Network.available_assets[assetIn];
+
+      const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+      const totalSupply = await GContractInstance.methods.totalSupply().call();
+
+      const {gas, gasPrice} = await this.getGasInfo(
+        GContractInstance.methods.approve,
+        [
+          liquidity_pool_address, 
+          totalSupply
+        ], 
+        address, 
+        web3
+      );
+
+      await GContractInstance.methods.approve(liquidity_pool_address, totalSupply).send({from: address, gas, gasPrice})
+        .on("transactionHash", (hash) => {
+          this.setState({
+            status: 'RECEIPT',
+            hash
+          })
+      })
+      .on("receipt",  (tx) => {
+          // Send the confirmation receipt
+          handleMultipleChange({allowance: true});
+      })
+      .on("confirmation", (confirmation) => {
+        handleMultipleChange({allowance: true});
+      })
+      .on("error", () => {
+        this.setState({status: 'NOT_APPROVED'});
+      });
+
     }
 
-  }
+  } 
 
   parseHash = (address) => {
     const front_tail = address.substring(0,10);
