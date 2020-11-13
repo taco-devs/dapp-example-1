@@ -62,6 +62,22 @@ const ActionConfirmButton = styled.div`
   }
 `
 
+const SlippageInput = styled.input`
+  width: 50px;
+  border-width: 0px;
+  border-radius: 0;
+  text-align: center;
+  margin: 0 5px 0 5px;
+  background-color: #E8E8E8;
+  border-bottom-style: solid;
+  border-bottom-width: 2.5px;
+  border-bottom-color: #00d395;
+
+  &:focus {
+    outline: none;
+  }
+`
+
 const initialState =  {
     balanceIn: null,
     balanceOut: null,
@@ -79,7 +95,7 @@ const initialState =  {
 export default class SwapSummary extends Component {
 
     state = {
-        slippage: 0.1,
+        slippage: 5,
     }
 
     toggleAllowance = () => {
@@ -190,9 +206,9 @@ export default class SwapSummary extends Component {
 
     // Refactor to support different trade states
     swap = async () => {
+        const {slippage} = this.state;
         const {amountInput, amountOutput, assetIn, assetOut, Network, asset, address, liquidity_pool_address, web3, spotPrice_rate, swapType, handleMultipleChange} = this.props;
 
-        const SLIPPAGE = 0.1;
         const BPoolInstance = await new web3.eth.Contract(BPool, liquidity_pool_address);
 
         handleMultipleChange({status: 'APPROVE'});
@@ -207,7 +223,7 @@ export default class SwapSummary extends Component {
 
                 // Parse Numbers
                 const tokenAmountIn = this.getWei(amountInput, 1e18);
-                const minAmountOut = this.getWei(amountOutput * (1 - SLIPPAGE),  1e8);
+                const minAmountOut = this.getWei(amountOutput * (1 - (slippage / 100)),  1e8);
                 const maxPrice = this.getWei(spotPrice_rate / 1e18 * 1.1, 1e18);
                 
                 await this.handleSwapExactIn(
@@ -225,8 +241,8 @@ export default class SwapSummary extends Component {
             } else {
                 
                 const tokenAmountOut = this.getWei(amountOutput, 1e8);
-                const maxAmountIn = this.getWei(amountInput * (1 + SLIPPAGE), 1e18);
-                const maxPrice = this.getWei(spotPrice_rate / 1e18 * (1 + SLIPPAGE), 1e18);
+                const maxAmountIn = this.getWei(amountInput * (1 + (slippage / 100)), 1e18);
+                const maxPrice = this.getWei(spotPrice_rate / 1e18 * (1 + (slippage / 100)), 1e18);
 
                 await this.handleSwapExactOut(
                     BPoolInstance,
@@ -252,7 +268,7 @@ export default class SwapSummary extends Component {
 
                 // Parse Numbers
                 const tokenAmountIn = this.getWei(amountInput, 1e8);
-                const minAmountOut = this.getWei(amountOutput * (1 - SLIPPAGE),  1e18);
+                const minAmountOut = this.getWei(amountOutput * (1 - (slippage / 100)),  1e18);
                 const maxPrice = this.getWei(spotPrice_rate / 1e8 * 1.1, 1e8);
 
                 await this.handleSwapExactIn(
@@ -270,8 +286,8 @@ export default class SwapSummary extends Component {
             } else {
 
                 const tokenAmountOut = this.getWei(amountOutput, 1e18);
-                const maxAmountIn = this.getWei(amountInput * (1 + SLIPPAGE), 1e8);
-                const maxPrice = this.getWei(spotPrice_rate / 1e8 * (1 + SLIPPAGE), 1e8);
+                const maxAmountIn = this.getWei(amountInput * (1 + (slippage / 100)), 1e8);
+                const maxPrice = this.getWei(spotPrice_rate / 1e8 * (1 + (slippage / 100)), 1e8);
 
                 await this.handleSwapExactOut(
                     BPoolInstance,
@@ -298,12 +314,12 @@ export default class SwapSummary extends Component {
 
             if (!amountInput) return '-';
 
-            return Math.round(amountOutput * (1 - slippage) * 1000) / 1000;
+            return Math.round(amountOutput * (1 - (slippage / 100)) * 1000) / 1000;
         }
 
         if (swapType === 'RECEIVE') {
             if (!amountOutput) return '-';
-            return Math.round(amountInput * (1 + slippage) * 1000) / 1000;
+            return Math.round(amountInput * (1 + (slippage / 100)) * 1000) / 1000;
         }
     }
 
@@ -322,10 +338,16 @@ export default class SwapSummary extends Component {
             }
         }
     }
+    
+    updateSlippage = (slippage) => {
+        if (slippage > 49) return;
+        this.setState({slippage});
+    }
 
     render() {
 
-        const {allowance, swapType, assetIn, assetOut, status} = this.props;
+        const {allowance, swapType, assetIn, assetOut, status, amountOutput, amountInput} = this.props;
+        const {slippage} = this.state;
         return (
             <SummarySection>
                 <SummaryRow>
@@ -333,7 +355,16 @@ export default class SwapSummary extends Component {
                         <PrimaryLabel>SLIPPAGE TOLERANCE</PrimaryLabel>
                     </SummaryColumn>
                     <SummaryColumn align="flex-end">
-                        <PrimaryLabel>10%</PrimaryLabel>
+                        <SummaryRow>
+                            <SlippageInput
+                                onClick={e => e.stopPropagation()}
+                                value={slippage}
+                                placeholder="10"
+                                type="number"
+                                onChange={e => this.updateSlippage(e.target.value)}
+                            />
+                            <PrimaryLabel>%</PrimaryLabel>
+                        </SummaryRow>
                     </SummaryColumn>
                 </SummaryRow>
                 <SummaryRow>
@@ -359,6 +390,8 @@ export default class SwapSummary extends Component {
                                 modal_type="mint"
                                 onClick={(e) => {
                                     e.stopPropagation();
+                                    if (!amountInput || !amountOutput) return;
+                                    if (!slippage || slippage < 1) return;
                                     if (status === 'INPUT') {
                                         this.swap();
                                     } 
