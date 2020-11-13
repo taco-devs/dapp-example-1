@@ -114,7 +114,7 @@ export default class SwapSummary extends Component {
 
     handleSwapExactIn = async (BPoolInstance, args, address) => {
 
-        const {web3} = this.props;
+        const {web3, handleMultipleChange} = this.props;
         
         // Get Gas info
         const {gas, gasPrice} = await this.getGasInfo(
@@ -126,15 +126,26 @@ export default class SwapSummary extends Component {
 
     
         await BPoolInstance.methods.swapExactAmountIn(...args)
-            .send({from: address, gas, gasPrice: gasPrice * 2});
+            .send({from: address, gas, gasPrice: gasPrice * 2})
+            .on("transactionHash", (hash) => {
+                
+            })
+            .on("receipt",  (tx) => {
+                // Send the confirmation receipt
+            })
+            .on("confirmation", (confirmation) => {
+              
+            })
+            .on("error", () => {
+              handleMultipleChange({status: 'INPUT'});
+            });;
     }
 
 
     handleSwapExactOut = async (BPoolInstance, args, address) => {
 
-        const {web3} = this.props;
+        const {web3, handleMultipleChange} = this.props;
 
-        console.log(args)
         // Get Gas info
         const {gas, gasPrice} = await this.getGasInfo(
             BPoolInstance.methods.swapExactAmountOut,
@@ -145,15 +156,29 @@ export default class SwapSummary extends Component {
 
     
         await BPoolInstance.methods.swapExactAmountOut(...args)
-            .send({from: address, gas, gasPrice: gasPrice * 2});
+            .send({from: address, gas, gasPrice: gasPrice * 2})
+            .on("transactionHash", (hash) => {
+                
+            })
+            .on("receipt",  (tx) => {
+                // Send the confirmation receipt
+            })
+            .on("confirmation", (confirmation) => {
+              
+            })
+            .on("error", () => {
+              handleMultipleChange({status: 'INPUT'});
+            });
     }
 
     // Refactor to support different trade states
     swap = async () => {
-        const {amountInput, amountOutput, assetIn, assetOut, Network, asset, address, liquidity_pool_address, web3, spotPrice_rate, swapType} = this.props;
+        const {amountInput, amountOutput, assetIn, assetOut, Network, asset, address, liquidity_pool_address, web3, spotPrice_rate, swapType, handleMultipleChange} = this.props;
 
         const SLIPPAGE = 0.1;
         const BPoolInstance = await new web3.eth.Contract(BPool, liquidity_pool_address);
+
+        handleMultipleChange({status: 'APPROVE'});
 
         if (assetIn === 'GRO') {
             const _currentAssetIn = Network.growth_token;
@@ -283,7 +308,7 @@ export default class SwapSummary extends Component {
 
     render() {
 
-        const {allowance, swapType, assetIn, assetOut} = this.props;
+        const {allowance, swapType, assetIn, assetOut, status} = this.props;
         return (
             <SummarySection>
                 <SummaryRow>
@@ -317,11 +342,13 @@ export default class SwapSummary extends Component {
                                 modal_type="mint"
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    this.swap();
+                                    if (status === 'INPUT') {
+                                        this.swap();
+                                    } 
                                 }}
-                                disabled={this.isDisabled()}
+                                disabled={status !== 'INPUT' || this.isDisabled()}
                             >
-                                {this.isDisabled() ? 'NOT ENOUGH BALANCE' : 'CONFIRM SWAP'}
+                                {status === 'INPUT' ? this.isDisabled() ? 'NOT ENOUGH BALANCE' : 'CONFIRM SWAP' : 'WAITING FOR CONFIRMATION'}
                             </ActionConfirmButton>
                             ) : (
                                 <ApproveSwapContainer 

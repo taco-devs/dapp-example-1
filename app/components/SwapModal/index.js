@@ -86,6 +86,7 @@ const initialState =  {
   spotPrice: null,
   spotPrice_rate: null,
   allowance: true,
+  status: 'INPUT', //  INPUT -> APPROVE -> LOADING -> [Close the Modal]
   swapType: 'SEND'
 }
 

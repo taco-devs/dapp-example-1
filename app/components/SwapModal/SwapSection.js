@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import styled from 'styled-components';
 import SwapInputSection from './SwapInputSection';
+import SwapApproveSection from './SwapApproveSection';
 
 const SwapSectionContainer = styled.div`
     display: flex;
@@ -11,9 +12,15 @@ const SwapSectionContainer = styled.div`
 
 export default class SwapSection extends Component {
     render() {
+        const {status} = this.props;
         return (
             <SwapSectionContainer>
-                <SwapInputSection {...this.props} />
+                {status === 'INPUT' && (
+                    <SwapInputSection {...this.props} />
+                )}
+                {status === 'APPROVE' && (
+                    <SwapApproveSection {...this.props} />
+                )}
             </SwapSectionContainer>
         )
     }
