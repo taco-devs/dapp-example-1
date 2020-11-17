@@ -125,11 +125,11 @@ export default class TransactionCard extends Component {
     }
 
     getTransactionDate = async () => {
-        const {transaction, web3} = this.props;
-        if (!transaction || !web3) return;
-        const date = await web3.eth.getBlock(transaction.block);
-        const { timestamp } = date;
-        this.setState({timestamp});
+        const {transaction} = this.props;
+       
+        if (!transaction) return '';
+
+        return moment(transaction.date * 1000).format('MMMM DD YYYY, LT');
     }
 
     getAsset = (token_name) => {
@@ -164,10 +164,6 @@ export default class TransactionCard extends Component {
 
     render() {
         const {transaction, Network, asset_key, currentOpenExtension} = this.props;
-        const { timestamp } = this.state;
-        if (!timestamp) {
-            this.getTransactionDate();
-        }
 
         // Hardcoded until implemented on the graph
         const asset = this.getAsset(transaction.token.symbol);
@@ -188,8 +184,8 @@ export default class TransactionCard extends Component {
                                 justify="flex-start"
                                 margin="0 0 0 0.5em"
                             >
-                                <PrimaryLabel>{timestamp && moment(timestamp * 1000).format('MMMM DD YYYY, LT')}</PrimaryLabel>
-                                {timestamp && (
+                                <PrimaryLabel>{transaction && moment(transaction.date * 1000).format('DD/MM/YYYY LT')}</PrimaryLabel>
+                                {transaction && (
                                     <SecondaryLabel>#{transaction.block}</SecondaryLabel>
                                 )}
                             </CardColumn>
@@ -311,7 +307,7 @@ export default class TransactionCard extends Component {
                                 justify="flex-start"
                                 margin="0 0 0 2em"
                             >
-                                <PrimaryLabel>{timestamp && moment(timestamp * 1000).format('MMMM DD YYYY, LT')}</PrimaryLabel>
+                                <PrimaryLabel>{moment(transaction.date * 1000).format('DD/MM/YYYY LT')}</PrimaryLabel>
                                 <SecondaryLabel>#{transaction.block}</SecondaryLabel>
                             </CardColumn>
                             <CardColumn

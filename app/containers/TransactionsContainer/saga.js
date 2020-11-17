@@ -27,6 +27,7 @@ const get_query = (address, pagination) =>  {
         type
         sent
         received
+        date
         block
         token {
           id
