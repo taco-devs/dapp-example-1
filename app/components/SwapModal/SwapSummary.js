@@ -349,7 +349,11 @@ export default class SwapSummary extends Component {
         const {allowance, swapType, assetIn, assetOut, status, amountOutput, amountInput} = this.props;
         const {slippage} = this.state;
         return (
-            <SummarySection>
+            <SummarySection
+                onClick={(e) => {
+                    e.stopPropagation();
+                }}
+            >
                 <SummaryRow>
                     <SummaryColumn>
                         <PrimaryLabel>SLIPPAGE TOLERANCE</PrimaryLabel>

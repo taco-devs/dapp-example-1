@@ -14,7 +14,11 @@ export default class SwapSection extends Component {
     render() {
         const {status} = this.props;
         return (
-            <SwapSectionContainer>
+            <SwapSectionContainer
+                onClick={(e) => {
+                    e.stopPropagation();
+                }}
+            >
                 {status === 'INPUT' && (
                     <SwapInputSection {...this.props} />
                 )}

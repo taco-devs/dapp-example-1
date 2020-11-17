@@ -611,6 +611,8 @@ function* getTokenStatsSaga(params) {
         avgPrice
         avgUnderlyingPrice
         txCount
+        supply
+        reserve
         token {
           id
         }

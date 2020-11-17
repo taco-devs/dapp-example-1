@@ -165,7 +165,6 @@ export default class AssetExtension extends Component {
         let chart_data = new Array(30);
         let current_days = 0;
 
-
         for (let day of chart_data) {
             const today_timestamp = FIRST_DAY + (seconds_in_day * current_days);
             const tomorrow_timestamp = today_timestamp + seconds_in_day;
@@ -184,7 +183,9 @@ export default class AssetExtension extends Component {
                 )
 
                 if (check_activity) {
-                    y_value = Math.ceil(day_data.avgPrice * 10000) / 10000;
+                    const avgPrice = day_data.reserve / day_data.supply;
+                    console.log(avgPrice, day_data.reserve, day_data.supply, day_data.avgPrice )
+                    y_value = Math.round(avgPrice * 10000) / 10000;
                 } else {
                     y_value = chart_data[current_days - 1].y_value;
                 }

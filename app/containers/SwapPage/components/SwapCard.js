@@ -293,13 +293,13 @@ export default class SwapCard extends Component {
                             <CardColumn 
                                 direction="column"
                             >
-                                <PrimaryLabel>{/* this.getVolume() */}-</PrimaryLabel>
+                                <PrimaryLabel>N/A</PrimaryLabel>
                                 {/*<SecondaryLabel>{this.calculate7DAPY()}% 7D</SecondaryLabel> */}
                             </CardColumn>
                             <CardColumn 
                                 direction="column"
                             >
-                                <PrimaryLabel>{/* this.getVolume() */}-</PrimaryLabel>
+                                <PrimaryLabel>N/A</PrimaryLabel>
                                 {/*<SecondaryLabel>{this.calculate7DAPY()}% 7D</SecondaryLabel> */}
                             </CardColumn>
                             <CardColumn 
