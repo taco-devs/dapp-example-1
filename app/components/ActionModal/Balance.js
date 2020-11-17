@@ -33,12 +33,12 @@ export default class Balance extends Component {
           if (is_native) {
             return (underlying_balance / asset.underlying_decimals).toFixed(2);
           } else {
-            return (asset_balance / 1e8).toFixed(2);
+            return (asset_balance / asset.base_decimals).toFixed(2);
           }
         }
   
         if (modal_type === 'redeem') {
-          return Math.round((g_balance / 1e8) * 10000) / 10000;
+          return Math.round((g_balance / asset.base_decimals) * 10000) / 10000;
         }      
     }
 

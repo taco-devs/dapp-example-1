@@ -169,7 +169,7 @@ class ActionModal extends React.Component {
 
     const { asset, web3, address } = this.props;
     
-    const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+    const GContract = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
     const UnderlyingContractInstance = await new web3.eth.Contract(asset.underlying_abi, asset.underlying_address);
     const BaseContractInstance = await new web3.eth.Contract(asset.base_abi, asset.base_address);
 
@@ -180,13 +180,17 @@ class ActionModal extends React.Component {
     let total_reserve;  
     let g_balance;
     
-    if (GContractInstance) {
-      total_supply    = await GContractInstance.methods.totalSupply().call();
-      deposit_fee     = await GContractInstance.methods.depositFee().call();
-      withdrawal_fee  = await GContractInstance.methods.withdrawalFee().call();
-      exchange_rate   = await GContractInstance.methods.exchangeRate().call();
-      total_reserve   = await GContractInstance.methods.totalReserve().call(); 
-      g_balance       = await GContractInstance.methods.balanceOf(address).call(); 
+    if (GContract) {
+      total_supply    = await GContract.methods.totalSupply().call();
+      deposit_fee     = await GContract.methods.depositFee().call();
+      withdrawal_fee  = await GContract.methods.withdrawalFee().call();
+      total_reserve   = await GContract.methods.totalReserve().call(); 
+      g_balance       = await GContract.methods.balanceOf(address).call(); 
+
+      // Exclusive type 1 function [gcDAI, gcUSDC]
+      if (asset.type === 1) {
+        exchange_rate   = await GContract.methods.exchangeRate().call();
+      }
     }
 
     let underlying_balance;
