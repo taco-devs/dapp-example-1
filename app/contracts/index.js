@@ -120,8 +120,8 @@ const assets = {
             gUSDC: {
                 type: 2,
                 pair_address: "0x9896bd979f9da57857322cc15e154222c4658a5a",
-                base_address: '0x3C9e45617AD6258FeA400Fd259Fb3eB3e671051d',
-                gtoken_address: '0x151ac053B6EEEB604c957f2E1F69F797834DB39b',
+                base_address: '0xb7a4f3e9097c08da09517b5ab877f7a917224ede',
+                gtoken_address: '0x7AE53D7076c5Df0762A7e85fa24c01408A63c1e8', 
                 underlying_address: '0xb7a4f3e9097c08da09517b5ab877f7a917224ede',
                 base_abi: USDC,
                 gtoken_abi: GToken,

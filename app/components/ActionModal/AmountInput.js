@@ -65,6 +65,7 @@ export default class AmountInpunt extends Component {
             const underlying_conversion = await GContractInstance.methods.calcCostFromUnderlyingCost(netShares, exchange_rate).call();
             const result = await GContractInstance.methods.calcDepositSharesFromCost(underlying_conversion, total_reserve, total_supply, deposit_fee).call();
             const {_netShares, _feeShares} = result;
+          
             handleMultiChange({
               real_fee: _feeShares,
               total_native: _netShares,
@@ -73,7 +74,7 @@ export default class AmountInpunt extends Component {
           } else {
             // CTokens only have 8 decimals 
             // NOTE: Standarized to gwei by converting it to 1e9 because .toWei() doesn't handle 1e8
-            const _cost = getWei(value, 1e8)
+            const _cost = getWei(value, asset.base_decimals)
             const result = await GContractInstance.methods.calcDepositSharesFromCost(_cost, total_reserve, total_supply, deposit_fee).call();
             const {_netShares, _feeShares} = result;
             // Change
@@ -102,12 +103,17 @@ export default class AmountInpunt extends Component {
             })
         }
     
-        const netShares = getWei(value, 1e8);
+        const netShares = getWei(value, asset.base_decimals);
       
         const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
         const result = await GContractInstance.methods.calcWithdrawalCostFromShares(netShares, total_reserve, total_supply, withdrawal_fee).call();
-        const rate = await GContractInstance.methods.calcUnderlyingCostFromCost(result._cost, exchange_rate).call();
         const {_cost, _feeShares} = result;
+
+        let rate;
+        if (asset.type === 1) {
+          rate = await GContractInstance.methods.calcUnderlyingCostFromCost(result._cost, exchange_rate).call();
+        }
+
         // Change
         handleMultiChange({
           real_fee: _feeShares,
@@ -162,16 +168,16 @@ export default class AmountInpunt extends Component {
             handleMultiChange({value_native});
             this.handleInputChange(value_native)
           } else {
-            if ((Number(asset_balance) / 1e8) < 0.01) return;
-            const value_base = asset_balance / 1e8;
+            if ((Number(asset_balance) / asset.base_decimals) < 0.01) return;
+            const value_base = asset_balance / asset.base_decimals;
             handleMultiChange({value_base});
             this.handleInputChange(value_base)
           }
         }
     
         if (modal_type === 'redeem') {
-          if ((Number(g_balance) / 1e8) < 0.01) return;
-          const value_redeem = g_balance / 1e8;
+          if ((Number(g_balance) / asset.base_decimals) < 0.01) return;
+          const value_redeem = g_balance / asset.base_decimals;
           handleMultiChange({value_redeem});
           this.calculateBurningTotal(value_redeem);
         }

@@ -141,7 +141,7 @@ class ActionModal extends React.Component {
     shares_value_native: '',
     shares_value_base_redeem: '',
     shares_value_native_redeem: '',
-    is_native: true,
+    is_native: false,
     underlying_balance: null,
     asset_balance: null,
     total_supply: null,
@@ -213,7 +213,7 @@ class ActionModal extends React.Component {
   }
 
   toggleModal = (modal_type) => {
-    this.setState({show: !this.state.show, isLoading: true, is_native: true});
+    this.setState({show: !this.state.show, isLoading: true});
     this.fetchBalance();
 
     if (modal_type) {
@@ -296,8 +296,8 @@ class ActionModal extends React.Component {
   }
 
   render () {
-    const {type, address} = this.props;
-    const {show, is_native } = this.state;
+    const {type, address, asset} = this.props;
+    const {show } = this.state;
     return (
       <div
         onClick={(e) => {
@@ -368,11 +368,13 @@ class ActionModal extends React.Component {
               </InputSectionColumn>
             </InputSection>            
           </InputContainer>
-          <AssetTypeToggle 
-            {...this.props}
-            {...this.state}
-            handleChange={this.handleChange}
-          />
+          {asset && asset.type === 1 && (
+            <AssetTypeToggle 
+              {...this.props}
+              {...this.state}
+              handleChange={this.handleChange}
+            />
+          )}
           <Summary 
             {...this.props}
             {...this.state}

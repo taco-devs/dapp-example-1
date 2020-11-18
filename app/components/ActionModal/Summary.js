@@ -23,7 +23,7 @@ const SummaryContainer = styled.div`
   flex-direction: column;
   background-color: #E8E8E8;
   flex: 1;
-  height: calc(550px - 260px);
+  height: calc(550px - ${props => props.hasToggle ? '260px' : '210px'});
   padding: 2em 1.5em 1em 1.5em;
 `
 
@@ -93,13 +93,13 @@ export default class Summary extends Component {
         }
 
         if (modal_type === 'redeem') {
-        return Number(value_redeem * 1e8) * (withdrawal_fee / asset.base_decimals);
+        return Number(value_redeem * asset.base_decimals) * (withdrawal_fee / asset.base_decimals);
         }
     }
 
-    parseNumber = (number, decimals) => {
+    parseNumber = (number, decimals, factor) => {
         const float_number = number / decimals;
-        return Math.round(float_number * 100) / 100;
+        return Math.round(float_number * factor) / factor;
     }
 
     // Check for allowance 
@@ -112,7 +112,7 @@ export default class Summary extends Component {
         return Number(value_native * asset.underlying_decimals) <= Number(underlying_allowance);
         } else {
         if (!value_base || !asset_allowance) return true;
-        return Number(value_base * 1e8) <= Number(asset_allowance);
+        return Number(value_base * asset.base_decimals) <= Number(asset_allowance);
         }
     }
 
@@ -133,13 +133,13 @@ export default class Summary extends Component {
             return  Number(value_native * asset.underlying_decimals) > Number(underlying_balance);
         } else {
             if (!value_base || Number(value_base) <= 0) return true;
-            return Number(value_base * 1e8) > Number(asset_balance);
+            return Number(value_base * asset.base_decimals) > Number(asset_balance);
         }
         }
 
         if (modal_type === 'redeem') {
         if (!value_redeem) return true;
-        return Number(value_redeem * 1e8) > Number(g_balance);
+        return Number(value_redeem * asset.base_decimals) > Number(g_balance);
         }
         return true;
     }
@@ -173,7 +173,7 @@ export default class Summary extends Component {
               sending: _cost,
               receiving: total_native,
               fromDecimals: asset.underlying_decimals,
-              toDecimals: 1e8,
+              toDecimals: asset.base_decimals,
               fromImage: asset.native_img_url,
               toImage: asset.gtoken_img_url,
             },
@@ -182,7 +182,7 @@ export default class Summary extends Component {
     
         } else {
           const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
-          const _cost = getWei(value_base, 1e8);
+          const _cost = getWei(value_base, asset.base_decimals);
           mintGTokenFromCToken({
             GContractInstance, 
             _cost, 
@@ -193,8 +193,8 @@ export default class Summary extends Component {
               to: asset.g_asset,
               sending: _cost,
               receiving: total_base,
-              fromDecimals: 1e8,
-              toDecimals: 1e8,
+              fromDecimals: asset.base_decimals,
+              toDecimals: asset.base_decimals,
               fromImage: asset.img_url,
               toImage: asset.gtoken_img_url,
             },
@@ -231,8 +231,8 @@ export default class Summary extends Component {
             to: asset.native,
             sending: total_native_cost_redeem,
             receiving: total_native_redeem,
-            fromDecimals: 1e8,
-            toDecimals: 1e18,
+            fromDecimals: asset.base_decimals,
+            toDecimals: asset.base_decimals,
             fromImage: asset.gtoken_img_url,
             toImage: asset.native_img_url,
         },
@@ -251,8 +251,8 @@ export default class Summary extends Component {
             to: asset.base_asset,
             sending: total_native_cost_redeem,
             receiving: total_base_redeem,
-            fromDecimals: 1e8,
-            toDecimals: 1e8,
+            fromDecimals: asset.base_decimals,
+            toDecimals: asset.base_decimals,
             fromImage: asset.gtoken_img_url,
             toImage: asset.img_url,
         },
@@ -288,6 +288,7 @@ export default class Summary extends Component {
         } = this.props;
         return (
             <SummaryContainer
+                hasToggle={asset && asset.type === 1}
                 onClick={e => e.stopPropagation()}
             >
                 <SummaryRow>
@@ -295,7 +296,7 @@ export default class Summary extends Component {
                     <PrimaryLabel>{asset.base_asset} RESERVE</PrimaryLabel>
                 </SummaryColumn>
                 <SummaryColumn align="flex-end">
-                    <PrimaryLabel spacing="1px">{total_reserve ?  this.parseNumber(total_reserve, 1e8).toLocaleString('En-en') : '-'} {asset.base_asset}</PrimaryLabel>
+                    <PrimaryLabel spacing="1px">{total_reserve ?  this.parseNumber(total_reserve, asset.base_decimals, 1).toLocaleString('En-en') : '-'} {asset.base_asset}</PrimaryLabel>
                 </SummaryColumn>
                 </SummaryRow>
                 <SummaryRow>
@@ -303,7 +304,7 @@ export default class Summary extends Component {
                     <PrimaryLabel>{asset.g_asset} SUPPLY</PrimaryLabel>
                 </SummaryColumn>
                 <SummaryColumn align="flex-end">
-                    <PrimaryLabel spacing="1px">{total_supply ? this.parseNumber(total_supply, 1e8).toLocaleString('En-en') : '-'} {asset.g_asset}</PrimaryLabel>
+                    <PrimaryLabel spacing="1px">{total_supply ? this.parseNumber(total_supply, asset.base_decimals, 1).toLocaleString('En-en') : '-'} {asset.g_asset}</PrimaryLabel>
                 </SummaryColumn>
                 </SummaryRow>
                 <SummaryRow>
@@ -314,8 +315,8 @@ export default class Summary extends Component {
                     </SummaryRow>
                 </SummaryColumn>
                 <SummaryColumn align="flex-end">
-                    {modal_type === 'mint' && <PrimaryLabel spacing="1px">{this.abbreviateNumber(this.parseNumber(this.calculateFee(), 1e18))} {is_native ? asset.native : asset.base_asset}  ({this.parseNumber(deposit_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}
-                    {modal_type === 'redeem' && <PrimaryLabel spacing="1px">{this.abbreviateNumber(this.parseNumber(this.calculateFee(), 1e18))} {asset.g_asset}  ({this.parseNumber(withdrawal_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}   
+                    {modal_type === 'mint' && <PrimaryLabel spacing="1px">{this.parseNumber(this.calculateFee(), 1e18, 1000)} {is_native ? asset.native : asset.base_asset}  ({this.parseNumber(deposit_fee, 1e16, 1).toFixed(2)}%)</PrimaryLabel>}
+                    {modal_type === 'redeem' && <PrimaryLabel spacing="1px">{this.parseNumber(this.calculateFee(), 1e18, 1000)} {asset.g_asset}  ({this.parseNumber(withdrawal_fee, 1e16, 1).toFixed(2)}%)</PrimaryLabel>}   
                 </SummaryColumn>
                 </SummaryRow>
                 <SummaryRow>
@@ -326,10 +327,10 @@ export default class Summary extends Component {
                     </SummaryRow>
                 </SummaryColumn>
                 <SummaryColumn align="flex-end">
-                    {modal_type === 'mint'&& is_native && <PrimaryLabel spacing="1px">{total_native ? this.parseNumber(total_native, 1e8).toLocaleString('en-En') : '-'} {asset.g_asset}</PrimaryLabel>}
-                    {modal_type === 'mint'&& !is_native && <PrimaryLabel spacing="1px">{total_base ? this.parseNumber(total_base, 1e8).toLocaleString('en-En') : '-'} {asset.g_asset}</PrimaryLabel>}
-                    {modal_type === 'redeem'&& is_native && <PrimaryLabel spacing="1px">{total_native_redeem ? this.parseNumber(total_native_redeem, asset.underlying_decimals).toLocaleString('en-En') : '-'} {asset.native}</PrimaryLabel>}
-                    {modal_type === 'redeem'&& !is_native && <PrimaryLabel spacing="1px">{total_base_redeem ? this.parseNumber(total_base_redeem, 1e8).toLocaleString('en-En') : '-'} {asset.base_asset}</PrimaryLabel>} 
+                    {modal_type === 'mint'&& is_native && <PrimaryLabel spacing="1px">{total_native ? this.parseNumber(total_native, asset.base_decimals, 100).toLocaleString('en-En') : '-'} {asset.g_asset}</PrimaryLabel>}
+                    {modal_type === 'mint'&& !is_native && <PrimaryLabel spacing="1px">{total_base ? this.parseNumber(total_base, asset.base_decimals, 100).toLocaleString('en-En') : '-'} {asset.g_asset}</PrimaryLabel>}
+                    {modal_type === 'redeem'&& is_native && <PrimaryLabel spacing="1px">{total_native_redeem ? this.parseNumber(total_native_redeem, asset.underlying_decimals, 100).toLocaleString('en-En') : '-'} {asset.native}</PrimaryLabel>}
+                    {modal_type === 'redeem'&& !is_native && <PrimaryLabel spacing="1px">{total_base_redeem ? this.parseNumber(total_base_redeem, asset.base_decimals, 100).toLocaleString('en-En') : '-'} {asset.base_asset}</PrimaryLabel>} 
                 </SummaryColumn>
                 </SummaryRow>
                 <SummaryRow justify="center" flex="2">

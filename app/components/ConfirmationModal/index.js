@@ -185,7 +185,7 @@ class ConfirmationModal extends React.Component {
 
   parseNumber = (number, decimals) => {
     const float_number = Number(number) / Number(decimals);
-    return Math.round(float_number * 10000) / 10000;
+    return Math.round(float_number * 100) / 100;
   }
 
   parseHash = (address) => {
@@ -239,14 +239,14 @@ class ConfirmationModal extends React.Component {
                           <StyledLogo src={require(`images/tokens/${currentSwap.fromImage}`)}/>
                         </DataBodyColumn>
                         <DataBodyColumn flex="3" margin="0 1.5em 0 0">
-                          <StyledText size="1.2em" modal_type={currentSwap.modal_type}>{this.parseNumber(currentSwap.sending, currentSwap.fromDecimals)}</StyledText>
+                          <StyledText size="1" modal_type={currentSwap.modal_type}>{this.parseNumber(currentSwap.sending, currentSwap.fromDecimals)}</StyledText>
                           <StyledText>{`${currentSwap.from}`}</StyledText>
                         </DataBodyColumn>
                         <DataBodyColumn flex="1" color={currentSwap.modal_type === 'mint' ? "#161d6b" : '#00d395'}>
                           <Icon icon={arrowRight} size="2em"/>
                         </DataBodyColumn>
                         <DataBodyColumn flex="3" margin="0 0 0 1.5em">
-                          <StyledText size="1.2em" modal_type={currentSwap.modal_type}>{this.parseNumber(currentSwap.receiving, currentSwap.toDecimals)}</StyledText>
+                          <StyledText size="1" modal_type={currentSwap.modal_type}>{this.parseNumber(currentSwap.receiving, currentSwap.toDecimals)}</StyledText>
                           <StyledText>{currentSwap.to}</StyledText>
                         </DataBodyColumn>
                         <DataBodyColumn align="left">
