@@ -205,7 +205,6 @@ export default class AssetCard extends Component {
     render() {
         const {asset, data, isMobile, asset_key, currentOpenExtension, web3} = this.props;
         const {isMobileDrawerOpen} = this.state;
-        
         return (
             <React.Fragment>
                 {isMobile ? (
@@ -266,7 +265,7 @@ export default class AssetCard extends Component {
                         isOpen={currentOpenExtension === asset_key}
                         onClick={(e) => {
                             e.stopPropagation()
-                            this.handleToggleExtension(asset_key)
+                            this.handleToggleExtension()
                         }}
                     >
                         <CardRow>
