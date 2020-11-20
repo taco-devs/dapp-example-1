@@ -70,9 +70,10 @@ const NavbarColumn = styled.div`
 
 
 const StyledMessage = styled.div`
-  margin: 0 1em 0 1em;
+  margin: 0 0.25em 0 0.25em;
   outline: none;
   box-shadow: none;
+  width: 100%;
 `
 
 const StyledLink = styled(Link)`
