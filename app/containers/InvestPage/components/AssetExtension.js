@@ -131,7 +131,8 @@ const CustomTooltip = ({ active, payload, label, base, g_asset }) => {
         return (
             <StyledTooltip>
                 <p>{`${label}`}</p>
-                <p>(G) Rate: {`${payload[0].value} ${base}`}</p>
+                <p>Rate (COMP): {`${payload[0].value} ${base}`}</p>
+                <p>Rate: {`${payload[1].value} ${base}`}</p>
             </StyledTooltip>
         );
     }
@@ -147,10 +148,28 @@ export default class AssetExtension extends Component {
         return `${front_tail}...${end_tail}`; 
     }
 
+    getMiningTokenPrice = () => {
+        const {relevantPrices} = this.props;
+        if (!relevantPrices) return 0;
+
+        const ethPrice = relevantPrices.pairs && relevantPrices.pairs.find(pair => pair.token0.symbol === 'WETH');
+        const miningToken = relevantPrices.pairs && relevantPrices.pairs.find(pair => pair.token0.symbol === 'COMP');
+
+        if (ethPrice && miningToken) {
+            return ethPrice.token1Price * miningToken.token1Price;
+        } else {
+            return 0;
+        }
+    }
+
     formatData = () => {
         const {tokenData} = this.props;
         if (!tokenData) return [];
         if (tokenData.length < 1) return [];
+
+        // Get MiningTokenPrice
+        const miningPriceUSD = this.getMiningTokenPrice();
+
 
         // Calculate 31 days before
         const seconds_in_day = 86400;
@@ -159,7 +178,6 @@ export default class AssetExtension extends Component {
         TODAY.setHours(0,0,0,0);
         const TODAY_DATE = Math.round(TODAY.getTime() / 1000);
         const FIRST_DAY = TODAY_DATE - (seconds_in_day * 30);
-
 
         // Chart Array
         let chart_data = new Array(30);
@@ -173,6 +191,7 @@ export default class AssetExtension extends Component {
 
             let x_axis_label;
             let y_value;
+            let y_mining_value;
 
             if (day_data) {
                 x_axis_label = moment(day_data.date * 1000).utc(0).format('MMM DD');
@@ -184,21 +203,27 @@ export default class AssetExtension extends Component {
 
                 if (check_activity) {
                     const avgPrice = day_data.reserve / day_data.supply;
-                    console.log(avgPrice, day_data.reserve, day_data.supply, day_data.avgPrice )
+
+                    const miningFactor = ((day_data.miningTokenBalance / 1e18) * miningPriceUSD) / (day_data.supply / 1e8) / day_data.currentPrice;
+
                     y_value = Math.round(avgPrice * 10000) / 10000;
+                    y_mining_value = Math.round((avgPrice + miningFactor) * 10000) / 10000;
                 } else {
                     y_value = chart_data[current_days - 1].y_value;
+                    y_mining_value = chart_data[current_days - 1].y_mining_value;
                 }
             } else {
                 x_axis_label = moment(tomorrow_timestamp * 1000).utc(0).format('MMM DD');
                 if (current_days > 0) {
                     y_value = chart_data[current_days - 1].y_value;
+                    y_mining_value = chart_data[current_days - 1].y_mining_value;
                 } else {
                     y_value = 0;
+                    y_mining_value = 0;
                 }
             }
 
-            chart_data[current_days] = {x_axis_label, y_value};
+            chart_data[current_days] = {x_axis_label, y_value, y_mining_value};
             current_days++;
         }
 
@@ -211,8 +236,8 @@ export default class AssetExtension extends Component {
 
         const range = 
             data
-                .filter(day => day.y_value > 0)
-                .map(day => day.y_value);
+                .filter(day => day.y_mining_value > 0)
+                .map(day => day.y_mining_value);
 
         const min = Math.min(...range);
         const max = Math.max(...range);
@@ -274,6 +299,7 @@ export default class AssetExtension extends Component {
                                     />
                                     <YAxis allowDataOverflow type="number" domain={domain} hide />
                                     <Tooltip content={<CustomTooltip base={asset.base_asset} g_asset={asset.g_asset} />}/>
+                                    <Area type="monotone" dataKey="y_mining_value" stroke="#00d395" fill="#161d6b" />
                                     <Area type="monotone" dataKey="y_value" stroke="#161d6b" fill="#00d395" />
                                 </AreaChart>
                             </ResponsiveContainer>

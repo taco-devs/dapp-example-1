@@ -613,6 +613,8 @@ function* getTokenStatsSaga(params) {
         txCount
         supply
         reserve
+        miningTokenBalance
+        currentPrice
         token {
           id
         }

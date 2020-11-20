@@ -50,6 +50,12 @@ const makeSelectPrices = () =>
     }
   );
 
+const makeSelectRelevantPrices = () =>
+  createSelector(selectStatsPage, statsState => {
+      return statsState.get('relevant_prices')
+    }
+  );
+
 const makeSelectStatus = () =>
   createSelector(selectStatsPage, statsState => {
       return statsState.get('status')
@@ -65,5 +71,6 @@ export {
   makeSelectTvl,
   makeSelectTvlHistory,
   makeSelectPrices,
-  makeSelectStatus
+  makeSelectStatus,
+  makeSelectRelevantPrices,
 };

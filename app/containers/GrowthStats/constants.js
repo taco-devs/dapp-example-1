@@ -26,6 +26,7 @@ export const GET_PRICES_REQUEST = 'app/GrowthStats/GET_PRICES_REQUEST';
 export const GET_PRICES_SUCCESS = 'app/GrowthStats/GET_PRICES_SUCCESS';
 export const GET_PRICES_ERROR = 'app/GrowthStats/GET_PRICES_ERROR';
 
+export const GET_RELEVANT_PRICES = 'app/GrowthStats/GET_RELEVANT_PRICES';
 export const GET_ETH_PRICE = 'app/GrowthStats/GET_ETH_PRICE';
 
 

@@ -8,7 +8,7 @@ import { DEFAULT_ACTION,
   GET_USER_STATS_REQUEST, GET_USER_STATS_SUCCESS, GET_USER_STATS_ERROR,
   GET_BALANCES_REQUEST, GET_BALANCES_SUCCESS, GET_BALANCES_ERROR,
   GET_PRICES_REQUEST, GET_PRICES_SUCCESS, GET_PRICES_ERROR,
-  GET_ETH_PRICE,
+  GET_ETH_PRICE, GET_RELEVANT_PRICES,
   GET_TVL_REQUEST, GET_TVL_SUCCESS, GET_TVL_ERROR,
 } from './constants';
 
@@ -22,6 +22,7 @@ export const initialState = fromJS({
   tvl: null,
   tvl_history: null,
   prices: null,
+  relevant_prices: null,
 });
 
 
@@ -64,6 +65,8 @@ function statsReducer(state = initialState, action) {
         .set('error', action.error);
     case GET_ETH_PRICE: 
       return state.set('eth_price', action.eth_price);
+    case GET_RELEVANT_PRICES: 
+      return state.set('relevant_prices', action.relevant_prices);
     default:
       return state;
   }

@@ -15,7 +15,7 @@ import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
 import { makeSelectPagination, makeSelectSearch, makeSelectTokenData, makeSelectIsLoadingChart, makeSelectTokens, makeSelectError } from './selectors';
 import { makeSelectCurrrentNetwork, makeSelectCurrrentSwap, makeSelectCurrrentApproval } from '../App/selectors';
-import { makeSelectBalances, makeSelectEthPrice, makeSelectPrices } from '../GrowthStats/selectors';
+import { makeSelectBalances, makeSelectEthPrice, makeSelectPrices, makeSelectRelevantPrices } from '../GrowthStats/selectors';
 import {isMobile} from 'react-device-detect';
 import reducer from './reducer';
 import saga from './saga';
@@ -161,6 +161,7 @@ const mapStateToProps = createStructuredSelector({
   balances: makeSelectBalances(),
   ethPrice: makeSelectEthPrice(),
   prices: makeSelectPrices(),
+  relevantPrices: makeSelectRelevantPrices(),
 });
 
 function mapDispatchToProps(dispatch) {

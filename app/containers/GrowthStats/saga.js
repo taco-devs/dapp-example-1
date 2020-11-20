@@ -13,7 +13,7 @@ import {
   getTVLSuccess,
   getTVLError,
   getPricesSuccess, getPricesError,
-  getGraphSuccess, getGraphError,
+  getGraphSuccess, getGraphError, getRelevantPrices,
 } from './actions';
 
 import { makeSelectCurrrentNetwork } from '../App/selectors';
@@ -21,6 +21,7 @@ import { makeSelectCurrrentNetwork } from '../App/selectors';
 const base_pairs = [
   "0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852", // ETH/USD
   "0x208bd5dc470eba21571ddb439801a614ed346376", // GRO/ETH 
+  "0xcffdded873554f362ac02f8fb1f02e5ada10516f", // COMP / ETH
 ]
 
 const compound_base_pairs = [
@@ -354,6 +355,8 @@ function* getBalancesSaga(params) {
 
         const response = yield call(request, query_url, options);
         const { data } = response;
+
+        yield put(getRelevantPrices(data));
       
         // Fetch Markets price
         let myHeaders = new Headers();
