@@ -247,7 +247,7 @@ export default class AssetExtension extends Component {
     }
 
     render() {
-        const {asset, isLoadingChart, total_supply, total_reserve, deposit_fee, withdrawal_fee, tokens} = this.props;
+        const {asset, isLoadingChart, tokenData, total_supply, total_reserve, deposit_fee, withdrawal_fee, tokens} = this.props;
         const data= this.formatData();
         const domain = this.getDomain(data);
         let token;
@@ -311,12 +311,16 @@ export default class AssetExtension extends Component {
                     margin="1em 0 1em 0"
                 >
                     <ExtensionColumn align="flex-start">
+                        <StatLabel>THRESHOLD</StatLabel>
+                        <Stat>{token && tokenData && (Math.round(tokenData[tokenData.length - 1].miningTokenBalance / 1e18 * 100) / 100).toLocaleString('En-en')} / 20 COMP</Stat>
+                    </ExtensionColumn>
+                    <ExtensionColumn align="flex-start">
                         <StatLabel>TOTAL SUPPLY</StatLabel>
-                        <Stat>{token && (token.totalSupply / 1e8).toLocaleString('En-en')} {asset.g_asset}</Stat>
+                        <Stat>{token && Math.round(token.totalSupply / 1e8).toLocaleString('En-en')} {asset.g_asset}</Stat>
                     </ExtensionColumn>
                     <ExtensionColumn>
-                        <StatLabel>TOKENS LOCKED</StatLabel>
-                        <Stat>{token && (token.totalReserve / asset.base_decimals).toLocaleString('En-en')} {asset.base_asset}</Stat>
+                        <StatLabel>TOTAL RESERVE</StatLabel>
+                        <Stat>{token && Math.round(token.totalReserve / asset.base_decimals).toLocaleString('En-en')} {asset.base_asset}</Stat>
                     </ExtensionColumn>
                     <ExtensionColumn>
                         <StatLabel>MINTING FEE</StatLabel>
