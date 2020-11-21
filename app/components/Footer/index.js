@@ -9,6 +9,7 @@ import {isMobile} from 'react-device-detect';
 import { Icon } from 'react-icons-kit';
 import {twitter} from 'react-icons-kit/fa/twitter';
 import {telegram} from 'react-icons-kit/fa/telegram';
+import {github} from 'react-icons-kit/fa/github'
 
 
 const Wrapper = styled.footer`
@@ -155,6 +156,9 @@ class Footer extends React.Component {
           </IconLink>
           <IconLink href="https://t.me/growthdefi" target="_blank">
             <Icon icon={telegram} size="1.5em" style={{margin: '0 10px 0 10px'}}/>
+          </IconLink>
+          <IconLink href="https://github.com/GrowthDeFi" target="_blank">
+            <Icon icon={github} size="1.5em" style={{margin: '0 10px 0 10px'}}/>
           </IconLink>
           <StyledLabel>v{process.env.VERSION}</StyledLabel>
           <StatusSection> 
