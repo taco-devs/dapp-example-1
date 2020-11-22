@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import styled from 'styled-components';
+import types from 'contracts/token_types.json'
 
 const ModalHeaderContainer = styled.div`
   display: flex;
@@ -14,13 +15,21 @@ const ModalHeaderOption = styled.div`
   justify-content: center;
   flex: 1;
   background-color: ${props => props.active ? props.defaultColor : 'white'};
-  color: ${props => props.active ? 'white' : props.defaultColor};
+  color: ${props => props.active ? 
+    (props.asset.type === types.STKGRO ? '#21262b' : 'white')
+    : 
+    (props.asset.type === types.STKGRO ? '#21262b' : props.defaultColor)
+  };
   transition: background-color .4s ease;
 
   &:hover {
     cursor: pointer;
     opacity: 0.75;
   }
+`
+
+const HeaderText = styled.p`
+  display: flex;
 `
 
 export default class ModalHeader extends Component {
@@ -31,30 +40,36 @@ export default class ModalHeader extends Component {
     }
 
     render() {
-        const {modal_type} = this.props;
+        const {modal_type, asset} = this.props;
         return (
             <ModalHeaderContainer
                 onClick={e => e.stopPropagation()}
             >
                 <ModalHeaderOption
-                active={modal_type === 'mint'}
-                defaultColor="#00d395"
-                onClick={(e) => {
-                    e.stopPropagation();
-                    this.changeType('mint')
-                }} 
+                    asset={asset}
+                    active={modal_type === 'mint'}
+                    defaultColor={asset.type === types.STKGRO ? '#ffe391' : "#00d395"}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        this.changeType('mint')
+                    }} 
                 >
-                    <p>MINT</p>
+                    <p>
+                        {asset.type === types.STKGRO ? 'STAKE' : 'MINT'}
+                    </p>
                 </ModalHeaderOption>
                 <ModalHeaderOption
-                active={modal_type === 'redeem'}
-                defaultColor="#161d6b"
-                onClick={(e) => {
-                    e.stopPropagation();
-                    this.changeType('redeem')
-                }} 
+                    asset={asset}
+                    active={modal_type === 'redeem'}
+                    defaultColor={asset.type === types.STKGRO ? '#ffe391' : "#161d6b"}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        this.changeType('redeem')
+                    }} 
                 >
-                    <p>REDEEM</p>
+                     <p>
+                        {asset.type === types.STKGRO ? 'UNSTAKE' : 'REDEEM'}
+                    </p>
                 </ModalHeaderOption>
             </ModalHeaderContainer>
         )

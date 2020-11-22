@@ -7,6 +7,7 @@
 import React from 'react';
 // import PropTypes from 'prop-types';
 // import styled from 'styled-components';
+import types from 'contracts/token_types.json';
 
 import { FormattedMessage } from 'react-intl';
 import messages from './messages';
@@ -21,11 +22,11 @@ const ApproveRow = styled.div`
   flex-direction: row;
   justify-content: center;
   border-radius: 5px;
-  background-color: #00d395;
+  background-color: ${props => props.asset.type === types.STKGRO ? '#ffe391' : '#00d395'};
   padding: 0;
   margin: 1em 0 0 0;
   width: 300px;
-  color: white;
+  color: ${props => props.asset.type === types.STKGRO ? '#21262b' : 'white'};
   border-width: 3px;
   border-style: solid;
   border-color:#161d6b;
@@ -39,7 +40,7 @@ const ApproveRow = styled.div`
 const ApproveConfirmButton = styled.div`
   display: flex;
   flex-direction: row;
-  background-color: #00d395;
+  background-color: ${props => props.asset.type === types.STKGRO ? '#ffe391' : '#00d395'};
 `
 
 const ApproveAction = styled.div`
@@ -122,15 +123,16 @@ class ApproveContainer extends React.Component {
   }
 
   render() {
-    const {currentApproval} = this.props;
+    const {currentApproval, asset} = this.props;
     return (
       <ApproveRow
+        asset={asset}
         onClick={() => {
           if (!currentApproval) this.handleApprove();
           if (currentApproval && currentApproval.status === 'receipt') return this.openLink(currentApproval.hash);
         }}
       >
-          <ApproveConfirmButton >
+          <ApproveConfirmButton asset={asset}>
             {!currentApproval && <p>APPROVE TOKENS</p>}
             {currentApproval && currentApproval.status === 'loading' && (
               <ApproveAction>

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Icon } from 'react-icons-kit';
 import {info} from 'react-icons-kit/icomoon/info';
 import ApproveContainer from 'components/ApproveContainer';
+import types from 'contracts/token_types.json';
 
 const PrimaryLabel = styled.b`
   color: #161d6b;
@@ -49,17 +50,19 @@ const ActionConfirmButton = styled.div`
   border-radius: 5px;
   background-color: ${props => {
     if (props.disabled) return '#BEBEBE';
+    if (props.asset.type === types.STKGRO) return '#ffe391';
     if (props.modal_type === 'mint') return '#00d395';
     if (props.modal_type === 'redeem') return '#161d6b';
   }};
   padding: 1em 1em 1em 1em;
   margin: 1em 0 0 0;
   width: 300px;
-  color: white;
+  color: ${props => !props.disabled && props.asset.type === types.STKGRO ? '#21262b' : 'white'};
   border-width: 3px;
   border-style: solid;
   border-color: ${props => {
     if (props.disabled) return '#BEBEBE';
+    if (props.asset.type === types.STKGRO) return '#ffe391';
     if (props.modal_type === 'mint') return '#00d395';
     if (props.modal_type === 'redeem') return '#161d6b';
   }};
@@ -338,6 +341,7 @@ export default class Summary extends Component {
                     <React.Fragment>
                         {this.hasEnoughAllowance() ? (
                         <ActionConfirmButton
+                            asset={asset}
                             modal_type={modal_type}
                             onClick={() => this.handleDeposit()}
                             disabled={this.isDisabled()}
@@ -354,6 +358,7 @@ export default class Summary extends Component {
                     )}
                     {modal_type === 'redeem' &&  (
                     <ActionConfirmButton 
+                        asset={asset}
                         modal_type={modal_type}
                         onClick={() => this.handleRedeem()}
                         disabled={this.isDisabled()}

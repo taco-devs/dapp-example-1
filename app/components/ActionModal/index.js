@@ -16,6 +16,7 @@ import styled from 'styled-components';
 import { Icon } from 'react-icons-kit';
 import {info} from 'react-icons-kit/icomoon/info';
 import {exchange} from 'react-icons-kit/fa/exchange'
+import types from 'contracts/token_types.json';
 
 import Loader from 'react-loader-spinner';
 
@@ -36,39 +37,39 @@ const ActionButton = styled.div`
   ${props => {
     if (props.type === 'mint') {
       return `
-        background-color: #00d395;
-        border-color: #00d395;
+        background-color: ${props.asset.type === types.STKGRO ? '#ffe391' : '#00d395'};
+        border-color: ${props.asset.type === types.STKGRO ? '#ffe391' : '#00d395'};
         border-width: 3px;
         border-style: solid;
         margin: 0 0.5em  0 0.5em;
         padding: 0.5em 1em 0.5em 1em;
-        color: white;
+        color: ${props.asset.type === types.STKGRO ? '#21262b' : 'white'};
         border-radius: 5px;
         min-width: 100px;
       
         &:hover {
           cursor: pointer;
-          background-color: white;
-          color: #00d395;
+          background-color: ${props.asset.type === types.STKGRO ? '#21262b' : 'white'};
+          color: ${props.asset.type === types.STKGRO ? '#ffe391' : '#00d395'};
         }
       `
     } 
     if (props.type === 'redeem') {
       return `
-        background-color: white;
-        border-color: #161d6b;
+        background-color: ${props.asset.type === types.STKGRO ? '#21262b' : 'white'};
+        border-color: ${props.asset.type === types.STKGRO ? '#ffe391' : '#161d6b'};
         border-width: 3px;
         border-style: solid;
         margin: 0 0.5em 0 0.5em ;
         padding: 0.5em 0 0.5em 0;
-        color: #161d6b;
+        color: ${props.asset.type === types.STKGRO ? '#ffe391' : '#161d6b'};
         border-radius: 5px;
         min-width: 100px;
       
         &:hover {
           cursor: pointer;
-          background-color: #161d6b;
-          color: white;
+          background-color: ${props.asset.type === types.STKGRO ? '#ffe391' : '#161d6b'};
+          color: ${props.asset.type === types.STKGRO ? '#21262b' : 'white'};
         }
       `
     }
@@ -308,6 +309,7 @@ class ActionModal extends React.Component {
         }}
       >
         <ActionButton
+          asset={asset}
           address={address}
           type={type}
           onClick={(e) => {

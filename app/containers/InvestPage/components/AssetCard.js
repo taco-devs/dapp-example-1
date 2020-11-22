@@ -5,11 +5,12 @@ import ActionDrawer from 'components/ActionDrawer';
 import AssetExtension from './AssetExtension';
 import { Icon } from 'react-icons-kit';
 import {areaChart} from 'react-icons-kit/fa/areaChart'
+import types from 'contracts/token_types.json';
 
 const Card = styled.div`
     display: flex;
     flex-direction: column;
-    background-color: white;
+    background-color: ${props => props.type ===  types.STKGRO ? '#21262b' : 'white'};
     border-radius: 5px;
     height: ${props => props.isOpen ? '100%' : '65px'};
     font-size: ${props => props.isMobile ? '0.75em' : '1em'};
@@ -20,9 +21,9 @@ const Card = styled.div`
 
     &:hover {
         cursor: pointer;
-        -webkit-box-shadow: 0px 0px 5px 5px rgba(0,211,149,0.75);
-        -moz-box-shadow: 0px 0px 5px 5px rgba(0,211,149,0.75);
-        box-shadow: 0px 0px 5px 5px rgba(0,211,149,0.75);
+        -webkit-box-shadow: 0px 0px 5px 5px ${props => props.type ===  types.STKGRO ? 'rgb(238,232,170)' : 'rgba(0,211,149,0.75)'};
+        -moz-box-shadow: 0px 0px 5px 5px ${props => props.type ===  types.STKGRO ? 'rgb(238,232,170)' : 'rgba(0,211,149,0.75)'};
+        box-shadow: 0px 0px 5px 5px ${props => props.type ===  types.STKGRO ? 'rgb(238,232,170)' : 'rgba(0,211,149,0.75)'};
     }
 `
 
@@ -49,13 +50,13 @@ const AssetLogo = styled.img`
 `
 
 const PrimaryLabel = styled.p`
-    color: #161d6b;
+    color: ${props => props.type ===  types.STKGRO ? 'white' : '#161d6b'};
     margin: 0 1em 0 1em;
     text-align: center;
 `
 
 const SecondaryLabel = styled.p`
-    color: #161d6b;
+    color: ${props => props.type ===  types.STKGRO ? 'white' : '#161d6b'};
     opacity: 0.75;
     margin: 0 1em 0 1em;
     text-align: center;
@@ -236,8 +237,8 @@ export default class AssetCard extends Component {
                                         <AssetLogo src={require(`images/tokens/${asset.gtoken_img_url}`)} isMobile={isMobile} />
                                     )}
                                     <CardColumn>
-                                        <PrimaryLabel>{asset.g_asset}</PrimaryLabel>
-                                        <SecondaryLabel>{asset.base_asset}</SecondaryLabel>
+                                        <PrimaryLabel type={asset.type}>{asset.g_asset}</PrimaryLabel>
+                                        <SecondaryLabel type={asset.type}>{asset.base_asset}</SecondaryLabel>
                                     </CardColumn>
                                     
                                 </CardColumn>
@@ -245,15 +246,15 @@ export default class AssetCard extends Component {
                                     direction="column"
                                     flex="1.2"
                                 >
-                                    <PrimaryLabel>{this.getMarketSize()}</PrimaryLabel>
-                                    <SecondaryLabel>{this.getSupply(true)} {asset.g_asset}</SecondaryLabel>
+                                    <PrimaryLabel type={asset.type}>{this.getMarketSize()}</PrimaryLabel>
+                                    <SecondaryLabel type={asset.type}>{this.getSupply(true)} {asset.g_asset}</SecondaryLabel>
                                 </CardColumn>
                                 <CardColumn 
                                     direction="column"
                                     flex="0.9"
                                 >
-                                <PrimaryLabel>{this.calculateAvgAPY()}% AVG</PrimaryLabel>
-                                <SecondaryLabel>{this.calculate7DAPY()}% 7D</SecondaryLabel>
+                                <PrimaryLabel type={asset.type}>{this.calculateAvgAPY()}% AVG</PrimaryLabel>
+                                <SecondaryLabel type={asset.type}>{this.calculate7DAPY()}% 7D</SecondaryLabel>
                                 </CardColumn>
                             </CardRow>
                             
@@ -267,6 +268,7 @@ export default class AssetCard extends Component {
                             e.stopPropagation()
                             this.handleToggleExtension()
                         }}
+                        type={asset.type}
                     >
                         <CardRow>
                             <CardColumn
@@ -280,19 +282,19 @@ export default class AssetCard extends Component {
                                 {asset.gtoken_img_url && (
                                     <AssetLogo src={require(`images/tokens/${asset.gtoken_img_url}`)} isMobile={isMobile} />
                                 )}
-                                <PrimaryLabel>{asset.g_asset} {!isMobile && '/'} {asset.base_asset}</PrimaryLabel>
+                                <PrimaryLabel type={asset.type}>{asset.g_asset} {!isMobile && '/'} {asset.base_asset}</PrimaryLabel>
                             </CardColumn>
                             <CardColumn 
                                 direction="column"
                             >
-                                <PrimaryLabel>{this.getMarketSize()}</PrimaryLabel>
-                                <SecondaryLabel>{this.getSupply()} {asset.g_asset}</SecondaryLabel>
+                                <PrimaryLabel type={asset.type}>{this.getMarketSize()}</PrimaryLabel>
+                                <SecondaryLabel type={asset.type}>{this.getSupply()} {asset.g_asset}</SecondaryLabel>
                             </CardColumn>
                             <CardColumn 
                                 direction="column"
                             >
-                                <PrimaryLabel>{this.calculateAvgAPY()}% AVG</PrimaryLabel>
-                                <SecondaryLabel>{this.calculate7DAPY()}% 7D</SecondaryLabel>
+                                <PrimaryLabel type={asset.type}>{this.calculateAvgAPY()}% AVG</PrimaryLabel>
+                                <SecondaryLabel type={asset.type}>{this.calculate7DAPY()}% 7D</SecondaryLabel>
                             </CardColumn>
                             <CardColumn 
                                 direction="row"
@@ -300,19 +302,28 @@ export default class AssetCard extends Component {
                                 <ActionModal 
                                     {...this.props}
                                     type="mint"
-                                    text="MINT"
+                                    text={asset.type === types.STKGRO ? "STAKE" : "MINT"}
                                     data={data}
                                     asset={asset}
                                 />
                                 <ActionModal 
                                     {...this.props}
                                     type="redeem"
-                                    text="REDEEM"
+                                    text={asset.type === types.STKGRO ? "UNSTAKE" : "REDEEM"}
                                     data={data}
                                     asset={asset}
                                 />
-                                <ChartButton>
-                                    <Icon icon={areaChart} style={{color: '#00d395', margin: '-5px 0 0 0'}} size="1.5em"/>
+                                <ChartButton
+                                    asset={asset}
+                                >
+                                    <Icon 
+                                        icon={areaChart} 
+                                        style={{
+                                            color: asset.type === types.STKGRO ? '#ffe391' : '#00d395', 
+                                            margin: '-5px 0 0 0'
+                                        }} 
+                                        size="1.5em"
+                                    />
                                 </ChartButton>  
                             </CardColumn>
                         </CardRow>

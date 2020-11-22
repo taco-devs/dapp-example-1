@@ -1,9 +1,12 @@
 import GrowToken from './GrowToken.json';
 import GToken from './GToken.json';
 import GCToken from './GCToken.json';
+import StkGRO from './StkGRO.json';
 
 import { CToken, CUSDC } from './Interop';
 import { DAI, USDC, WBTC, WETH } from './Underlying';
+
+import types from './token_types.json';
 
 
 const assets = {
@@ -66,14 +69,14 @@ const assets = {
         },
         available_assets: {
             stkGRO: {
-                type: 3,
+                type: types.STKGRO,
                 pair_address: "0x9896bd979f9da57857322cc15e154222c4658a5a",
                 base_address: '0xfcb74f30d8949650aa524d8bf496218a20ce2db4',
                 gtoken_address: '0x760FbB334dbbc15B9774e3d9fA0def86C0A6e7Af',
                 underlying_address: '0xfcb74f30d8949650aa524d8bf496218a20ce2db4',
-                base_abi: CToken,
-                gtoken_abi: GCToken,
-                underlying_abi: DAI,
+                base_abi: GrowToken,
+                gtoken_abi: StkGRO,
+                underlying_abi: GrowToken,
                 underlying_decimals: 1e18,
                 base_decimals: 1e18,
                 native: 'GRO',

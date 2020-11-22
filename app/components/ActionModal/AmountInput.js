@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import debounce from 'lodash.debounce';
+import types from 'contracts/token_types.json';
 
 const InputRow = styled.div`
   display: flex;
@@ -29,6 +30,7 @@ const MaxButton = styled.div`
   flex: 1;
   transition: background-color .4s ease;
   background-color: ${props => {
+    if (props.asset.type === types.STKGRO) return '#ffe391';
     if (props.modal_type === 'mint') return '#00d395';
     if (props.modal_type === 'redeem') return '#161d6b';
   }};
@@ -185,6 +187,7 @@ export default class AmountInpunt extends Component {
 
     render() {
         const {
+            asset,
             modal_type, is_native, isLoading,
             value_native, value_base, value_redeem
         } = this.props;
@@ -230,6 +233,7 @@ export default class AmountInpunt extends Component {
                 
                 </AmountInput>
                 <MaxButton
+                    asset={asset}
                     modal_type={modal_type}
                     onClick={() => this.setMax()}
                 > 
