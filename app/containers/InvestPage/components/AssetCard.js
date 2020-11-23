@@ -106,18 +106,18 @@ export default class AssetCard extends Component {
 
     // Get the market size for this asset
     getMarketSize = () => {
-        const {asset, tokens, prices} = this.props;
+        const {asset, tokens, prices, asset_key} = this.props;
 
         if (!prices || !tokens) return '-';
 
-        const token = tokens.find(token => token.symbol === asset.g_asset);
+        const token = tokens.find(token => token.symbol === asset_key);
 
         if (!token) return '-';
         const asset_data = prices.markets && prices.markets.find(market => market.symbol === asset.base_asset);
 
         if (!asset_data) return '-';
         const reservePrice = Number(asset_data.exchangeRate) / Number(asset_data.underlyingPriceUSD);
-        const market_cap = (Number(token.totalReserve) / 1e8) * reservePrice;
+        const market_cap = (Number(token.totalReserve) / asset.base_decimals) * reservePrice;
 
         if (!market_cap || market_cap <= 1) return 'N/A'
 
@@ -126,27 +126,27 @@ export default class AssetCard extends Component {
 
     // Get the total supply for an asset
     getSupply = (abbreviate) => {
-        const {tokens, asset} = this.props;
+        const {tokens, asset, asset_key} = this.props;
         if (!tokens) return '-'
         
-        const token = tokens.find(token => token.symbol === asset.g_asset);
+        const token = tokens.find(token => token.symbol === asset_key);
 
         if (!token) return '-';
 
         if (abbreviate) {
-            return this.abbreviateNumber(Math.round(token.totalSupply / 1e8));
+            return this.abbreviateNumber(Math.round(token.totalSupply / asset.base_decimals));
         } else {
-            return Math.round(token.totalSupply / 1e8).toLocaleString('en-En');
+            return Math.round(token.totalSupply / asset.base_decimals).toLocaleString('en-En');
         }
         
     }
 
     // Get the weighted APY 
     calculateAvgAPY = () => {
-        const {tokens, asset} = this.props;
+        const {tokens, asset, asset_key} = this.props;
         if (!tokens) return '-'
         
-        const token = tokens.find(token => token.symbol === asset.g_asset);
+        const token = tokens.find(token => token.symbol === asset_key);
 
         if (!token) return '-';
 
@@ -169,10 +169,10 @@ export default class AssetCard extends Component {
 
     // Get the 7 day % increase
     calculate7DAPY = () => {
-        const {tokens, asset} = this.props;
+        const {tokens, asset, asset_key} = this.props;
         if (!tokens) return '-'
         
-        const token = tokens.find(token => token.symbol === asset.g_asset);
+        const token = tokens.find(token => token.symbol === asset_key);
 
         if (!token) return '-';
 

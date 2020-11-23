@@ -356,6 +356,7 @@ function* getTokensSaga(params) {
       if ( response && response.data) {
         const {tokens} = response.data;
 
+
         if (tokens) {
           yield put(getTokensSuccess(tokens));
         }

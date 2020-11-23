@@ -47,6 +47,7 @@ export default class AssetList extends Component {
                     return `g${asset_key}`.toUpperCase().indexOf(search.toUpperCase()) > -1;
                 })
                 .slice(slice_start, slice_end);
+                
         return page_assets.map((asset_key) => (
             <AssetCard  
                 {...this.props} 
