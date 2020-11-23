@@ -31,6 +31,7 @@ const assets = {
                 underlying_abi: GrowToken,
                 underlying_decimals: 1e18,
                 base_decimals: 1e18,
+                card_name: 'Staked GRO',
                 native: 'GRO',
                 base_asset: 'GRO',
                 g_asset: 'stkGRO',
