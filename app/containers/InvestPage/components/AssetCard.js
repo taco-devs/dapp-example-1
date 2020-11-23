@@ -224,6 +224,7 @@ export default class AssetCard extends Component {
                                 if (!web3) return alert('Please connect your wallet to interact with this asset');
                                 this.toggleMobileDrawer();
                             }}
+                            type={asset.type}
                         >
                             <CardRow>
                                 <CardColumn
