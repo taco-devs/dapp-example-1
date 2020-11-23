@@ -61,15 +61,15 @@ export default class AssetList extends Component {
     }
 
 
-    toggleExtension = (asset) => {
+    toggleExtension = (asset, asset_key) => {
         const {getTokenStats} = this.props;
         const {currentOpenExtension} = this.state;
 
-        if (asset.g_asset === currentOpenExtension) {
+        if (asset_key === currentOpenExtension) {
             this.setState({currentOpenExtension: null});
         } else {
             getTokenStats({token: asset.gtoken_address});
-            this.setState({currentOpenExtension: asset.g_asset});
+            this.setState({currentOpenExtension: asset_key});
         }        
     }
 

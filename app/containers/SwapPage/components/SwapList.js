@@ -34,27 +34,18 @@ export default class SwapList extends Component {
     showAvailableAssets = (currentOpenExtension) => {
         const {assets, pagination, Network, search} = this.props;
         if (!assets || !Network) return;
-        /* const assets_per_page = 10;
-        const slice_start = pagination * assets_per_page;
-        const slice_end = (pagination + 1) * assets_per_page;
-        const page_assets = 
-            assets
-                .filter(asset_key => {
-                    if (!search) return true;
-                    if (search.length < 1) return true;
-                    return `g${asset_key}`.toUpperCase().indexOf(search.toUpperCase()) > -1;
-                })
-                .slice(slice_start, slice_end);*/
 
-        return assets.map((asset_key) => (
-            <SwapCard  
-                {...this.props} 
-                asset_key={asset_key}
-                currentOpenExtension={currentOpenExtension}
-                asset={Network.available_assets[asset_key]} 
-            />
+        return assets
+            .filter(asset_key => Network.available_assets[asset_key].liquidity_pool_address)
+            .map((asset_key) => (
+                <SwapCard  
+                    {...this.props} 
+                    asset_key={asset_key}
+                    currentOpenExtension={currentOpenExtension}
+                    asset={Network.available_assets[asset_key]} 
+                />
+                )
             )
-        )
     } 
 
 

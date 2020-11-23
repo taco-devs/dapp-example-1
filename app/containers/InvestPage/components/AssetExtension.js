@@ -10,6 +10,11 @@ import {shareSquareO} from 'react-icons-kit/fa/shareSquareO';
 import Loader from 'react-loader-spinner';
 import moment from 'moment';
 import types from 'contracts/token_types.json';
+
+const dummy = [
+    {x_axis_label: 'SEPT 01', y_value: 0, y_mining_value: 0},
+    {x_axis_label: 'SEPT 02', y_value: 100, y_mining_value: 0},
+]
    
 const data = [
     {
@@ -90,14 +95,14 @@ const ExtensionColumn = styled.div`
 `
 
 const StyledTooltip = styled.div`
-  background: rgb(22,29,107);
+  background: ${props => props.asset.type === types.STKGRO ? '#ffe391' : 'rgb(22,29,107)'};
   border-radius: 5px;
   padding: 0 1em 0 1em;
   font-size: 0.85em;
-  color: white;
+  color: ${props => props.asset.type === types.STKGRO ? '#21262b' : 'white'};
   border-style: solid;
   border-width: 1px;
-  border-color: rgb(22,29,107);
+  border-color: ${props => props.asset.type === types.STKGRO ? '#ffe391' : 'rgb(22,29,107)'};
 `
 
  
@@ -128,12 +133,16 @@ const LoaderContainer = styled.div`
     margin: 1em 0 1em 0;
 `
 
-const CustomTooltip = ({ active, payload, label, base, g_asset }) => {
+const CustomTooltip = ({ active, payload, label, asset, base, g_asset, hasMiningToken }) => {
     if (active) {
         return (
-            <StyledTooltip>
+            <StyledTooltip
+                asset={asset}
+            >
                 <p>{`${label}`}</p>
-                <p>Rate (COMP): {`${payload[0].value} ${base}`}</p>
+                {hasMiningToken && (
+                    <p>Rate (COMP): {`${payload[0].value} ${base}`}</p>
+                )}
                 <p>Rate: {`${payload[1].value} ${base}`}</p>
             </StyledTooltip>
         );
@@ -249,12 +258,12 @@ export default class AssetExtension extends Component {
     }
 
     render() {
-        const {asset, isLoadingChart, tokenData, total_supply, total_reserve, deposit_fee, withdrawal_fee, tokens} = this.props;
+        const {asset, asset_key, isLoadingChart, tokenData, total_supply, total_reserve, deposit_fee, withdrawal_fee, tokens} = this.props;
         const data= this.formatData();
         const domain = this.getDomain(data);
         let token;
         if (tokens) {
-            token = tokens.find(token => token.symbol === asset.g_asset);
+            token = tokens.find(token => token.symbol === asset_key);
         }
         return (
             <ExtensionContainer>
@@ -302,9 +311,14 @@ export default class AssetExtension extends Component {
 
                                     />
                                     <YAxis allowDataOverflow type="number" domain={domain} hide />
-                                    <Tooltip content={<CustomTooltip base={asset.base_asset} g_asset={asset.g_asset} />}/>
+                                    <Tooltip content={<CustomTooltip asset={asset} base={asset.base_asset} g_asset={asset.g_asset} hasMiningToken={token && token.hasMiningToken}/>}/>
                                     <Area type="monotone" dataKey="y_mining_value" stroke="#00d395" fill="#161d6b" />
-                                    <Area type="monotone" dataKey="y_value" stroke="#161d6b" fill="#00d395" />
+                                    <Area 
+                                        type="monotone" 
+                                        dataKey="y_value" 
+                                        stroke={asset.type === types.STKGRO ? '#ffe391' : "#161d6b"} 
+                                        fill={asset.type === types.STKGRO ? '#ffe391' : "#00d395"}
+                                    />
                                 </AreaChart>
                             </ResponsiveContainer>
                         </div>
@@ -317,7 +331,7 @@ export default class AssetExtension extends Component {
                     margin="1em 0 1em 0"
                     color={asset.type === types.STKGRO && 'white'}
                 >
-                    {tokenData && tokenData[tokenData.length - 1] &&  tokenData[tokenData.length - 1].miningTokenBalance && (
+                    {token && token.hasMiningToken && (
                         <ExtensionColumn align="flex-start">
                             <StatLabel>THRESHOLD</StatLabel>
                             <Stat>{token && tokenData && (Math.round(tokenData[tokenData.length - 1].miningTokenBalance / 1e18 * 100) / 100).toLocaleString('En-en')} / 20 COMP</Stat>
@@ -325,7 +339,7 @@ export default class AssetExtension extends Component {
                     )}
                     <ExtensionColumn align="flex-start">
                         <StatLabel>TOTAL SUPPLY</StatLabel>
-                        <Stat>{token && Math.round(token.totalSupply / 1e8).toLocaleString('En-en')} {asset.g_asset}</Stat>
+                        <Stat>{token && Math.round(token.totalSupply / asset.base_decimals).toLocaleString('En-en')} {asset.g_asset}</Stat>
                     </ExtensionColumn>
                     <ExtensionColumn>
                         <StatLabel>TOTAL RESERVE</StatLabel>

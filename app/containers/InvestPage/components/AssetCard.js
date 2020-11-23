@@ -99,8 +99,8 @@ export default class AssetCard extends Component {
 
     // Open / Close asset stats page
     handleToggleExtension = () => {
-        const {toggleExtension, asset} = this.props;
-        toggleExtension(asset);
+        const {toggleExtension, asset, asset_key} = this.props;
+        toggleExtension(asset, asset_key);
     }
 
 

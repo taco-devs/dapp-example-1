@@ -324,6 +324,7 @@ function* getTokensSaga(params) {
         listingDate
         countTokenDailyDatas
         cumulativeDailyChange
+        hasMiningToken
         tokenDailyDatas (
           orderBy: id
           orderDirection: desc
