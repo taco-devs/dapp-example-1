@@ -9,7 +9,8 @@ import {shareSquareO} from 'react-icons-kit/fa/shareSquareO';
 
 import Loader from 'react-loader-spinner';
 import moment from 'moment';
-  
+import types from 'contracts/token_types.json';
+   
 const data = [
     {
         name: 'SEPT 01', uv: 1.1, pv: 2400, amt: 2400,
@@ -78,6 +79,7 @@ const ExtensionRow = styled.div`
     width: 100%;
     justify-content: ${props => props.justify || 'space-between'};
     margin: ${props => props.margin || '0'};
+    ${props => props.color && 'color: white;'}
 `
 
 const ExtensionColumn = styled.div`
@@ -110,7 +112,7 @@ const Stat = styled.p`
 
 const IconContainer = styled.a`
     
-    color: #00d395;
+    color: ${props => props.color || '#00d395'};
 
     &:hover {
         cursor: pointer;
@@ -256,8 +258,10 @@ export default class AssetExtension extends Component {
         }
         return (
             <ExtensionContainer>
-                <Divider />
-                <ExtensionRow>
+                <Divider
+                    color={asset.type === types.STKGRO && '#ffe391'}
+                />
+                <ExtensionRow color={asset.type === types.STKGRO && 'white'}>
                     <ExtensionColumn align="flex-start">
                         <p>{asset.g_asset} PERFORMANCE</p>
                     </ExtensionColumn>
@@ -266,13 +270,13 @@ export default class AssetExtension extends Component {
                             <p>1 {asset.g_asset} = {data[data.length - 1].y_value} {asset.base_asset}</p>
                         )}
                     </ExtensionColumn>
-                </ExtensionRow>
-                <ExtensionRow justify="center">
+                </ExtensionRow >
+                <ExtensionRow justify="center" color={asset.type === types.STKGRO && 'white'}>
                     {isLoadingChart && (
                         <LoaderContainer>
                             <Loader
                             type="TailSpin"
-                            color='#00d395'
+                            color={asset.type === types.STKGRO ? '#ffe391' : '#00d395'}
                             height={120}
                             width={120}
                             />
@@ -306,14 +310,19 @@ export default class AssetExtension extends Component {
                         </div>
                     )}
                 </ExtensionRow>
-                <Divider />
+                <Divider 
+                    color={asset.type === types.STKGRO && '#ffe391'}
+                />
                 <ExtensionRow
                     margin="1em 0 1em 0"
+                    color={asset.type === types.STKGRO && 'white'}
                 >
-                    <ExtensionColumn align="flex-start">
-                        <StatLabel>THRESHOLD</StatLabel>
-                        <Stat>{token && tokenData && (Math.round(tokenData[tokenData.length - 1].miningTokenBalance / 1e18 * 100) / 100).toLocaleString('En-en')} / 20 COMP</Stat>
-                    </ExtensionColumn>
+                    {tokenData && tokenData[tokenData.length - 1] &&  tokenData[tokenData.length - 1].miningTokenBalance && (
+                        <ExtensionColumn align="flex-start">
+                            <StatLabel>THRESHOLD</StatLabel>
+                            <Stat>{token && tokenData && (Math.round(tokenData[tokenData.length - 1].miningTokenBalance / 1e18 * 100) / 100).toLocaleString('En-en')} / 20 COMP</Stat>
+                        </ExtensionColumn>
+                    )}
                     <ExtensionColumn align="flex-start">
                         <StatLabel>TOTAL SUPPLY</StatLabel>
                         <Stat>{token && Math.round(token.totalSupply / 1e8).toLocaleString('En-en')} {asset.g_asset}</Stat>
@@ -334,7 +343,7 @@ export default class AssetExtension extends Component {
                         <StatLabel>TOKEN ADDRESS</StatLabel>
                         <ExtensionRow justify="flex-end">
                             <Stat>{this.parseAddress(asset.gtoken_address)}</Stat>
-                            <IconContainer href={`https://etherscan.io/token/${asset.gtoken_address}`} target="_blank">
+                            <IconContainer href={`https://etherscan.io/token/${asset.gtoken_address}`} target="_blank" color={asset.type === types.STKGRO && '#ffe391'}>
                                 <Icon icon={shareSquareO} size="1.25em" style={{ margin: '0 5px 0 10px'}}/>
                             </IconContainer>
                         </ExtensionRow>

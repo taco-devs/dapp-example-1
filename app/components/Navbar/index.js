@@ -38,10 +38,10 @@ const NavbarTab = styled.div`
   flex-direction: row;
   outline: none;
   box-shadow: none;
-  min-width: 120px;
+  min-width: 100px;
   justify-content: space-around;
   align-items: center;
-  margin: 0 1.5em 0 1.5em;
+  margin: 0 0.5em 0 0.5em;
   padding: 0.5em 1em 0.5em 1em;
   border-radius: 5px;
   ${props => props.active && `
@@ -70,7 +70,7 @@ const NavbarColumn = styled.div`
 
 
 const StyledMessage = styled.div`
-  margin: 0 0.25em 0 0.25em;
+  margin: 0 0.5em 0 1em;
   outline: none;
   box-shadow: none;
   width: 100%;
