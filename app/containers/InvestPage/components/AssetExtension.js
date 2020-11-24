@@ -250,8 +250,11 @@ export default class AssetExtension extends Component {
                 .filter(day => day.y_mining_value > 0)
                 .map(day => day.y_mining_value);
 
-        const min = Math.min(...range);
-        const max = Math.max(...range);
+    
+        let min = Math.min(...range);
+        let max = Math.max(...range);
+
+        if (min === max) min = 0;
         
         return [min, max];
 
