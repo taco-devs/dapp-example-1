@@ -107,6 +107,11 @@ export default class BalanceList extends Component {
                 <BalanceHeader isMobile={isMobile}>
                     {!isMobile && (
                         <BalanceHeaderColumn>
+                            <p>ASSET</p>
+                        </BalanceHeaderColumn>
+                    )}
+                    {!isMobile && (
+                        <BalanceHeaderColumn>
                             <p>HOLDINGS</p>
                         </BalanceHeaderColumn>
                     )}
