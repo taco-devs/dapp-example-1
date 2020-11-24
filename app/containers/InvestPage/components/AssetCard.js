@@ -53,6 +53,7 @@ const PrimaryLabel = styled.p`
     color: ${props => props.type ===  types.STKGRO ? 'white' : '#161d6b'};
     margin: 0 1em 0 1em;
     text-align: center;
+    ${props => props.spacing && `letter-spacing: ${props.spacing};`}
 `
 
 const SecondaryLabel = styled.p`
@@ -297,7 +298,7 @@ export default class AssetCard extends Component {
                             <CardColumn 
                                 direction="column"
                             >
-                                <PrimaryLabel type={asset.type}>{this.getMarketSize()}</PrimaryLabel>
+                                <PrimaryLabel spacing="1.5px" type={asset.type}>{this.getMarketSize()}</PrimaryLabel>
                                 <SecondaryLabel type={asset.type}>{this.getSupply()} {asset.g_asset}</SecondaryLabel>
                             </CardColumn>
                             <CardColumn 
