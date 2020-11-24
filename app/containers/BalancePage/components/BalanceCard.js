@@ -188,7 +188,7 @@ export default class BalanceCard extends Component {
                                 {hideBalances ? (
                                     <PrimaryLabel>***** USD</PrimaryLabel>
                                 ) : (
-                                    <PrimaryLabel>${(Math.round(this.parseNumber(asset.web3_balance, 1e8) * asset.base_price_usd * 100) / 100).toLocaleString('En-en')} USD</PrimaryLabel>
+                                    <PrimaryLabel>${(Math.round(this.parseNumber(asset.web3_balance, asset.base_decimals) * asset.base_price_usd * 100) / 100).toLocaleString('En-en')} USD</PrimaryLabel>
                                 )}
                             </CardColumn>
                         </CardRow>
@@ -211,7 +211,7 @@ export default class BalanceCard extends Component {
                             <CardColumn>
                                 {asset.balance && (
                                     <PrimaryLabel>
-                                        {hideBalances ? `${this.getPercentage()} %` : this.parseNumber(asset.web3_balance, 1e8).toLocaleString('En-en')}
+                                        {hideBalances ? `${this.getPercentage()} %` : this.parseNumber(asset.web3_balance, asset.base_decimals).toLocaleString('En-en')}
                                     </PrimaryLabel>
                                 )}
                                 
@@ -224,7 +224,7 @@ export default class BalanceCard extends Component {
                                 {hideBalances ? (
                                     <PrimaryLabel>***** USD</PrimaryLabel>
                                 ) : (
-                                    <PrimaryLabel>${(Math.round(this.parseNumber(asset.web3_balance, 1e8) * asset.base_price_usd * 100) / 100).toLocaleString('En-en')} USD</PrimaryLabel>
+                                    <PrimaryLabel>${(Math.round(this.parseNumber(asset.web3_balance, asset.base_decimals) * asset.base_price_usd * 100) / 100).toLocaleString('En-en')} USD</PrimaryLabel>
                                 )}
                             </CardColumn>
                             <CardColumn 

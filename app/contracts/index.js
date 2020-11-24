@@ -18,12 +18,12 @@ const assets = {
             img_url: 'gro.png',
         },
         available_assets: {
-            TEST: {
+            TEST2: {
                 type: types.STKGRO,
                 pair_address: "0x9896bd979f9da57857322cc15e154222c4658a5a",
                 // compound_id: '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643',
                 base_address: '0x09e64c2b61a5f1690ee6fbed9baf5d6990f8dfd0',
-                gtoken_address: '0xF403a1d3ecdB190e10818bbE069Aa70B8beE7bBa',
+                gtoken_address: '0x8189d9fD44c719c6C8160aBf0186Cac99EB4AF8d',
                 underlying_address: '0x09e64c2b61a5f1690ee6fbed9baf5d6990f8dfd0',
                 // liquidity_pool_address: '0x575d4a489efff11a9a30b7bad6a551a0010ba98d',
                 base_abi: GrowToken,

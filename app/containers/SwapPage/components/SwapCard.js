@@ -176,6 +176,7 @@ export default class SwapCard extends Component {
     getLiquidity = () => {
         const {asset, pools, prices, ethPrice, balances} = this.props;
 
+        console.log({asset, pools, prices, ethPrice, balances})
         if (!pools || !prices || !balances || !ethPrice) return '-';
         if (pools.length < 1 || prices.length < 1) return '-';
 

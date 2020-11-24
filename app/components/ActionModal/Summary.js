@@ -223,10 +223,11 @@ export default class Summary extends Component {
     // Handle depending the asset
     if (is_native) {
 
+
         const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
         redeemGTokenToUnderlying({
         GContractInstance, 
-        _grossShares: total_native_cost_redeem,
+        _grossShares: value_redeem * asset.base_decimals,
         address,
         web3,
         asset: {
@@ -235,18 +236,19 @@ export default class Summary extends Component {
             sending: total_native_cost_redeem,
             receiving: total_native_redeem,
             fromDecimals: asset.base_decimals,
-            toDecimals: asset.base_decimals,
+            toDecimals: asset.underlying_decimals,
             fromImage: asset.gtoken_img_url,
             toImage: asset.native_img_url,
         },
         toggle: toggleModal
         })
 
+
     } else {
         const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
         redeemGTokenToCToken({
         GContractInstance, 
-        _grossShares: total_native_cost_redeem,
+        _grossShares: value_redeem * asset.base_decimals,
         address,
         web3,
         asset: {
@@ -317,9 +319,9 @@ export default class Summary extends Component {
                     <Icon icon={info} style={{color: '#BEBEBE' }} />
                     </SummaryRow>
                 </SummaryColumn>
-                <SummaryColumn align="flex-end">
+                <SummaryColumn align="flex-end" flex="2">
                     {modal_type === 'mint' && <PrimaryLabel spacing="1px">{this.parseNumber(this.calculateFee(), 1e18, 1000)} {is_native ? asset.native : asset.base_asset}  ({this.parseNumber(deposit_fee, 1e16, 1).toFixed(2)}%)</PrimaryLabel>}
-                    {modal_type === 'redeem' && <PrimaryLabel spacing="1px">{this.parseNumber(this.calculateFee(), 1e18, 1000)} {asset.g_asset}  ({this.parseNumber(withdrawal_fee, 1e16, 1).toFixed(2)}%)</PrimaryLabel>}   
+                    {modal_type === 'redeem' && <PrimaryLabel spacing="1px">{this.parseNumber(this.calculateFee(), 1e18, 1000)} {asset.g_asset}  ({this.parseNumber(withdrawal_fee, 1e16, 1)}%)</PrimaryLabel>}   
                 </SummaryColumn>
                 </SummaryRow>
                 <SummaryRow>

@@ -17,6 +17,7 @@ import {
 } from './actions';
 
 import { makeSelectCurrrentNetwork } from '../App/selectors';
+import types from 'contracts/token_types.json';
 
 const base_pairs = [
   "0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852", // ETH/USD
@@ -145,7 +146,13 @@ const fetch_balances = async (available_assets, user_balances, web3, address) =>
 
       // Fetch asset balance
       const ContractInstance = await new web3.eth.Contract(asset.gtoken_abi, balance.token.id);
-      const exchange_rate = await ContractInstance.methods.exchangeRate().call();
+
+      let exchange_rate;
+
+      if (asset.type !== types.STKGRO) {
+        exchange_rate = await ContractInstance.methods.exchangeRate().call();
+      }
+     
       const web3_balance = await ContractInstance.methods.balanceOf(address).call();
       const total_supply = await ContractInstance.methods.totalSupply().call();
       const total_reserve = await ContractInstance.methods.totalReserve().call();
