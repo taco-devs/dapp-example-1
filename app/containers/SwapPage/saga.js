@@ -70,7 +70,7 @@ function* getPoolsSaga() {
       const tokens_response = yield call(request, process.env.GROWTH_GRAPH_URL, tokens_options);
 
       // Get the pair pools
-      const pools = Object.keys(Network.available_assets).map(asset => Network.available_assets[asset].liquidity_pool_address);
+      const pools = Object.keys(Network.available_assets).filter(asset => Network.available_assets[asset].liquidity_pool_address).map(asset => Network.available_assets[asset].liquidity_pool_address);
       // Get the correct pairs to fetch price
       const query = get_query(pools);
 
