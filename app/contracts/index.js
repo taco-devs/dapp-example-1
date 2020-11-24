@@ -23,7 +23,7 @@ const assets = {
                 pair_address: "0x9896bd979f9da57857322cc15e154222c4658a5a",
                 // compound_id: '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643',
                 base_address: '0x09e64c2b61a5f1690ee6fbed9baf5d6990f8dfd0',
-                gtoken_address: '0x8189d9fD44c719c6C8160aBf0186Cac99EB4AF8d',
+                gtoken_address: '0xD93f98b483CC2F9EFE512696DF8F5deCB73F9497',
                 underlying_address: '0x09e64c2b61a5f1690ee6fbed9baf5d6990f8dfd0',
                 // liquidity_pool_address: '0x575d4a489efff11a9a30b7bad6a551a0010ba98d',
                 base_abi: GrowToken,
