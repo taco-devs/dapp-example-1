@@ -112,7 +112,6 @@ export default class BalanceCard extends Component {
 
         let price = asset.total_reserve / asset.total_supply;
         let groPrice = this.getGroPrice();
-        console.log(price, groPrice)
         return Math.round(price * groPrice * 100) / 100; 
     }
 

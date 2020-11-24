@@ -106,13 +106,21 @@ export default class AssetCard extends Component {
 
     // Get the market size for this asset
     getMarketSize = () => {
-        const {asset, tokens, prices, asset_key} = this.props;
+        const {asset, tokens, prices, asset_key, balances, ethPrice} = this.props;
 
         if (!prices || !tokens) return '-';
 
         const token = tokens.find(token => token.symbol === asset_key);
 
         if (!token) return '-';
+
+        // Check for stkGRO
+        if (token.symbol === 'stkGRO') {
+            const GRO = balances.find(balance => balance.name === 'GRO');
+            const groPrice = ethPrice / GRO.price_eth;
+            return `$${Math.round((token.totalReserve / token.totalSupply) * (token.totalSupply / asset.base_decimals) * groPrice).toLocaleString('en-En')}`;
+        };
+
         const asset_data = prices.markets && prices.markets.find(market => market.symbol === asset.base_asset);
 
         if (!asset_data) return '-';
