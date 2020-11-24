@@ -18,7 +18,7 @@ const assets = {
             img_url: 'gro.png',
         },
         available_assets: {
-            TEST2: {
+            stkGRO: {
                 type: types.STKGRO,
                 pair_address: "0x9896bd979f9da57857322cc15e154222c4658a5a",
                 // compound_id: '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643',
