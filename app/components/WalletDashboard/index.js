@@ -80,6 +80,10 @@ class WalletDashboard extends React.Component {
              if (addGRO && curr.name === 'GRO') {
                return acc + Number(curr.balance / 1e18) / Number(curr.price_eth) * eth_price; 
              } 
+             if (curr.name === 'stkGRO') {
+               const gro = balances.find(balance => balance.name === 'GRO');
+               return acc + (curr.balance / 1e18 ) / Number(gro.price_eth) * eth_price;
+             }
              if (curr.balance > 0 && curr.base_price_usd) {
                 return acc + Number(curr.balance / 1e8 * curr.base_price_usd);
              }
