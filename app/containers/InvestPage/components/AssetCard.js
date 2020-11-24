@@ -116,6 +116,7 @@ export default class AssetCard extends Component {
 
         // Check for stkGRO
         if (token.symbol === 'stkGRO') {
+            if (!balances || !ethPrice) return '-'
             const GRO = balances.find(balance => balance.name === 'GRO');
             const groPrice = ethPrice / GRO.price_eth;
             return `$${Math.round((token.totalReserve / token.totalSupply) * (token.totalSupply / asset.base_decimals) * groPrice).toLocaleString('en-En')}`;
