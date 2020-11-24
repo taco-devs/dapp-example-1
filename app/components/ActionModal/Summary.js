@@ -209,7 +209,7 @@ export default class Summary extends Component {
     
     handleRedeem = async () => {
     const {
-        asset, web3, address,
+        asset, web3, address, getWei,
         redeemGTokenToCToken,
         redeemGTokenToUnderlying,
         is_native, value_redeem, total_native_cost_redeem, total_base_cost_redeem, total_native_redeem, total_base_redeem,
@@ -227,7 +227,7 @@ export default class Summary extends Component {
         const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
         redeemGTokenToUnderlying({
         GContractInstance, 
-        _grossShares: value_redeem * asset.base_decimals,
+        _grossShares: getWei(value_redeem, asset.base_decimals),
         address,
         web3,
         asset: {
@@ -248,7 +248,7 @@ export default class Summary extends Component {
         const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
         redeemGTokenToCToken({
         GContractInstance, 
-        _grossShares: value_redeem * asset.base_decimals,
+        _grossShares: getWei(value_redeem, asset.base_decimals),
         address,
         web3,
         asset: {
