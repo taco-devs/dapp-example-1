@@ -89,7 +89,7 @@ const MoreButton = styled.a`
     font-size: 0.85em;
     text-decoration: none;
     text-align: center;
-    width: ${props => props.isMobile ? '80px' : '120px'};
+    width: ${props => props.isMobile ? '100px' : '120px'};
     margin: 0 0.5em 0 0.5em ;
     padding: 0.5em 0 0.5em 0;
     border-radius: 5px;

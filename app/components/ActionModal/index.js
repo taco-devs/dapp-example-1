@@ -189,7 +189,7 @@ class ActionModal extends React.Component {
       g_balance       = await GContract.methods.balanceOf(address).call(); 
 
       // Exclusive type 1 function [gcDAI, gcUSDC]
-      if (asset.type === 1) {
+      if (asset.type === types.TYPE1) {
         exchange_rate   = await GContract.methods.exchangeRate().call();
       }
     }
@@ -370,7 +370,7 @@ class ActionModal extends React.Component {
               </InputSectionColumn>
             </InputSection>            
           </InputContainer>
-          {asset && asset.type === 1 && (
+          {asset && asset.type === types.TYPE1 && (
             <AssetTypeToggle 
               {...this.props}
               {...this.state}

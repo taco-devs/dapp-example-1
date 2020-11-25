@@ -293,7 +293,7 @@ export default class Summary extends Component {
         } = this.props;
         return (
             <SummaryContainer
-                hasToggle={asset && asset.type === 1}
+                hasToggle={asset && asset.type === types.TYPE1}
                 onClick={e => e.stopPropagation()}
             >
                 <SummaryRow>

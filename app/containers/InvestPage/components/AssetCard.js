@@ -173,7 +173,7 @@ export default class AssetCard extends Component {
 
         const dayDelta = (TODAY_DATE - FIRST_DATE) / SECONDS_IN_DAY;
 
-        const increase = (token.cumulativeDailyChange / dayDelta) * 100 * 365;
+        const increase = (token.cumulativeDailyChange / (dayDelta)) * 100 * 365;
         return Math.round(increase * 100) / 100;
     }
 
@@ -257,7 +257,7 @@ export default class AssetCard extends Component {
                                     direction="column"
                                     flex="1.2"
                                 >
-                                    <PrimaryLabel type={asset.type}>{this.getMarketSize()}</PrimaryLabel>
+                                    <PrimaryLabel spacing="1px" type={asset.type}>{this.getMarketSize()}</PrimaryLabel>
                                     <SecondaryLabel type={asset.type}>{this.getSupply(true)} {asset.g_asset}</SecondaryLabel>
                                 </CardColumn>
                                 <CardColumn 

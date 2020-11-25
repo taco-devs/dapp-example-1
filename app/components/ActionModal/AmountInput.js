@@ -112,7 +112,7 @@ export default class AmountInpunt extends Component {
         const {_cost, _feeShares} = result;
 
         let rate;
-        if (asset.type === 1) {
+        if (asset.type === types.TYPE1) {
           rate = await GContractInstance.methods.calcUnderlyingCostFromCost(result._cost, exchange_rate).call();
         }
 
