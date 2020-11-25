@@ -137,7 +137,7 @@ class GrowthDashboard extends React.Component {
     const FIRST_DAY = TODAY_DATE - (seconds_in_day * 30);
 
     // Chart Array
-    let chart_data = new Array(30);
+    let chart_data = new Array(90);
     let current_days = 0;
 
 
