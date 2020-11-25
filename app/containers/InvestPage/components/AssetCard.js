@@ -53,6 +53,7 @@ const PrimaryLabel = styled.p`
     color: ${props => props.type ===  types.STKGRO ? 'white' : '#161d6b'};
     margin: 0 1em 0 1em;
     text-align: center;
+    ${props => props.size && `font-size: ${props.size}`}
     ${props => props.spacing && `letter-spacing: ${props.spacing};`}
 `
 
@@ -61,6 +62,8 @@ const SecondaryLabel = styled.p`
     opacity: 0.75;
     margin: 0 1em 0 1em;
     text-align: center;
+    font-size: 0.85em;
+    ${props => props.spacing && `letter-spacing: ${props.spacing};`}
 `
 
 const ChartButton = styled.div`
@@ -178,7 +181,7 @@ export default class AssetCard extends Component {
     }
 
     // Get the 7 day % increase
-    calculate7DAPY = () => {
+    calculate1MonthAPY = () => {
         const {tokens, asset, asset_key} = this.props;
         if (!tokens) return '-'
         
@@ -186,13 +189,15 @@ export default class AssetCard extends Component {
 
         if (!token) return '-';
 
-        const {tokenDailyDatas} = token;
+        let last30daysTDD = token.tokenDailyDatas && token.tokenDailyDatas.length > 0 && token.tokenDailyDatas[0];
 
-        const today = tokenDailyDatas[0];
-        const yesterday = tokenDailyDatas[tokenDailyDatas.length - 1];
-
-        const increase = ((today.avgPrice / yesterday.avgPrice) - 1) * 100;
-        return Math.round(increase * 100) / 100;
+        if (last30daysTDD) {
+            let delta = (token.lastAvgPrice / last30daysTDD.avgPrice) - 1;
+            const increase = delta * 100 * 12;
+            return `${Math.round(increase * 100) / 100} %`;
+        } else {
+            return '-'
+        }
     }
 
     // Format the numbers for K, M, B
@@ -242,7 +247,7 @@ export default class AssetCard extends Component {
                                     align="center"
                                     justify="flex-start"
                                     margin="0 0 0 5px"
-                                    flex="1.1"
+                                    flex="1.2"
                                 >
                                     {asset.gtoken_img_url && (
                                         <AssetLogo src={require(`images/tokens/${asset.gtoken_img_url}`)} isMobile={isMobile} />
@@ -255,17 +260,17 @@ export default class AssetCard extends Component {
                                 </CardColumn>
                                 <CardColumn 
                                     direction="column"
-                                    flex="1.2"
+                                    flex="1.1"
                                 >
                                     <PrimaryLabel spacing="1px" type={asset.type}>{this.getMarketSize()}</PrimaryLabel>
-                                    <SecondaryLabel type={asset.type}>{this.getSupply(true)} {asset.g_asset}</SecondaryLabel>
+                                    <SecondaryLabel spacing="1px" type={asset.type}>{this.getSupply(true)} {asset.g_asset}</SecondaryLabel>
                                 </CardColumn>
                                 <CardColumn 
                                     direction="column"
-                                    flex="0.9"
+                                    flex="1.2"
                                 >
                                 <PrimaryLabel type={asset.type}>{this.calculateAvgAPY()}% AVG</PrimaryLabel>
-                                <SecondaryLabel type={asset.type}>{this.calculate7DAPY()}% 7D</SecondaryLabel>
+                                <SecondaryLabel type={asset.type}>{this.calculate1MonthAPY()} 30D AVG</SecondaryLabel>
                                 </CardColumn>
                             </CardRow>
                             
@@ -299,13 +304,13 @@ export default class AssetCard extends Component {
                                 direction="column"
                             >
                                 <PrimaryLabel spacing="1.5px" type={asset.type}>{this.getMarketSize()}</PrimaryLabel>
-                                <SecondaryLabel type={asset.type}>{this.getSupply()} {asset.g_asset}</SecondaryLabel>
+                                <SecondaryLabel spacing="1px" type={asset.type}>{this.getSupply()} {asset.g_asset}</SecondaryLabel>
                             </CardColumn>
                             <CardColumn 
                                 direction="column"
                             >
-                                <PrimaryLabel type={asset.type}>{this.calculateAvgAPY()}% AVG</PrimaryLabel>
-                                <SecondaryLabel type={asset.type}>{this.calculate7DAPY()}% 7D</SecondaryLabel>
+                                <PrimaryLabel spacing="1px" type={asset.type}>{this.calculateAvgAPY()}% AVG</PrimaryLabel>
+                                <SecondaryLabel spacing="1px" type={asset.type}>{this.calculate1MonthAPY()} 30D AVG</SecondaryLabel>
                             </CardColumn>
                             <CardColumn 
                                 direction="row"

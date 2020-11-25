@@ -310,7 +310,7 @@ const approve = async (Contract, asset, total_supply, address, web3, functions) 
 function* getTokensSaga(params) {
   const {dateRange} = params;
 
-  const {today_date, last_week_date} = dateRange;  
+  const {last_month_date} = dateRange;  
   const query = `
     {
       tokens {
@@ -325,12 +325,13 @@ function* getTokensSaga(params) {
         countTokenDailyDatas
         cumulativeDailyChange
         hasMiningToken
+        lastAvgPrice
         tokenDailyDatas (
+          first: 1
           orderBy: id
           orderDirection: desc
           where: {
-            date_lt: ${today_date},
-            date_gte: ${last_week_date}
+            date_lte: ${last_month_date}
           }
         ) {
           id
@@ -356,7 +357,7 @@ function* getTokensSaga(params) {
 
       if ( response && response.data) {
         const {tokens} = response.data;
-
+        console.log(tokens)
 
         if (tokens) {
           yield put(getTokensSuccess(tokens));

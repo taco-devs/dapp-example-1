@@ -79,13 +79,12 @@ class InvestPage extends React.Component {
   handleGetTokens = () => {
     const {getTokens} = this.props;
 
-    const today_date = Math.round(new Date().getTime() / 1000);
-    
-    let last_week = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-    last_week.setHours(0,0,0,0);
-    const last_week_date = Math.round(last_week.getTime() / 1000);
+    const DAYS_RANGE = 30;
+    let last_month = new Date(Date.now() - DAYS_RANGE * 24 * 60 * 60 * 1000);
+    last_month.setHours(0,0,0,0);
+    const last_month_date = Math.round(last_month.getTime() / 1000);
 
-    getTokens({today_date, last_week_date});
+    getTokens({last_month_date});
   }
 
   render () {

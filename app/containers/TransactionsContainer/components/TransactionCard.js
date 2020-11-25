@@ -157,7 +157,7 @@ export default class TransactionCard extends Component {
             if (shortValue % 1 != 0)  shortValue = shortValue.toFixed(1);
             newValue = shortValue+suffixes[suffixNum];
         }
-        return Math.round(newValue * 1000 / 1000);
+        return Math.round(newValue * 10000) / 10000;
       }
     
 
@@ -265,7 +265,7 @@ export default class TransactionCard extends Component {
                                             <TransactionLogo src={require(`images/tokens/${asset.gtoken_img_url}`)}/>
                                         </TransactionContainerColumn>
                                         <TransactionContainerColumn>
-                                            <PrimaryLabel>{this.abbreviateNumber(transaction.received, asset.base_decimals)}</PrimaryLabel>
+                                            <PrimaryLabel>{this.abbreviateNumber(this.parseAmount(transaction.received, asset.base_decimals))}</PrimaryLabel>
                                             <SecondaryLabel>{asset.g_asset}</SecondaryLabel>
                                         </TransactionContainerColumn>
                                     </TransactionContainer>
