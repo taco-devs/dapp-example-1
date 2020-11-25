@@ -218,8 +218,6 @@ class GrowthDashboard extends React.Component {
       current_days++;
     }
 
-    console.log(chart_data)
-    
     return chart_data;
     } catch (e) {
       console.log(e);
