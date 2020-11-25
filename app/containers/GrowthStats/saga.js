@@ -5,7 +5,7 @@ import {
 import request from 'utils/request'
 import NetworkData from 'contracts';
 
-import { GET_BALANCES_REQUEST, GET_USER_STATS_REQUEST, GET_TVL_REQUEST, GET_PRICES_REQUEST, GET_GRAPH_REQUEST } from './constants'
+import { GET_BALANCES_REQUEST, GET_USER_STATS_REQUEST, GET_TVL_REQUEST, GET_PRICES_REQUEST, GET_GRAPH_REQUEST, GET_RELEVANT_PRICES_REQUEST } from './constants'
 import { 
   getUserStatsSuccess, getUserStatsError,
   getBalancesSuccess, getBalancesError,
@@ -13,7 +13,8 @@ import {
   getTVLSuccess,
   getTVLError,
   getPricesSuccess, getPricesError,
-  getGraphSuccess, getGraphError, getRelevantPrices,
+  getGraphSuccess, getGraphError, 
+  getRelevantPricesSuccess, getRelevantPricesError
 } from './actions';
 
 import { makeSelectCurrrentNetwork } from '../App/selectors';
@@ -322,6 +323,27 @@ function* getTVLSaga() {
   }
 }
 
+function* getRelevantPricesSaga (params) {
+    // Fetch Pairs price
+    try {
+      const PAIRS = get_pairs(NetworkData['eth']); // Default always to mainnet
+      const query_url = 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2';
+      const options = {
+        method: 'POST',
+        body: JSON.stringify({ query: PAIRS })
+      };
+
+      const response = yield call(request, query_url, options);
+      const { data } = response;
+
+      if (data) {
+        yield put(getRelevantPricesSuccess(data))
+      }
+    } catch (e) {
+      console.log(e);
+    }
+}
+
 function* getBalancesSaga(params) {
 
   const {address, web3} = params;
@@ -362,8 +384,6 @@ function* getBalancesSaga(params) {
 
         const response = yield call(request, query_url, options);
         const { data } = response;
-
-        yield put(getRelevantPrices(data));
       
         // Fetch Markets price
         let myHeaders = new Headers();
@@ -488,8 +508,8 @@ function* getPricesRequest() {
   yield takeLatest(GET_PRICES_REQUEST, getPricesSaga);
 }
 
-function* getGraphRequest() {
-  yield takeLatest(GET_GRAPH_REQUEST, getGraphSaga);
+function* getRelevantPricesRequest() {
+  yield takeLatest(GET_RELEVANT_PRICES_REQUEST, getRelevantPricesSaga);
 }
 
 export default function* rootSaga() {
@@ -498,6 +518,6 @@ export default function* rootSaga() {
     fork(getBalancesRequest),
     fork(getTVLRequest),
     fork(getPricesRequest),
-    // fork(getGraphRequest),
+    fork(getRelevantPricesRequest),
   ]);
 }

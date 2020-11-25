@@ -10,7 +10,8 @@ import { DEFAULT_ACTION,
   GET_USER_STATS_REQUEST, GET_USER_STATS_SUCCESS, GET_USER_STATS_ERROR,
   GET_TVL_REQUEST, GET_TVL_SUCCESS, GET_TVL_ERROR,
   GET_PRICES_REQUEST, GET_PRICES_SUCCESS, GET_PRICES_ERROR,
-  GET_ETH_PRICE, GET_RELEVANT_PRICES
+  GET_ETH_PRICE, 
+  GET_RELEVANT_PRICES_REQUEST, GET_RELEVANT_PRICES_SUCCESS, GET_RELEVANT_PRICES_ERROR
 } from './constants';
 
 export function defaultAction() {
@@ -131,9 +132,21 @@ export function getEthPrice(eth_price) {
   };
 }
 
-export function getRelevantPrices(relevant_prices) {
+export function getRelevantPrices() {
   return {
-    type: GET_RELEVANT_PRICES,
+    type: GET_RELEVANT_PRICES_REQUEST,
+  }
+}
+
+export function getRelevantPricesSuccess(relevant_prices) {
+  return {
+    type: GET_RELEVANT_PRICES_SUCCESS,
     relevant_prices
   };
+}
+
+export function getRelevantPricesError(error) {
+  return {
+    type: GET_RELEVANT_PRICES_ERROR
+  }
 }
