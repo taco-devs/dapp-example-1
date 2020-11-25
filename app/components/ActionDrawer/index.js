@@ -689,7 +689,6 @@ export default class ActionDrawer extends Component {
                               <SummaryColumn align="flex-end" flex="2.5">
                                 <SummaryRow>
                                   <PrimaryLabel margin="0 5px 0 5px">{this.getPrice(is_native)}</PrimaryLabel>
-                                  {/* <HiSwitchHorizontal /> */}
                                 </SummaryRow>
                               </SummaryColumn>
                             </SummaryRow>
@@ -717,7 +716,7 @@ export default class ActionDrawer extends Component {
                               </SummaryColumn>
                               <SummaryColumn align="flex-end" flex="3">
                                   {modal_type === 'mint' && <PrimaryLabel spacing="1px">{this.parseNumber(this.calculateFee(), is_native ? asset.underlying_decimals : asset.base_decimals).toLocaleString('en-En')} {is_native ? asset.native : asset.base_asset}  ({this.parseNumber(deposit_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}
-                                  {modal_type === 'redeem' && <PrimaryLabel spacing="1px">{this.parseNumber(this.calculateFee(), 1e8).toLocaleString('en-En')} {asset.g_asset}  ({this.parseNumber(withdrawal_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}   
+                                  {modal_type === 'redeem' && <PrimaryLabel spacing="1px">{this.parseNumber(this.calculateFee(), 1e18).toLocaleString('en-En')} {asset.g_asset}  ({this.parseNumber(withdrawal_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}   
                               </SummaryColumn>
                             </SummaryRow>
                             <SummaryRow>

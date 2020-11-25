@@ -185,7 +185,7 @@ export default class BalanceCard extends Component {
                                             {hideBalances ? 'PERCENTAGE' : 'HOLDINGS'}
                                         </SecondaryLabel>
                                         <PrimaryLabel>
-                                            {hideBalances ? `${this.getPercentage()} %` : this.parseNumber(asset.web3_balance, 1e8).toLocaleString('En-en')}
+                                            {hideBalances ? `${this.getPercentage()} %` : this.parseNumber(asset.web3_balance, asset.base_decimals).toLocaleString('En-en')}
                                         </PrimaryLabel>
                                     </React.Fragment>
                                     
@@ -196,7 +196,14 @@ export default class BalanceCard extends Component {
                         </CardRow>
                         <CardRow>
                             <CardColumn align="flex-start" flex="1">
-                                <PrimaryLabel>${Math.round(asset.base_price_usd * 100000) / 100000} USD</PrimaryLabel>
+                                <PrimaryLabel>
+                                    {asset.type === types.STKGRO ? (
+                                        `$${this.stkGROPrice()} USD`
+                                    ) : (
+                                        `$${Math.round(asset.base_price_usd * 100000) / 100000} USD`
+                                    )}
+                                    
+                                </PrimaryLabel>
                                 <SecondaryLabel>{Math.round(asset.total_reserve / asset.total_supply * 10000) / 10000} {asset.base_asset}</SecondaryLabel>
                             </CardColumn>
                             <CardColumn flex="1" align="flex-start">
@@ -204,7 +211,11 @@ export default class BalanceCard extends Component {
                                 {hideBalances ? (
                                     <PrimaryLabel>***** USD</PrimaryLabel>
                                 ) : (
-                                    <PrimaryLabel>${(Math.round(this.parseNumber(asset.web3_balance, asset.base_decimals) * asset.base_price_usd * 100) / 100).toLocaleString('En-en')} USD</PrimaryLabel>
+                                    <PrimaryLabel>{asset.type === types.STKGRO ? (
+                                        `$${(Math.round(this.parseNumber(asset.web3_balance, asset.base_decimals) * this.stkGROPrice() * 100) / 100).toLocaleString('En-en')} USD`
+                                    ) : (
+                                        `$${(Math.round(this.parseNumber(asset.web3_balance, asset.base_decimals) * asset.base_price_usd * 100) / 100).toLocaleString('En-en')} USD`
+                                    )}</PrimaryLabel>
                                 )}
                             </CardColumn>
                         </CardRow>

@@ -159,7 +159,12 @@ export default class AmountInputContainer extends Component {
       
         const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
         const result = await GContractInstance.methods.calcWithdrawalCostFromShares(netShares, total_reserve, total_supply, withdrawal_fee).call();
-        const rate = await GContractInstance.methods.calcUnderlyingCostFromCost(result._cost, exchange_rate).call();
+
+        let rate;
+
+        if (asset.type === types.TYPE1) {
+             rate = await GContractInstance.methods.calcUnderlyingCostFromCost(result._cost, exchange_rate).call();
+        }
         const {_cost, _feeShares} = result;
         handleChange({
           real_fee: _feeShares,
