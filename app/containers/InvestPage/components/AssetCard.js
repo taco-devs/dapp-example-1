@@ -110,7 +110,7 @@ export default class AssetCard extends Component {
 
     // Get the market size for this asset
     getMarketSize = () => {
-        const {asset, tokens, prices, asset_key, balances, ethPrice} = this.props;
+        const {asset, tokens, prices, asset_key, relevantPrices, ethPrice} = this.props;
 
         if (!prices || !tokens) return '-';
 
@@ -120,10 +120,10 @@ export default class AssetCard extends Component {
 
         // Check for stkGRO
         if (token.symbol === 'stkGRO') {
-            if (!balances || !ethPrice) return '-'
-            const GRO = balances.find(balance => balance.name === 'GRO');
-            const groPrice = ethPrice / GRO.price_eth;
-            return `$${Math.round((token.totalReserve / token.totalSupply) * (token.totalSupply / asset.base_decimals) * groPrice).toLocaleString('en-En')}`;
+            if (!relevantPrices || !ethPrice) return '-'
+            const GRO = relevantPrices.pairs.find(price => price.token0.symbol === 'GRO');
+            const groPrice = ethPrice * GRO.token1Price;
+            return `$${Math.round((token.totalReserve / token.totalSupply) * (token.totalSupply / asset.base_decimals) * groPrice).toLocaleString('en-En')}`; 
         };
 
         const asset_data = prices.markets && prices.markets.find(market => market.symbol === asset.base_asset);
