@@ -146,13 +146,13 @@ export default class SwapCard extends Component {
     }
 
     getGRORate = (gro) => {
-        const {ethPrice, balances} = this.props;
+        const {ethPrice, relevantPrices} = this.props;
         
-        if (!balances) return 0;
+        if (!relevantPrices) return 0;
 
-        const GROPrice = balances.find(balance => balance.name === 'GRO');
+        const GROPair = relevantPrices.pairs.find(pair => pair.token0.symbol === 'GRO');
 
-        return ethPrice / GROPrice.price_eth * gro.balance;
+       return ethPrice / GROPair.token0Price * gro.balance;
     }
 
     getGTokenRate = (gtoken_pool) => {
@@ -176,8 +176,10 @@ export default class SwapCard extends Component {
     getLiquidity = () => {
         const {asset, pools, prices, ethPrice, balances} = this.props;
 
-        if (!pools || !prices || !balances || !ethPrice) return '-';
+        if (!pools || !prices || !ethPrice) return '-';
         if (pools.length < 1 || prices.length < 1) return '-';
+
+        console.log(pools)
 
         // Search by id
         const pool = pools.find(pool => pool.id === asset.liquidity_pool_address);

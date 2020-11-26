@@ -17,7 +17,7 @@ import injectReducer from 'utils/injectReducer';
 import { makeSelectPools, makeSelectTokens } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
-import { makeSelectPrices, makeSelectEthPrice, makeSelectBalances } from '../GrowthStats/selectors';
+import { makeSelectPrices, makeSelectEthPrice, makeSelectBalances, makeSelectRelevantPrices } from '../GrowthStats/selectors';
 import { getPools } from './actions';
 import messages from './messages';
 import NetworkData from 'contracts';
@@ -130,6 +130,7 @@ const mapStateToProps = createStructuredSelector({
   tokens: makeSelectTokens(),
   prices: makeSelectPrices(),
   ethPrice: makeSelectEthPrice(),
+  relevantPrices: makeSelectRelevantPrices(),
 });
 
 function mapDispatchToProps(dispatch) {
