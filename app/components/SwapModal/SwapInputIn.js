@@ -135,24 +135,81 @@ export default class SwapInputIn extends Component {
 
     parseBalance = (amount) => {
       if (!amount) return '-';
-      return (Math.round(amount * 100) / 100).toLocaleString('en-En');
+      return amount;
     }
 
-    handleInputChange = (amountInput) => {
-      const {handleMultipleChange, spotPrice} = this.props;
-      const amountOutput = Math.round(spotPrice * amountInput * 1e8) / 1e8;
+    getTokens = (assetIn, amountInput, tokens) => {
+      const {getWei} = this.props;
+
+      let tokenIn;
+      let tokenOut;
+      let _amountInput;
+
+      // Validate if GRO 
+      if (assetIn === 'GRO') {
+        // Asset in position 0 is GRO
+        tokenIn = tokens[0];
+        tokenOut = tokens[1]; 
+        _amountInput = getWei(amountInput, 1e18);
+      } else {
+        tokenIn = tokens[1];
+        tokenOut = tokens[0]; 
+        _amountInput = getWei(amountInput, 1e8)
+      }
+
+      return {tokenIn, tokenOut, _amountInput};
+    }
+
+    getConversion = (assetIn, amountOutput) => {
       
+      if (assetIn === 'GRO') {
+        return amountOutput / 1e8;
+      } else {
+        return amountOutput / 1e18;
+      }
+    }
+
+    handleInputChange = debounce(async (amountInput) => {
+      const {handleMultipleChange, liquidity_pool_address, web3, assetIn } = this.props;
+
+      // Init LP Contract
+      const BPoolInstance = await new web3.eth.Contract(BPool, liquidity_pool_address);  
+
+      // Get current rates
+      const tokens = await BPoolInstance.methods.getCurrentTokens().call();
+
+      let {tokenIn, tokenOut, _amountInput} = this.getTokens(assetIn, amountInput, tokens);
+
+      // Get Data
+      let swapFee = await BPoolInstance.methods.getSwapFee().call();
+      let tokenBalanceIn = await BPoolInstance.methods.getBalance(tokenIn).call();
+      let tokenBalanceOut = await BPoolInstance.methods.getBalance(tokenOut).call();
+      let tokenWeightIn = await BPoolInstance.methods.getNormalizedWeight(tokenIn).call();
+      let tokenWeightOut = await BPoolInstance.methods.getNormalizedWeight(tokenOut).call();
+
+      // CalcOutGivenIn
+      const _amountOutput = await BPoolInstance.methods.calcOutGivenIn(
+        tokenBalanceIn, //tokenBalanceIn
+        tokenWeightIn, // tokenWeightIn
+        tokenBalanceOut, // tokenBalanceOut
+        tokenWeightOut, // tokenWeightOut
+        _amountInput,// tokenAmountIn
+        swapFee//
+      ).call();
+      
+      let amountOutput = this.getConversion(assetIn, _amountOutput);  
+
       handleMultipleChange({
-        amountInput,
         amountOutput,
         swapType: 'SEND'
       });
-    }
+    }, 300);
 
     setMax = () => {
-      const {balanceIn} = this.props;
+      const {balanceIn, handleMultipleChange} = this.props;
       const amountInput = balanceIn;
 
+      handleMultipleChange({amountInput});
       this.handleInputChange(amountInput);
     }
 
@@ -160,13 +217,14 @@ export default class SwapInputIn extends Component {
         const {
             isLoading,
             amountInput,
-            balanceIn
+            balanceIn,
+            handleMultipleChange
         } = this.props;
         const asset = this.getInputAsset();
         return (
           <InputSection>
             <InputRow>
-              <InputSectionColumn align="flex-start">
+              <InputSectionColumn flex="2.5" align="flex-start">
                 <BalanceLabel>BALANCE: {this.parseBalance(balanceIn)}</BalanceLabel>
               </InputSectionColumn>
               <InputSectionColumn align="flex-end">
@@ -186,7 +244,13 @@ export default class SwapInputIn extends Component {
                           type="number"
                           onClick={e => e.stopPropagation()}
                           onChange={e => {
-                              this.handleInputChange(e.target.value)
+                              handleMultipleChange({amountInput: e.target.value});
+                              if (e.target.value.length <= 0) {
+                                handleMultipleChange({amountOutput: ''})
+                              } else {
+                                this.handleInputChange(e.target.value)
+                              };
+                              
                           }}
                       />
                   </AmountInput>

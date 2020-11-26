@@ -271,6 +271,16 @@ export default class SwapSummary extends Component {
                 const minAmountOut = this.getWei(amountOutput * (1 - (slippage / 100)),  1e18);
                 const maxPrice = this.getWei(spotPrice_rate / 1e8 * 1.1, 1e8);
 
+                console.log(
+                    [
+                        _currentAssetIn.gtoken_address, // tokenIn
+                        tokenAmountIn,
+                        _currentAssetOut.address, // tokenOut
+                        minAmountOut,
+                        maxPrice
+                    ]
+                )
+
                 await this.handleSwapExactIn(
                     BPoolInstance,
                     [

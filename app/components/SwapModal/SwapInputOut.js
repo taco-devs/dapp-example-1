@@ -136,7 +136,7 @@ export default class SwapInputOut extends Component {
 
     parseBalance = (amount) => {
         if (!amount) return '-';
-        return (Math.round(amount * 100) / 100).toLocaleString('en-En');
+        return amount;
     }
 
     handleInputChange = (amountOutput) => {
@@ -160,7 +160,7 @@ export default class SwapInputOut extends Component {
         return (
           <InputSection>
             <InputRow>
-                <InputSectionColumn align="flex-start">
+                <InputSectionColumn flex="2.5" align="flex-start">
                 <BalanceLabel>BALANCE: {this.parseBalance(balanceOut)}</BalanceLabel> 
                 </InputSectionColumn>
                 <InputSectionColumn align="flex-end">
