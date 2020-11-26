@@ -179,7 +179,6 @@ export default class SwapCard extends Component {
         if (!pools || !prices || !ethPrice) return '-';
         if (pools.length < 1 || prices.length < 1) return '-';
 
-        console.log(pools)
 
         // Search by id
         const pool = pools.find(pool => pool.id === asset.liquidity_pool_address);
@@ -253,7 +252,6 @@ export default class SwapCard extends Component {
     render() {
         const {asset, data, isMobile, asset_key, currentOpenExtension, web3} = this.props;
         const {isMobileDrawerOpen} = this.state;
-        
         return (
             <React.Fragment>
                 {isMobile ? (
@@ -311,6 +309,7 @@ export default class SwapCard extends Component {
                                     type="mint"
                                     onClick={(e) => {
                                         e.stopPropagation();
+                                        if (!web3) return alert('Please connect your wallet');
                                         this.handleToggleModal();
                                     }}
                                     >
