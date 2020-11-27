@@ -319,17 +319,18 @@ export default class SwapSummary extends Component {
     }
 
     getExchangeRate = (reverse) => {
-        const {assetIn, assetOut, spotPrice} = this.props;
+        const {amountInput, assetIn, assetOut, amountOutput, isLoadingCalc} = this.props;
 
-        if (!spotPrice) return '-';
+        if (isLoadingCalc) return '-';
+        if (!amountInput || !amountOutput) return '-';
 
         if (reverse) {
             return '-';
         } else {
             if (assetIn === 'GRO') {
-                return `1 ${assetIn} = ${Math.round(spotPrice * 100) / 100} ${assetOut}`;
+                return `1 ${assetIn} = ${Math.round((amountOutput / amountInput) * 100) / 100} ${assetOut}`;
             } else {
-                return `1 ${assetIn} = ${Math.round(spotPrice * 100000) / 100000} ${assetOut}`;
+                return `1 ${assetIn} = ${Math.round((amountOutput / amountInput) * 100000) / 100000} ${assetOut}`;
             }
         }
     }
