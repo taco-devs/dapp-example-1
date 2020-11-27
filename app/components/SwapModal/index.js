@@ -79,6 +79,8 @@ const customStyles = {
 };
 
 const initialState =  {
+  isLoadingCalc: false,
+  slippage: 1,
   balanceIn: null,
   balanceOut: null,
   amountInput: null,

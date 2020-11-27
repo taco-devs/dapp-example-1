@@ -201,6 +201,7 @@ export default class SwapInputIn extends Component {
 
       handleMultipleChange({
         amountOutput,
+        isLoadingCalc: false,
         swapType: 'SEND'
       });
     }, 300);
@@ -209,7 +210,7 @@ export default class SwapInputIn extends Component {
       const {balanceIn, handleMultipleChange} = this.props;
       const amountInput = balanceIn;
 
-      handleMultipleChange({amountInput});
+      handleMultipleChange({amountInput, isLoadingCalc: true});
       this.handleInputChange(amountInput);
     }
 
@@ -244,7 +245,7 @@ export default class SwapInputIn extends Component {
                           type="number"
                           onClick={e => e.stopPropagation()}
                           onChange={e => {
-                              handleMultipleChange({amountInput: e.target.value});
+                              handleMultipleChange({amountInput: e.target.value, isLoadingCalc: true});
                               if (e.target.value.length <= 0) {
                                 handleMultipleChange({amountOutput: ''})
                               } else {

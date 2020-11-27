@@ -31,6 +31,20 @@ const IconButton = styled.div`
     }
 `
 
+const SlippageSection = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.85em;
+    height: 30px;
+    letter-spacing: 1px;
+    color: ${props => {
+        if (props.slippage < 5) return 'black';
+        if (props.slippage >= 5 && props.slippage < 10) return '#ea9010';
+        if (props.slippage >= 10 ) return '#ee6055';
+    }}
+`
+
 export default class SwapInputSection extends Component {
 
     componentDidMount = () => {
@@ -54,6 +68,17 @@ export default class SwapInputSection extends Component {
         })
         await this.getCurrentRate();
         await hasEnoughAllowance();
+    }
+
+    getSlippage = () => {
+        const {spotPrice, amountInput, amountOutput, isLoadingCalc} = this.props;
+        const realRate = amountOutput / amountInput;
+
+        if (isLoadingCalc) return '-'
+        if (!spotPrice || !amountInput || !amountOutput) return '-';
+
+        let effectiveSlippage = (spotPrice / realRate) - 1;
+        return Math.round(effectiveSlippage * 10000) / 100;
     }
 
 
@@ -81,6 +106,7 @@ export default class SwapInputSection extends Component {
     }
 
     render() {
+        const {slippage} = this.props;
         return (
             <Wrapper>
                 <SwapInputIn {...this.props}/>
@@ -98,6 +124,11 @@ export default class SwapInputSection extends Component {
                     </IconButton>
                 </IconSection>
                 <SwapInputOut {...this.props} />
+                <SlippageSection
+                    slippage={this.getSlippage()}
+                >
+                    <p>Pool Slippage: {this.getSlippage()}% + {slippage}%</p>
+                </SlippageSection>
             </Wrapper>
         )
     }
