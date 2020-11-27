@@ -101,7 +101,8 @@ export default class SwapSummary extends Component {
     }
 
     isDisabled = () => {
-        const {balanceIn, amountInput} = this.props;
+        const {balanceIn, amountInput, isLoadingCalc} = this.props;
+        if (isLoadingCalc) return true;
         if (Number(balanceIn) < Number(amountInput)) return true;
         return false;
     }
@@ -343,7 +344,7 @@ export default class SwapSummary extends Component {
 
     render() {
 
-        const {allowance, slippage, swapType, assetIn, assetOut, status, amountOutput, amountInput} = this.props;
+        const {allowance, slippage, swapType, assetIn, assetOut, status, amountOutput, amountInput, isLoadingCalc} = this.props;
         return (
             <SummarySection
                 onClick={(e) => {
@@ -390,6 +391,7 @@ export default class SwapSummary extends Component {
                                 modal_type="mint"
                                 onClick={(e) => {
                                     e.stopPropagation();
+                                    if (this.isDisabled()) return;
                                     if (!amountInput || !amountOutput) return;
                                     if (!slippage || slippage < 1) return;
                                     if (status === 'INPUT') {

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import debounce from 'lodash.debounce';
+import BPool from 'contracts/Interop/Bpool.json';
 
 const BalanceLabel = styled.b`
   color: #161d6b;
@@ -139,22 +140,92 @@ export default class SwapInputOut extends Component {
         return amount;
     }
 
-    handleInputChange = (amountOutput) => {
-        const {handleMultipleChange, spotPrice} = this.props;
-        const amountInput = Math.round(amountOutput / spotPrice * 1e8) / 1e8;
-        
-        handleMultipleChange({
-          amountInput,
-          amountOutput,
-          swapType: 'RECEIVE'
-        });
+
+    getConversion = (assetIn, amountInput) => {
+      
+      if (assetIn === 'GRO') {
+        return amountInput / 1e18;
+      } else {
+        return amountInput / 1e8;
+      }
     }
+
+    getTokens = (assetOut, amountOutput, tokens) => {
+      const {getWei} = this.props;
+
+      let tokenIn;
+      let tokenOut;
+      let _amountOutput;
+
+      // Validate if GRO 
+      if (assetOut === 'GRO') {
+        // Asset in position 0 is GRO
+        tokenIn = tokens[1];
+        tokenOut = tokens[0]; 
+        _amountOutput = getWei(amountOutput, 1e18);
+      } else {
+        tokenIn = tokens[0];
+        tokenOut = tokens[1]; 
+        _amountOutput = getWei(amountOutput, 1e8)
+      }
+
+      return {tokenIn, tokenOut, _amountOutput};
+    }
+
+
+    handleInputChange = debounce(async (amountOutput) => {
+      const {handleMultipleChange, liquidity_pool_address, web3, assetOut, assetIn } = this.props;
+
+      // Init LP Contract
+      const BPoolInstance = await new web3.eth.Contract(BPool, liquidity_pool_address);  
+
+      // Get current rates
+      const tokens = await BPoolInstance.methods.getCurrentTokens().call();
+
+      let {tokenIn, tokenOut, _amountOutput} = this.getTokens(assetOut, amountOutput, tokens);
+
+      // Get Data
+      let swapFee = await BPoolInstance.methods.getSwapFee().call();
+      let tokenBalanceIn = await BPoolInstance.methods.getBalance(tokenIn).call();
+      let tokenBalanceOut = await BPoolInstance.methods.getBalance(tokenOut).call();
+      let tokenWeightIn = await BPoolInstance.methods.getNormalizedWeight(tokenIn).call();
+      let tokenWeightOut = await BPoolInstance.methods.getNormalizedWeight(tokenOut).call();
+
+      console.log({
+        tokenBalanceIn,
+        tokenWeightIn,
+        tokenBalanceOut,
+        tokenWeightOut,
+        _amountOutput,
+        swapFee
+      })
+
+      // CalcOutGivenIn
+      const _amountInput = await BPoolInstance.methods.calcInGivenOut(
+        tokenBalanceIn, //tokenBalanceIn
+        tokenWeightIn, // tokenWeightIn
+        tokenBalanceOut, // tokenBalanceOut
+        tokenWeightOut, // tokenWeightOut
+        _amountOutput,// tokenAmountIn
+        swapFee//
+      ).call();
+
+      
+      let amountInput = this.getConversion(assetIn, _amountInput);  
+
+      handleMultipleChange({
+        amountInput,
+        isLoadingCalc: false,
+        swapType: 'RECEIVE'
+      });
+    }, 300);
 
     render() {
         const {
             isLoading,
             balanceOut,
             amountOutput,
+            handleMultipleChange
         } = this.props;
         const asset = this.getOutputAsset();
         return (
@@ -180,6 +251,10 @@ export default class SwapInputOut extends Component {
                           type="number"
                           onClick={e => e.stopPropagation()}
                           onChange={e => {
+                              handleMultipleChange({
+                                amountOutput: e.target.value,
+                                isLoadingCalc: true
+                              })
                               this.handleInputChange(e.target.value)
                           }}
                       />
