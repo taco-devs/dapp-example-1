@@ -164,7 +164,6 @@ export default class AmountInpunt extends Component {
         
         if (modal_type === 'mint') {
           if (is_native) {
-            const SAFE_MARGIN = 0.0001 * asset.underlying_decimals;
             if ((Number(underlying_balance) / asset.underlying_decimals) < 0.01) return;
             const value_native = (underlying_balance/ asset.underlying_decimals);
             handleMultiChange({value_native});
@@ -172,6 +171,7 @@ export default class AmountInpunt extends Component {
           } else {
             if ((Number(asset_balance) / asset.base_decimals) < 0.01) return;
             const value_base = asset_balance / asset.base_decimals;
+
             handleMultiChange({value_base});
             this.handleInputChange(value_base)
           }

@@ -190,6 +190,8 @@ export default class AssetExtension extends Component {
         const TODAY_DATE = Math.round(TODAY.getTime() / 1000);
         const FIRST_DAY = TODAY_DATE - (seconds_in_day * 30);
 
+ 
+
         // Chart Array
         let chart_data = new Array(30);
         let current_days = 0;
@@ -250,7 +252,7 @@ export default class AssetExtension extends Component {
                 .filter(day => day.y_mining_value > 0)
                 .map(day => day.y_mining_value);
 
-    
+        
         let min = Math.min(...range);
         let max = Math.max(...range);
 

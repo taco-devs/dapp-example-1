@@ -96,7 +96,7 @@ class WalletDashboard extends React.Component {
 
   calculateAPY = () => {
 
-    const { balances, eth_price } = this.props;
+    const { balances, eth_price, relev } = this.props;
 
     if (!balances) return '-';
     if (balances.length < 1) return;
@@ -110,23 +110,30 @@ class WalletDashboard extends React.Component {
           .filter(balance => blacklisted_balance.indexOf(balance.name) < 0);
 
     if (gToken_balances.length < 1) return '-';
-    
+
     const portfolio_value = 
       balances
         .reduce((acc, curr) => {
             // If not available balance
             if (Number(curr.balance) <= 0 ) return acc; 
             // Balances
+            if (curr.name === 'stkGRO') {
+              return acc + Number(curr.balance / 1e18 * curr.base_price_usd);
+            }
             if (curr.balance > 0 && curr.base_price_usd) {
               return acc + Number(curr.balance / 1e8 * curr.base_price_usd);
             }
             return acc;
         }, 0);
+
         
     const alloc = 
         gToken_balances
           .map((curr) => {
-            const allocPercentage = Number(curr.balance / 1e8 * curr.base_price_usd) / portfolio_value;
+
+            let assetDecimals = curr.name === 'stkGRO' ? 1e18 : 1e8;
+            const allocPercentage = Number(curr.balance / assetDecimals * curr.base_price_usd) / portfolio_value;
+
             return {
               ...curr,
               allocPercentage

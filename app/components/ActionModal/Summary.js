@@ -78,25 +78,29 @@ export default class Summary extends Component {
     // Calculate correct fee
     calculateFee = () => {
         const { 
+            total_supply, total_reserve, total_reserve_underlying,
             asset, is_native, modal_type, deposit_fee, withdrawal_fee, value_native, value_base, value_redeem
         } = this.props;
 
         if (!deposit_fee || !withdrawal_fee) return 0;
 
+        const rate = (total_reserve / asset.base_decimals) / (total_supply / asset.base_decimals);
+
         // Validate when input a mint function
         if (modal_type === 'mint') {
-        // Validate against native balance
-        if (is_native) {
-            if (!value_native || Number(value_native) <= 0) return true;
-            return  Number(value_native * asset.underlying_decimals) * (deposit_fee / asset.underlying_decimals);
-        } else {
-            if (!value_base || Number(value_base) <= 0) return true;
-            return Number(value_base * asset.base_decimals) * (deposit_fee / asset.base_decimals);
-        }
+            // Validate against native balance
+            if (is_native) {
+                if (!value_native || Number(value_native) <= 0) return true;
+                return Number(value_native * asset.underlying_decimals) * (deposit_fee / asset.underlying_decimals) * rate;
+            } else {
+                if (!value_base || Number(value_base) <= 0) return true;
+                // get the current rate
+                return Number(value_base * asset.base_decimals) * (deposit_fee / asset.base_decimals) * rate;
+            }
         }
 
         if (modal_type === 'redeem') {
-        return Number(value_redeem * asset.base_decimals) * (withdrawal_fee / asset.base_decimals);
+            return Number(value_redeem * asset.base_decimals) * (withdrawal_fee / asset.base_decimals);
         }
     }
 
@@ -222,9 +226,8 @@ export default class Summary extends Component {
 
     // Handle depending the asset
     if (is_native) {
-
-
         const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+        console.log(getWei(value_redeem, asset.base_decimals));
         redeemGTokenToUnderlying({
         GContractInstance, 
         _grossShares: getWei(value_redeem, asset.base_decimals),
@@ -285,6 +288,31 @@ export default class Summary extends Component {
         return newValue;
     }
 
+    // Get current asset price
+    getPrice = (is_native, revert) => {
+        const { asset, total_supply, total_reserve, total_reserve_underlying} = this.props; 
+        if (!asset || !total_supply || !total_reserve ) return '-';
+
+    
+        if (is_native) {
+            if (revert) {
+                let price = Math.round((total_supply / asset.base_decimals) / (total_reserve_underlying / asset.underlying_decimals) * 1000) / 1000;
+                return `${price} ${asset.g_asset} = 1 ${asset.native}`
+            } else {
+                let price = Math.round((total_supply / asset.base_decimals)  / (total_reserve_underlying / asset.underlying_decimals) * 1000) / 1000;
+                return `${price} ${asset.g_asset} = 1 ${asset.native}`
+            }
+        } else {
+            if (revert) {
+                let price = Math.round(total_reserve / total_supply * 1000) / 1000;
+                return `${price} ${asset.base_asset} = 1 ${asset.g_asset}`
+            } else {
+            let price = Math.round(total_supply / total_reserve * 1000) / 1000;
+                return `${price} ${asset.g_asset} = 1 ${asset.base_asset}`
+            }
+        }
+        }
+
     render() {
         const {
             asset, is_native,
@@ -296,6 +324,14 @@ export default class Summary extends Component {
                 hasToggle={asset && asset.type === types.TYPE1}
                 onClick={e => e.stopPropagation()}
             >
+                <SummaryRow>
+                <SummaryColumn>
+                    <PrimaryLabel>PRICE</PrimaryLabel>
+                </SummaryColumn>
+                <SummaryColumn flex="2" align="flex-end">
+                    <PrimaryLabel spacing="1px">{this.getPrice(is_native, true)}</PrimaryLabel>
+                </SummaryColumn>
+                </SummaryRow>
                 <SummaryRow>
                 <SummaryColumn>
                     <PrimaryLabel>{asset.base_asset} RESERVE</PrimaryLabel>

@@ -8,6 +8,7 @@ const BalanceContainer = styled.div`
     flex-direction: column;
     flex: 1;
     padding: ${props => props.isMobile ? '0' : '1em 0 1em 0'} ;
+    width: 100%;
 `
 
 const BalanceHeader = styled.div`

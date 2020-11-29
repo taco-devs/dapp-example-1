@@ -345,8 +345,7 @@ export default class ActionDrawer extends Component {
       }
       if (decimals === 1e8) {
         // Horrible hack to avoid precision error on js
-        const raw_value = (Math.round(value_number * 10) / 100).toString()
-        return web3.utils.toWei(raw_value, 'gwei');
+        return value_number * 1e8;
       }
       if (decimals === 1e6) {
         const value = value_number.toString();
@@ -697,7 +696,7 @@ export default class ActionDrawer extends Component {
                                 <PrimaryLabel>{asset.base_asset} RESERVE</PrimaryLabel>
                               </SummaryColumn>
                               <SummaryColumn align="flex-end">
-                                <PrimaryLabel>{total_supply && Math.round(total_supply / asset.base_decimals).toLocaleString('En-en')} {asset.base_asset}</PrimaryLabel>
+                                <PrimaryLabel>{total_reserve && Math.round(total_reserve / asset.base_decimals).toLocaleString('En-en')} {asset.g_asset}</PrimaryLabel>
                               </SummaryColumn>
                             </SummaryRow>
                             <SummaryRow>
@@ -705,7 +704,9 @@ export default class ActionDrawer extends Component {
                                 <PrimaryLabel>{asset.g_asset} SUPPLY</PrimaryLabel>
                               </SummaryColumn>
                               <SummaryColumn align="flex-end">
-                                <PrimaryLabel>{total_reserve && Math.round(total_reserve / asset.base_decimals).toLocaleString('En-en')} {asset.g_asset}</PrimaryLabel>
+                                <PrimaryLabel>
+                                  {total_supply && Math.round(total_supply / asset.base_decimals).toLocaleString('En-en')} {asset.base_asset}
+                                </PrimaryLabel>
                               </SummaryColumn>
                             </SummaryRow>
                             <SummaryRow>

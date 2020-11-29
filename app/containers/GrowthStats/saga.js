@@ -224,20 +224,36 @@ const get_markets = ( Network ) => {
   return QUERY;
 }
 
-const get_prices = async (asset_balances, data, web3) => {
+const get_prices = async (asset_balances, data, pairs_data, web3) => {
   // Iterate through all prices
   try {
     const { markets } = data;
     const with_prices = 
           asset_balances.map((asset) => {
-            const market = markets.find(market => market.symbol === asset.base);
+            let market;
+            let base_price_eth;
+            let base_price_usd;
+
             const gTokenPrice = Number(asset.total_reserve) / Number(asset.total_supply);
-            const baseAssetPrice = market ? market.exchangeRate * market.underlyingPriceUSD : 0;
-            const base_price_usd = gTokenPrice * baseAssetPrice
+
+            // Needs a router
+            if (asset.name === 'stkGRO') {
+              const GRO = pairs_data.pairs.find(pair => pair.token0.symbol === 'GRO');
+              const ETH = pairs_data.pairs.find(pair => pair.token0.symbol === 'WETH');
+
+              base_price_eth = GRO.token1Price * gTokenPrice;
+              base_price_usd = ETH.token1Price * GRO.token1Price * gTokenPrice;
+
+            } else {
+              market = markets.find(market => market.symbol === asset.base);
+              const baseAssetPrice = market ? market.exchangeRate * market.underlyingPriceUSD : 0;
+              base_price_eth = market ? market.exchangeRate : 0;
+              base_price_usd = gTokenPrice * baseAssetPrice
+            }
             // Get the redeeming rate
             return {
               ...asset,
-              base_price_eth: market ? market.exchangeRate : 0,
+              base_price_eth,
               base_price_usd,
             }
           })
@@ -415,7 +431,7 @@ function* getBalancesSaga(params) {
         const asset_balances = yield fetch_balances(Network.available_assets, balances_data.userBalances, web3, address);
 
         // Calculate the asset price
-        const balances_with_rate = yield get_prices(asset_balances, c_data, web3, address);
+        const balances_with_rate = yield get_prices(asset_balances, c_data, data, web3, address);
 
         const balances = [
           {

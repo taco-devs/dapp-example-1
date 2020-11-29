@@ -150,6 +150,7 @@ class ActionModal extends React.Component {
     withdrawal_fee: null,
     exchange_rate: null,
     total_reserve: null,
+    total_reserve_underlying: null,
     total_native: null,
     total_base: null,
     total_native_redeem: null,
@@ -179,6 +180,7 @@ class ActionModal extends React.Component {
     let withdrawal_fee;  
     let exchange_rate;   
     let total_reserve;  
+    let total_reserve_underlying;  
     let g_balance;
     
     if (GContract) {
@@ -191,6 +193,7 @@ class ActionModal extends React.Component {
       // Exclusive type 1 function [gcDAI, gcUSDC]
       if (asset.type === types.TYPE1) {
         exchange_rate   = await GContract.methods.exchangeRate().call();
+        total_reserve_underlying = await GContract.methods.totalReserveUnderlying().call();
       }
     }
 
@@ -210,11 +213,11 @@ class ActionModal extends React.Component {
       asset_allowance = await BaseContractInstance.methods.allowance(address, asset.gtoken_address).call();
     }
 
-    this.setState({total_supply, deposit_fee, withdrawal_fee, exchange_rate, total_reserve, underlying_balance, asset_balance, g_balance, isLoading: false, underlying_allowance, asset_allowance});
+    this.setState({total_supply, deposit_fee, withdrawal_fee, exchange_rate, total_reserve, total_reserve_underlying, underlying_balance, asset_balance, g_balance, isLoading: false, underlying_allowance, asset_allowance});
   }
 
   toggleModal = (modal_type) => {
-    this.setState({show: !this.state.show, isLoading: true});
+    this.setState({show: !this.state.show, isLoading: true, is_native: false});
     this.fetchBalance();
 
     if (modal_type) {
@@ -241,11 +244,10 @@ class ActionModal extends React.Component {
       return web3.utils.toWei(value);
     }
     if (decimals === 1e8) {
-      // Horrible hack to avoid precision error on js
-      const raw_value = (Math.round(value_number * 10) / 100).toString()
-      return web3.utils.toWei(raw_value, 'gwei');
+      return value_number * 1e8;
     }
     if (decimals === 1e6) {
+      console.log(value_number)
       const value = value_number.toString();
       return web3.utils.toWei(value, 'mwei');
     }
@@ -339,7 +341,7 @@ class ActionModal extends React.Component {
           >
             <InputSection>
               <InputSectionColumn
-                flex="2"
+                flex="3"
               >
                 <Balance 
                   {...this.props}
