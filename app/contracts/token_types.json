@@ -2,5 +2,7 @@
     "TYPE1": "TYPE1",
     "TYPE2": "TYPE2",
     "PMT": "PMT",
-    "STKGRO": "STKGRO"
+    "STKGRO": "STKGRO",
+    "GETH": "GETH",
+    "TYPE_ETH": "TYPE_ETH"
 }

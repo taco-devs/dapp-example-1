@@ -84,7 +84,7 @@ export default class Summary extends Component {
 
         if (!deposit_fee || !withdrawal_fee) return 0;
 
-        const rate = (total_reserve / asset.base_decimals) / (total_supply / asset.base_decimals);
+        const rate = total_supply > 0 ? (total_reserve / asset.base_decimals) / (total_supply / asset.base_decimals) : 1;
 
         // Validate when input a mint function
         if (modal_type === 'mint') {
@@ -293,6 +293,7 @@ export default class Summary extends Component {
         const { asset, total_supply, total_reserve, total_reserve_underlying} = this.props; 
         if (!asset || !total_supply || !total_reserve ) return '-';
 
+        if (total_supply <= 0) return '-';
     
         if (is_native) {
             if (revert) {
@@ -317,11 +318,11 @@ export default class Summary extends Component {
         const {
             asset, is_native,
             total_reserve, total_supply, deposit_fee, withdrawal_fee,
-            total_native, total_base, total_native_redeem, total_base_redeem, modal_type
+            total_native, total_base, total_native_redeem, total_base_redeem, modal_type, toggleNativeAvailable
         } = this.props;
         return (
             <SummaryContainer
-                hasToggle={asset && asset.type === types.TYPE1}
+                hasToggle={asset && toggleNativeAvailable.indexOf(asset.type) > -1}
                 onClick={e => e.stopPropagation()}
             >
                 <SummaryRow>

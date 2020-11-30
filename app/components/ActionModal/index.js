@@ -127,6 +127,11 @@ const customStyles = {
   }
 };
 
+const toggleNativeAvailable = [
+  types.TYPE1,
+  types.TYPE_ETH
+]
+
 class ActionModal extends React.Component {
 
   state = {
@@ -191,7 +196,7 @@ class ActionModal extends React.Component {
       g_balance       = await GContract.methods.balanceOf(address).call(); 
 
       // Exclusive type 1 function [gcDAI, gcUSDC]
-      if (asset.type === types.TYPE1) {
+      if (toggleNativeAvailable.indexOf(asset.type) > -1) {
         exchange_rate   = await GContract.methods.exchangeRate().call();
         total_reserve_underlying = await GContract.methods.totalReserveUnderlying().call();
       }
@@ -201,16 +206,30 @@ class ActionModal extends React.Component {
     let underlying_allowance;
 
     if (UnderlyingContractInstance) {
-      underlying_balance = await UnderlyingContractInstance.methods.balanceOf(address).call(); 
-      underlying_allowance = await UnderlyingContractInstance.methods.allowance(address, asset.gtoken_address).call();
+
+      if (asset.type === types.TYPE_ETH) {
+        underlying_balance = await web3.eth.getBalance(address);
+        underlying_allowance = 1000000 * 1e18;
+
+      } else {
+        underlying_balance = await UnderlyingContractInstance.methods.balanceOf(address).call(); 
+        underlying_allowance = await UnderlyingContractInstance.methods.allowance(address, asset.gtoken_address).call();
+      }
+      
     }
     
     let asset_balance;
     let asset_allowance;
 
     if (BaseContractInstance) {
-      asset_balance = await BaseContractInstance.methods.balanceOf(address).call();
-      asset_allowance = await BaseContractInstance.methods.allowance(address, asset.gtoken_address).call();
+
+      if (asset.type === types.GETH) {
+        asset_balance = await web3.eth.getBalance(address);
+        asset_allowance = 1000000 * 1e18;
+      } else {
+        asset_balance = await BaseContractInstance.methods.balanceOf(address).call();
+        asset_allowance = await BaseContractInstance.methods.allowance(address, asset.gtoken_address).call();
+      }
     }
 
     this.setState({total_supply, deposit_fee, withdrawal_fee, exchange_rate, total_reserve, total_reserve_underlying, underlying_balance, asset_balance, g_balance, isLoading: false, underlying_allowance, asset_allowance});
@@ -341,7 +360,7 @@ class ActionModal extends React.Component {
           >
             <InputSection>
               <InputSectionColumn
-                flex="3"
+                flex="3.25"
               >
                 <Balance 
                   {...this.props}
@@ -372,7 +391,7 @@ class ActionModal extends React.Component {
               </InputSectionColumn>
             </InputSection>            
           </InputContainer>
-          {asset && asset.type === types.TYPE1 && (
+          {asset && toggleNativeAvailable.indexOf(asset.type) > -1 && (
             <AssetTypeToggle 
               {...this.props}
               {...this.state}
@@ -382,6 +401,7 @@ class ActionModal extends React.Component {
           <Summary 
             {...this.props}
             {...this.state}
+            toggleNativeAvailable={toggleNativeAvailable}
             getWei={this.getWei}
             toggleModal={this.toggleModal}
             updateApprovalBalance={this.updateApprovalBalance}

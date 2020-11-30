@@ -31,14 +31,14 @@ export default class Balance extends Component {
         if (modal_type === 'mint') {
         
           if (is_native) {
-            return (underlying_balance / asset.underlying_decimals);
+            return Math.round(underlying_balance / asset.underlying_decimals * 1e8) / 1e8;
           } else {
-            return (asset_balance / asset.base_decimals);
+            return Math.round(asset_balance / asset.base_decimals * 1e8) / 1e8; 
           }
         }
   
         if (modal_type === 'redeem') {
-          return (g_balance / asset.base_decimals);
+          return Math.round((g_balance / asset.base_decimals) * 1e8) / 1e8;
         }      
     }
 

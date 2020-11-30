@@ -4,6 +4,7 @@ build_stage
 build_prod
 node_modules
 stats.json
+deploy_stage.sh
 
 # Cruft
 .DS_Store
