@@ -78,9 +78,7 @@ const CustomLink = styled.a`
 class ApproveContainer extends React.Component {
 
   handleApprove = async () => {
-    const { web3, asset, is_native, approveToken, address, updateApprovalBalance } = this.props;
-
-    // const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+    const { web3, asset, is_native, approveToken, address, updateApprovalBalance, bridgeApproval } = this.props;
 
     if ( is_native ) {
       const UnderlyingContractInstance = await new web3.eth.Contract(asset.underlying_abi, asset.underlying_address);
@@ -94,13 +92,19 @@ class ApproveContainer extends React.Component {
         web3
       })
     } else {
-      const BaseContractInstance = await new web3.eth.Contract(asset.base_abi, asset.base_address);
-      const total_supply = await BaseContractInstance.methods.totalSupply().call();
+
+      let abi = bridgeApproval ? asset.gtoken_abi : asset.base_abi;
+      let abi_address = bridgeApproval ? asset.gtoken_address : asset.base_address;
+      let approval_address = bridgeApproval ? asset.bridge_address : asset.gtoken_address;
+
+      const Contract = await new web3.eth.Contract(abi, abi_address);
+      const total_supply = await Contract.methods.totalSupply().call();
+
       await approveToken({
-        Contract: BaseContractInstance,
+        Contract,
         total_supply,
         address,
-        asset,
+        approval_address,
         updateApprovalBalance,
         web3
       })

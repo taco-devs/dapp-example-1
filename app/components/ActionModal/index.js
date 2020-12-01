@@ -164,6 +164,7 @@ class ActionModal extends React.Component {
     underlying_conversion: null,
     underlying_allowance: null,
     asset_allowance: null,
+    bridge_allowance: null,
     calcFromCost: true,
   }
 
@@ -204,6 +205,7 @@ class ActionModal extends React.Component {
 
     let underlying_balance;
     let underlying_allowance;
+    let bridge_allowance;
 
     if (UnderlyingContractInstance) {
 
@@ -226,13 +228,14 @@ class ActionModal extends React.Component {
       if (asset.type === types.GETH) {
         asset_balance = await web3.eth.getBalance(address);
         asset_allowance = 1000000 * 1e18;
+        bridge_allowance = await BaseContractInstance.methods.allowance(address, asset.bridge_address).call();
       } else {
         asset_balance = await BaseContractInstance.methods.balanceOf(address).call();
         asset_allowance = await BaseContractInstance.methods.allowance(address, asset.gtoken_address).call();
       }
     }
 
-    this.setState({total_supply, deposit_fee, withdrawal_fee, exchange_rate, total_reserve, total_reserve_underlying, underlying_balance, asset_balance, g_balance, isLoading: false, underlying_allowance, asset_allowance});
+    this.setState({total_supply, deposit_fee, withdrawal_fee, exchange_rate, total_reserve, total_reserve_underlying, underlying_balance, asset_balance, g_balance, isLoading: false, underlying_allowance, asset_allowance, bridge_allowance});
   }
 
   toggleModal = (modal_type) => {

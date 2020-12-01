@@ -7,42 +7,36 @@
  */
 
 import React from 'react';
-import { render } from 'react-testing-library';
+import { render, fireEvent, waitFor, screen } from '@testing-library/react'
 import { IntlProvider } from 'react-intl';
-// import 'jest-dom/extend-expect'; // add some helpful assertions
+import NetworkData from 'contracts';
+import 'jest-dom/extend-expect'; // add some helpful assertions
 
 import { InvestPage } from '../index';
 import { DEFAULT_LOCALE } from '../../../i18n';
 
-describe('<InvestPage />', () => {
-  it('Expect to not log errors in console', () => {
-    const spy = jest.spyOn(global.console, 'error');
-    const dispatch = jest.fn();
-    render(
-      <IntlProvider locale={DEFAULT_LOCALE}>
-        <InvestPage dispatch={dispatch} />
-      </IntlProvider>,
-    );
-    expect(spy).not.toHaveBeenCalled();
-  });
+import { AssetList } from '../components'
 
-  it('Expect to have additional unit tests specified', () => {
-    expect(true).toEqual(false);
-  });
+describe('Initial List', () => {
 
-  /**
-   * Unskip this test to use it
-   *
-   * @see {@link https://jestjs.io/docs/en/api#testskipname-fn}
-   */
-  it.skip('Should render and match the snapshot', () => {
-    const {
-      container: { firstChild },
-    } = render(
-      <IntlProvider locale={DEFAULT_LOCALE}>
-        <InvestPage />
-      </IntlProvider>,
-    );
-    expect(firstChild).toMatchSnapshot();
-  });
+    it("Should render" , () => {
+
+      const Network = NetworkData['eth'];
+      const assets = Object.keys(NetworkData['eth'].available_assets);
+
+      const {
+        queryAllByText
+      } = render(
+        <AssetList
+          pagination={0}
+          search=""
+          Network={Network}
+          assets={assets}  
+        />
+      );
+      
+      // query* functions will return the element or null if it cannot be found
+      // get* functions will return the element or throw an error if it cannot be found
+      expect(queryAllByText('gcwBTC / cwBTC')).toBeInTheDocument()
+    })
 });

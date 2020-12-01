@@ -105,8 +105,15 @@ export default class Summary extends Component {
     }
 
     parseNumber = (number, decimals, factor) => {
+        let validate_factor = factor || 100;
         const float_number = number / decimals;
-        return Math.round(float_number * factor) / factor;
+ 
+        if (float_number >= 1000) {
+            return (Math.round(float_number * validate_factor) / validate_factor).toLocaleString('en-En');
+        } else {
+            return Math.round(float_number * validate_factor) / validate_factor;
+        }
+        
     }
 
     // Check for allowance 
@@ -115,11 +122,11 @@ export default class Summary extends Component {
 
         // Only apppliable on Mint
         if (is_native) {
-        if (!value_native || !underlying_allowance) return true;
-        return Number(value_native * asset.underlying_decimals) <= Number(underlying_allowance);
+            if (!value_native || !underlying_allowance) return true;
+            return Number(value_native * asset.underlying_decimals) <= Number(underlying_allowance);
         } else {
-        if (!value_base || !asset_allowance) return true;
-        return Number(value_base * asset.base_decimals) <= Number(asset_allowance);
+            if (!value_base || !asset_allowance) return true;
+            return Number(value_base * asset.base_decimals) <= Number(asset_allowance);
         }
     }
 
@@ -156,6 +163,7 @@ export default class Summary extends Component {
           asset, web3, address,
           mintGTokenFromCToken,
           mintGTokenFromUnderlying,
+          mintGTokenFromBridge,
           is_native, value_base, value_native, total_native, total_base,
           // Functions
           getWei, toggleModal
@@ -169,6 +177,7 @@ export default class Summary extends Component {
     
           const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
           const _cost = getWei(value_native, asset.underlying_decimals);
+        
           mintGTokenFromUnderlying({
             GContractInstance, 
             _cost, 
@@ -188,25 +197,51 @@ export default class Summary extends Component {
           })
     
         } else {
-          const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
-          const _cost = getWei(value_base, asset.base_decimals);
-          mintGTokenFromCToken({
-            GContractInstance, 
-            _cost, 
-            address,
-            web3,
-            asset: {
-              from: asset.base_asset ,
-              to: asset.g_asset,
-              sending: _cost,
-              receiving: total_base,
-              fromDecimals: asset.base_decimals,
-              toDecimals: asset.base_decimals,
-              fromImage: asset.img_url,
-              toImage: asset.gtoken_img_url,
-            },
-            toggle: toggleModal
-          })
+            let GContractInstance;
+            const _cost = getWei(value_base, asset.base_decimals);
+
+            if (asset.type === types.GETH) {
+                GContractInstance = await new web3.eth.Contract(asset.bridge_abi, asset.bridge_address);
+                mintGTokenFromBridge({
+                    GContractInstance, 
+                    _cost,
+                    growthToken: asset.gtoken_address,
+                    address,
+                    web3,
+                    asset: {
+                        from: asset.base_asset ,
+                        to: asset.g_asset,
+                        sending: _cost,
+                        receiving: total_base,
+                        fromDecimals: asset.base_decimals,
+                        toDecimals: asset.base_decimals,
+                        fromImage: asset.img_url,
+                        toImage: asset.gtoken_img_url,
+                    },
+                    toggle: toggleModal
+                }) 
+            } else {
+                GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+                mintGTokenFromCToken({
+                    GContractInstance, 
+                    _cost, 
+                    address,
+                    web3,
+                    asset: {
+                    from: asset.base_asset ,
+                    to: asset.g_asset,
+                    sending: _cost,
+                    receiving: total_base,
+                    fromDecimals: asset.base_decimals,
+                    toDecimals: asset.base_decimals,
+                    fromImage: asset.img_url,
+                    toImage: asset.gtoken_img_url,
+                    },
+                    toggle: toggleModal
+                }) 
+            }
+
+            
         }
     }
     
@@ -216,6 +251,7 @@ export default class Summary extends Component {
         asset, web3, address, getWei,
         redeemGTokenToCToken,
         redeemGTokenToUnderlying,
+        redeemGTokenToBridge,
         is_native, value_redeem, total_native_cost_redeem, total_base_cost_redeem, total_native_redeem, total_base_redeem,
         toggleModal,
     } = this.props;
@@ -227,45 +263,70 @@ export default class Summary extends Component {
     // Handle depending the asset
     if (is_native) {
         const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
-        console.log(getWei(value_redeem, asset.base_decimals));
+        
         redeemGTokenToUnderlying({
-        GContractInstance, 
-        _grossShares: getWei(value_redeem, asset.base_decimals),
-        address,
-        web3,
-        asset: {
-            from: asset.g_asset,
-            to: asset.native,
-            sending: total_native_cost_redeem,
-            receiving: total_native_redeem,
-            fromDecimals: asset.base_decimals,
-            toDecimals: asset.underlying_decimals,
-            fromImage: asset.gtoken_img_url,
-            toImage: asset.native_img_url,
-        },
-        toggle: toggleModal
+            GContractInstance, 
+            _grossShares: getWei(value_redeem, asset.base_decimals),
+            address,
+            web3,
+            asset: {
+                from: asset.g_asset,
+                to: asset.native,
+                sending: total_native_cost_redeem,
+                receiving: total_native_redeem,
+                fromDecimals: asset.base_decimals,
+                toDecimals: asset.underlying_decimals,
+                fromImage: asset.gtoken_img_url,
+                toImage: asset.native_img_url,
+            },
+            toggle: toggleModal
         })
 
 
     } else {
-        const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
-        redeemGTokenToCToken({
-        GContractInstance, 
-        _grossShares: getWei(value_redeem, asset.base_decimals),
-        address,
-        web3,
-        asset: {
-            from: asset.g_asset,
-            to: asset.base_asset,
-            sending: total_native_cost_redeem,
-            receiving: total_base_redeem,
-            fromDecimals: asset.base_decimals,
-            toDecimals: asset.base_decimals,
-            fromImage: asset.gtoken_img_url,
-            toImage: asset.img_url,
-        },
-        toggle: toggleModal
-        })
+
+        let GContractInstance;
+
+        if (asset.type === types.GETH) {
+            GContractInstance = await new web3.eth.Contract(asset.bridge_abi, asset.bridge_address);
+            redeemGTokenToBridge({
+                GContractInstance, 
+                _grossShares: getWei(value_redeem, asset.base_decimals),
+                growthToken: asset.gtoken_address,
+                address,
+                web3,
+                asset: {
+                    from: asset.g_asset,
+                    to: asset.base_asset,
+                    sending: total_native_cost_redeem,
+                    receiving: total_base_redeem,
+                    fromDecimals: asset.base_decimals,
+                    toDecimals: asset.base_decimals,
+                    fromImage: asset.gtoken_img_url,
+                    toImage: asset.img_url,
+                },
+                toggle: toggleModal
+            })
+        } else {
+            GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+            redeemGTokenToCToken({
+                GContractInstance, 
+                _grossShares: getWei(value_redeem, asset.base_decimals),
+                address,
+                web3,
+                asset: {
+                    from: asset.g_asset,
+                    to: asset.base_asset,
+                    sending: total_native_cost_redeem,
+                    receiving: total_base_redeem,
+                    fromDecimals: asset.base_decimals,
+                    toDecimals: asset.base_decimals,
+                    fromImage: asset.gtoken_img_url,
+                    toImage: asset.img_url,
+                },
+                toggle: toggleModal
+            })
+        }   
     }
     }
 
@@ -312,7 +373,14 @@ export default class Summary extends Component {
                 return `${price} ${asset.g_asset} = 1 ${asset.base_asset}`
             }
         }
-        }
+    }
+
+    hasEnoughBridgeAllowance = () => {
+        const {asset, bridge_allowance} = this.props;
+        if ([types.GETH, types.TYPE_ETH].indexOf(asset.type) < 0) return true;
+
+        return bridge_allowance > 0;
+    }
 
     render() {
         const {
@@ -368,42 +436,53 @@ export default class Summary extends Component {
                     <Icon icon={info} style={{color: '#BEBEBE' }} />
                     </SummaryRow>
                 </SummaryColumn>
-                <SummaryColumn align="flex-end">
-                    {modal_type === 'mint'&& is_native && <PrimaryLabel spacing="1px">{total_native ? this.parseNumber(total_native, asset.base_decimals, 100).toLocaleString('en-En') : '-'} {asset.g_asset}</PrimaryLabel>}
-                    {modal_type === 'mint'&& !is_native && <PrimaryLabel spacing="1px">{total_base ? this.parseNumber(total_base, asset.base_decimals, 100).toLocaleString('en-En') : '-'} {asset.g_asset}</PrimaryLabel>}
-                    {modal_type === 'redeem'&& is_native && <PrimaryLabel spacing="1px">{total_native_redeem ? this.parseNumber(total_native_redeem, asset.underlying_decimals, 100).toLocaleString('en-En') : '-'} {asset.native}</PrimaryLabel>}
-                    {modal_type === 'redeem'&& !is_native && <PrimaryLabel spacing="1px">{total_base_redeem ? this.parseNumber(total_base_redeem, asset.base_decimals, 100).toLocaleString('en-En') : '-'} {asset.base_asset}</PrimaryLabel>} 
+                <SummaryColumn align="flex-end" flex="2">
+                    {modal_type === 'mint'&& is_native && <PrimaryLabel spacing="1px">{total_native ? this.parseNumber(total_native, asset.base_decimals, asset.ui_decimals) : '-'} {asset.g_asset}</PrimaryLabel>}
+                    {modal_type === 'mint'&& !is_native && <PrimaryLabel spacing="1px">{total_base ? this.parseNumber(total_base, asset.base_decimals, asset.ui_decimals) : '-'} {asset.g_asset}</PrimaryLabel>}
+                    {modal_type === 'redeem'&& is_native && <PrimaryLabel spacing="1px">{total_native_redeem ? this.parseNumber(total_native_redeem, asset.underlying_decimals, asset.ui_decimals) : '-'} {asset.native}</PrimaryLabel>}
+                    {modal_type === 'redeem'&& !is_native && <PrimaryLabel spacing="1px">{total_base_redeem ? this.parseNumber(total_base_redeem, asset.base_decimals, asset.ui_decimals) : '-'} {asset.base_asset}</PrimaryLabel>} 
                 </SummaryColumn>
                 </SummaryRow>
                 <SummaryRow justify="center" flex="2">
                     {modal_type === 'mint' &&  (
-                    <React.Fragment>
-                        {this.hasEnoughAllowance() ? (
-                        <ActionConfirmButton
-                            asset={asset}
-                            modal_type={modal_type}
-                            onClick={() => this.handleDeposit()}
-                            disabled={this.isDisabled()}
-                        >
-                            {this.isDisabled() ? 'NOT ENOUGH BALANCE' : 'CONFIRM MINT'}
-                        </ActionConfirmButton>
-                        ) : (
-                        <ApproveContainer 
-                            {...this.props}
-                            {...this.state}
-                        />
-                        )}
-                    </React.Fragment>
+                        <React.Fragment>
+                            {this.hasEnoughAllowance() ? (
+                            <ActionConfirmButton
+                                asset={asset}
+                                modal_type={modal_type}
+                                onClick={() => this.handleDeposit()}
+                                disabled={this.isDisabled()}
+                            >
+                                {this.isDisabled() ? 'NOT ENOUGH BALANCE' : 'CONFIRM MINT'}
+                            </ActionConfirmButton>
+                            ) : (
+                                <ApproveContainer 
+                                    {...this.props}
+                                    {...this.state}
+                                />
+                            )}
+                        </React.Fragment>
                     )}
                     {modal_type === 'redeem' &&  (
-                    <ActionConfirmButton 
-                        asset={asset}
-                        modal_type={modal_type}
-                        onClick={() => this.handleRedeem()}
-                        disabled={this.isDisabled()}
-                    >
-                        {this.isDisabled() ? 'NOT ENOUGH BALANCE' : 'CONFIRM REDEEM'}
-                    </ActionConfirmButton>
+                        <React.Fragment>
+                            {this.hasEnoughBridgeAllowance() ? (
+                                <ActionConfirmButton 
+                                    asset={asset}
+                                    modal_type={modal_type}
+                                    onClick={() => this.handleRedeem()}
+                                    disabled={this.isDisabled()}
+                                >
+                                    {this.isDisabled() ? 'NOT ENOUGH BALANCE' : 'CONFIRM REDEEM'}
+                                </ActionConfirmButton>
+                            ) : (
+                                <ApproveContainer 
+                                    {...this.props}
+                                    {...this.state}
+                                    bridgeApproval={true}
+                                />
+                            )}
+                            
+                        </React.Fragment>
                     )}
                 </SummaryRow>
             </SummaryContainer>

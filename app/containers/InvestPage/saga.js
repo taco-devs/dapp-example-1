@@ -7,7 +7,7 @@ import request from 'utils/request'
 import NetworkData from 'contracts';
 import {isMobile} from 'react-device-detect';
 
-import { APPROVE_TOKEN, GET_TOKENS_REQUEST, GET_TOKEN_STATS_REQUEST, MINT_GTOKEN_FROM_CTOKEN, MINT_GTOKEN_FROM_UNDERLYING, REDEEM_GTOKEN_TO_CTOKEN, REDEEM_GTOKEN_TO_UNDERLYING } from './constants'
+import { APPROVE_TOKEN, GET_TOKENS_REQUEST, GET_TOKEN_STATS_REQUEST, MINT_GTOKEN_FROM_CTOKEN, MINT_GTOKEN_FROM_UNDERLYING, MINT_GTOKEN_FROM_BRIDGE, REDEEM_GTOKEN_TO_CTOKEN, REDEEM_GTOKEN_TO_UNDERLYING, REDEEM_GTOKEN_TO_BRIDGE } from './constants'
 import { 
   getTokensSuccess, getTokensError,
   mintGTokenFromCTokenSuccess, mintGTokenFromCTokenError,
@@ -22,266 +22,21 @@ import {
 } from '../App/actions'
 
 import {
-  getBalances, getPricesSuccess
+  getBalances, getPricesSuccess,
 } from '../GrowthStats/actions'
 
+import { 
+  deposit, deposit_underlying, bridge_deposit,
+  withdraw, withdraw_underlying, withdraw_bridge
+} from './contractHandlers'
 
 const connectionStatusChannel = channel();
 
-const getGasInfo = async (method, values, address, web3) => {
-  try {
-    const SAFE_MULTIPLIER = 1.15;
-    const raw_gas = await method(...values).estimateGas({from: address});
-    const gas = web3.utils.BN(raw_gas).mul(SAFE_MULTIPLIER);
-    const raw_gasPrice = await web3.eth.getGasPrice();
-    const gasPrice = web3.utils.BN(raw_gasPrice).mul(SAFE_MULTIPLIER); 
-
-    return {gas, gasPrice};
-  } catch(e) {
-    console.log(e);
-    return {
-      gas: null, 
-      gasPrice: null
-    }
-  }
-}
-
-const deposit = async (ContractInstance, _cost, address, asset, web3, functions) => {
-  let stored_hash;
-  const {gas, gasPrice} = await getGasInfo(ContractInstance.methods.deposit, [_cost], address, web3);
-
-  return ContractInstance.methods.deposit(_cost).send({ from: address, gasPrice, gas})
-    .on("transactionHash", (hash) => {
-        stored_hash = hash;
-        connectionStatusChannel.put(
-          functions.addCurrentSwap({
-            status: 'receipt',
-            modal_type: 'mint',
-            from: asset.from,
-            to: asset.to,
-            sending: asset.sending,
-            receiving: asset.receiving,
-            fromDecimals: asset.fromDecimals,
-            toDecimals: asset.toDecimals,
-            fromImage: asset.fromImage,
-            toImage: asset.toImage,
-            hash,
-            progress: false,
-          })
-        )
-    })
-    .on("receipt",  (tx) => {
-        // Send the confirmation receipt
-        connectionStatusChannel.put(
-          functions.addCurrentSwap({
-            status: 'confirmed',
-            modal_type: 'mint',
-            from: asset.from,
-            to: asset.to,
-            sending: asset.sending,
-            receiving: asset.receiving,
-            fromDecimals: asset.fromDecimals,
-            toDecimals: asset.toDecimals,
-            fromImage: asset.fromImage,
-            toImage: asset.toImage,
-            hash: stored_hash,
-            progress: true,
-          })
-        )
-
-        // Timeout to autoclose the modal in 5s
-        
-        let timeout = isMobile ? 1000 : 5000;
-        setTimeout(() => {
-          connectionStatusChannel.put(functions.dismissSwap());
-          connectionStatusChannel.put(functions.getBalances(address, web3));
-        }, timeout)
-    })
-    .on("confirmation", (confirmation) => {
-      // connectionStatusChannel.put(functions.dismissSwap()); 
-    })
-    .on("error", async function () {
-        console.log("Error");
-    });
-}
-
-const deposit_underlying = async (ContractInstance, _cost, address, asset, web3, functions) => {
-  let stored_hash;
-  const {gas, gasPrice} = await getGasInfo(ContractInstance.methods.depositUnderlying, [_cost], address, web3);
-
-  return ContractInstance.methods.depositUnderlying(_cost).send({ from: address, gas, gasPrice})
-    .on("transactionHash", (hash) => {
-        stored_hash = hash;
-        connectionStatusChannel.put(
-          functions.addCurrentSwap({
-            status: 'receipt',
-            modal_type: 'mint',
-            from: asset.from,
-            to: asset.to,
-            sending: asset.sending,
-            receiving: asset.receiving,
-            fromDecimals: asset.fromDecimals,
-            toDecimals: asset.toDecimals,
-            fromImage: asset.fromImage,
-            toImage: asset.toImage,
-            hash,
-            progress: false,
-          })
-        )
-    })
-    .on("receipt",  (tx) => {
-        // Send the confirmation receipt
-        connectionStatusChannel.put(
-          functions.addCurrentSwap({
-            status: 'confirmed',
-            modal_type: 'mint',
-            from: asset.from,
-            to: asset.to,
-            sending: asset.sending,
-            receiving: asset.receiving,
-            fromDecimals: asset.fromDecimals,
-            toDecimals: asset.toDecimals,
-            fromImage: asset.fromImage,
-            toImage: asset.toImage,
-            hash: stored_hash,
-            progress: true,
-          })
-        )
-
-        // Timeout to autoclose the modal in 5s
-        let timeout = isMobile ? 1000 : 5000;
-        setTimeout(() => {
-          connectionStatusChannel.put(functions.dismissSwap());
-          connectionStatusChannel.put(functions.getBalances(address, web3));
-        }, timeout)
-    })
-    .on("confirmation", (confirmation) => {
-      // connectionStatusChannel.put(functions.dismissSwap()); 
-    })
-    .on("error", async function () {
-        console.log("Error");
-    });
-}
-
-const withdraw = async (ContractInstance, _cost, address, asset, web3, functions) => {
-  let stored_hash;
-  const {gas, gasPrice} = await getGasInfo(ContractInstance.methods.withdraw, [_cost], address, web3);
-  return ContractInstance.methods.withdraw(_cost).send({ from: address, gas, gasPrice})
-    .on("transactionHash", (hash) => {
-        stored_hash = hash;
-        connectionStatusChannel.put(
-          functions.addCurrentSwap({
-            status: 'receipt',
-            modal_type: 'redeem',
-            from: asset.from,
-            to: asset.to,
-            sending: asset.sending,
-            receiving: asset.receiving,
-            fromDecimals: asset.fromDecimals,
-            toDecimals: asset.toDecimals,
-            fromImage: asset.fromImage,
-            toImage: asset.toImage,
-            hash,
-            progress: false,
-          })
-        )
-    })
-    .on("receipt",  (tx) => {
-        // Send the confirmation receipt
-        connectionStatusChannel.put(
-          functions.addCurrentSwap({
-            status: 'confirmed',
-            modal_type: 'redeem',
-            from: asset.from,
-            to: asset.to,
-            sending: asset.sending,
-            receiving: asset.receiving,
-            fromDecimals: asset.fromDecimals,
-            toDecimals: asset.toDecimals,
-            fromImage: asset.fromImage,
-            toImage: asset.toImage,
-            hash: stored_hash,
-            progress: true,
-          })
-        )
-
-        // Timeout to autoclose the modal in 5s
-        let timeout = isMobile ? 1000 : 5000;
-        setTimeout(() => {
-          connectionStatusChannel.put(functions.dismissSwap());
-          connectionStatusChannel.put(functions.getBalances(address, web3));
-        }, timeout)
-    })
-    .on("confirmation", (confirmation) => {
-      // connectionStatusChannel.put(functions.dismissSwap()); 
-    })
-    .on("error", async function () {
-        console.log("Error");
-    });
-}
-
-const withdraw_underlying = async (ContractInstance, _cost, address, asset, web3, functions) => {
-  let stored_hash;
-  const {gas, gasPrice} = await getGasInfo(ContractInstance.methods.withdrawUnderlying, [_cost], address, web3);
-  return ContractInstance.methods.withdrawUnderlying(_cost).send({ from: address, gas, gasPrice})
-    .on("transactionHash", (hash) => {
-        stored_hash = hash;
-        connectionStatusChannel.put(
-          functions.addCurrentSwap({
-            status: 'receipt',
-            modal_type: 'redeem',
-            from: asset.from,
-            to: asset.to,
-            sending: asset.sending,
-            receiving: asset.receiving,
-            fromDecimals: asset.fromDecimals,
-            toDecimals: asset.toDecimals,
-            fromImage: asset.fromImage,
-            toImage: asset.toImage,
-            hash,
-            progress: false,
-          })
-        )
-    })
-    .on("receipt",  (tx) => {
-        // Send the confirmation receipt
-        connectionStatusChannel.put(
-          functions.addCurrentSwap({
-            status: 'confirmed',
-            modal_type: 'redeem',
-            from: asset.from,
-            to: asset.to,
-            sending: asset.sending,
-            receiving: asset.receiving,
-            fromDecimals: asset.fromDecimals,
-            toDecimals: asset.toDecimals,
-            fromImage: asset.fromImage,
-            toImage: asset.toImage,
-            hash: stored_hash,
-            progress: true,
-          })
-        )
-
-        // Timeout to autoclose the modal in 5s
-        let timeout = isMobile ? 1000 : 5000;
-        setTimeout(() => {
-          connectionStatusChannel.put(functions.dismissSwap());
-          connectionStatusChannel.put(functions.getBalances(address, web3));
-        }, timeout)
-    })
-    .on("confirmation", (confirmation) => {
-      // connectionStatusChannel.put(functions.dismissSwap()); 
-    })
-    .on("error", async function () {
-        console.log("Error");
-    });
-}
-
 // Approve the user to send tokens
-const approve = async (Contract, asset, total_supply, address, web3, functions) => {
+const approve = async (Contract, approval_address, total_supply, address, web3, functions) => {
   let stored_hash;
 
-  return Contract.methods.approve(asset.gtoken_address, total_supply).send({ from: address })
+  return Contract.methods.approve(approval_address, total_supply).send({ from: address })
     .on("transactionHash", (hash) => {
         stored_hash = hash;
         connectionStatusChannel.put(
@@ -302,7 +57,6 @@ const approve = async (Contract, asset, total_supply, address, web3, functions) 
       // connectionStatusChannel.put(functions.dismissApproval()); 
     })
     .on("error", async function () {
-      console.log('dismissing')
       connectionStatusChannel.put(functions.dismissApproval());
     });
 }
@@ -396,7 +150,58 @@ function* mintGTokenFromCTokenSaga(params) {
     // const result = yield call([DepositMethod, DepositMethod.send], {from: address});
     yield deposit(
       GContractInstance, 
+      connectionStatusChannel,
       _cost, 
+      address, 
+      asset,
+      web3,
+      {
+        toggle,
+        addCurrentSwap,
+        dismissSwap,
+        getBalances,
+      });
+
+  } catch (error) {
+    const jsonError = yield error.response ? error.response.json() : error;
+    yield put(dismissSwap());
+    yield toggle();
+    yield put(mintGTokenFromCTokenError(jsonError));
+  }
+}
+
+
+function* mintGTokenFromBridgeSaga(params) {
+  const {payload} = params;
+  const {GContractInstance, _cost, growthToken, address, asset, toggle, web3} = payload;
+
+  try { 
+  
+    // Close the current modal
+    yield toggle();
+
+    // Call the confirmation modal
+    yield put(addCurrentSwap({
+      status: 'loading',
+      modal_type: 'mint',
+      from: asset.from,
+      to: asset.to,
+      sending: asset.sending,
+      receiving: asset.receiving,
+      fromDecimals: asset.fromDecimals,
+      toDecimals: asset.toDecimals,
+      fromImage: asset.fromImage,
+      toImage: asset.toImage
+    }));    
+
+    
+    // Call Web3 to Confirm this transaction
+    // const result = yield call([DepositMethod, DepositMethod.send], {from: address});
+    yield bridge_deposit(
+      GContractInstance, 
+      connectionStatusChannel,
+      _cost, 
+      growthToken,
       address, 
       asset,
       web3,
@@ -443,6 +248,7 @@ function* mintGTokenFromUnderlyingSaga(params) {
     // Call Web3 to Confirm this transaction
     yield deposit_underlying(
       GContractInstance, 
+      connectionStatusChannel,
       _cost, 
       address, 
       asset,
@@ -490,6 +296,7 @@ function* redeemGTokenToCTokenSaga(params) {
     // const result = yield call([DepositMethod, DepositMethod.send], {from: address});
     yield withdraw(
       GContractInstance, 
+      connectionStatusChannel,
       _grossShares, 
       address, 
       asset,
@@ -538,7 +345,58 @@ function* redeemGTokenToUnderlyingSaga(params) {
     // const result = yield call([DepositMethod, DepositMethod.send], {from: address});
     yield withdraw_underlying(
       GContractInstance, 
+      connectionStatusChannel,
       _grossShares, 
+      address, 
+      asset,
+      web3,
+      {
+        toggle,
+        addCurrentSwap,
+        dismissSwap,
+        getBalances
+      });
+
+  } catch (error) {
+    const jsonError = yield error.response ? error.response.json() : error;
+    yield put(dismissSwap());
+    yield toggle();
+    yield put(mintGTokenFromCTokenError(jsonError));
+  }
+}
+
+function* redeemGTokenToBridgeSaga(params) {
+  const {payload} = params;
+  const {GContractInstance, _grossShares, growthToken, address, asset,  web3, toggle} = payload;
+  console.log(payload)
+
+  try { 
+  
+    // Close the current modal
+    yield toggle();
+
+    // Call the confirmation modal
+    yield put(addCurrentSwap({
+      status: 'loading',
+      modal_type: 'redeem',
+      from: asset.from,
+      to: asset.to,
+      sending: asset.sending,
+      receiving: asset.receiving,
+      fromDecimals: asset.fromDecimals,
+      toDecimals: asset.toDecimals,
+      fromImage: asset.fromImage,
+      toImage: asset.toImage
+    }));    
+
+    
+    // Call Web3 to Confirm this transaction
+    // const result = yield call([DepositMethod, DepositMethod.send], {from: address});
+    yield withdraw_bridge(
+      GContractInstance, 
+      connectionStatusChannel,
+      _grossShares, 
+      growthToken,
       address, 
       asset,
       web3,
@@ -559,7 +417,7 @@ function* redeemGTokenToUnderlyingSaga(params) {
 
 function* approveTokenSaga(params) {
   const {payload} = params;
-  const {Contract, asset, total_supply, address, updateApprovalBalance, web3} = payload;
+  const {Contract, approval_address, total_supply, address, updateApprovalBalance, web3} = payload;
 
   try { 
 
@@ -568,7 +426,7 @@ function* approveTokenSaga(params) {
 
     yield approve(
       Contract, 
-      asset, 
+      approval_address, 
       total_supply, 
       address,
       web3,
@@ -661,12 +519,20 @@ function* mintGTokenFromUnderlyingRequest() {
   yield takeLatest(MINT_GTOKEN_FROM_UNDERLYING, mintGTokenFromUnderlyingSaga);
 }
 
+function* mintGTokenFromBridgeRequest() {
+  yield takeLatest(MINT_GTOKEN_FROM_BRIDGE, mintGTokenFromBridgeSaga);
+}
+
 function* redeemGTokenToCTokenRequest() {
   yield takeLatest(REDEEM_GTOKEN_TO_CTOKEN, redeemGTokenToCTokenSaga);
 }
 
 function* redeemGTokenToUnderlyingRequest() {
   yield takeLatest(REDEEM_GTOKEN_TO_UNDERLYING, redeemGTokenToUnderlyingSaga);
+}
+
+function* redeemGTokenToBridgeRequest() {
+  yield takeLatest(REDEEM_GTOKEN_TO_BRIDGE, redeemGTokenToBridgeSaga);
 }
 
 function* approveTokenRequest() {
@@ -689,8 +555,10 @@ export default function* rootSaga() {
     fork(getTokensRequest),
     fork(mintGTokenFromCTokenRequest),
     fork(mintGTokenFromUnderlyingRequest),
+    fork(mintGTokenFromBridgeRequest),
     fork(redeemGTokenToCTokenRequest),
     fork(redeemGTokenToUnderlyingRequest),
+    fork(redeemGTokenToBridgeRequest),
     fork(approveTokenRequest),
     fork(getTokenStatsRequest),
     fork(watchDownloadFileChannel)

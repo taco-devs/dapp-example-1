@@ -50,6 +50,7 @@ export default class AssetList extends Component {
                 
         return page_assets.map((asset_key) => (
             <AssetCard  
+                key={asset_key}
                 {...this.props} 
                 asset_key={asset_key}
                 currentOpenExtension={currentOpenExtension}
@@ -99,7 +100,6 @@ export default class AssetList extends Component {
                     )}
                 </AssetHeader>
                 {this.showAvailableAssets(currentOpenExtension)}
-                
             </AssetContainer>     
         )
     }

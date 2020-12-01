@@ -1,6 +1,7 @@
 import GrowToken from './GrowToken.json';
 import GToken from './GToken.json';
 import GCToken from './GCToken.json';
+import GEtherBridge from './GEtherBridge.json';
 import StkGRO from './StkGRO.json';
 
 import { CToken, CUSDC } from './Interop';
@@ -86,6 +87,8 @@ const assets = {
                 base_abi: WETH,
                 gtoken_abi: GToken,
                 underlying_abi: WETH,
+                bridge_abi: GEtherBridge,
+                bridge_address: "0xbc6a1af02c09fc1514B95eC98756ccAa95e8Af2e",
                 underlying_decimals: 1e18,
                 base_decimals: 1e18,
                 native: 'ETH',
@@ -224,7 +227,7 @@ const assets = {
                 gtoken_img_url: 'stkgro.png',
             },
             gDAI: {
-                type: 2,
+                type: types.PMT,
                 pair_address: "0x9896bd979f9da57857322cc15e154222c4658a5a",
                 base_address: '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
                 gtoken_address: '0x3C9e45617AD6258FeA400Fd259Fb3eB3e671051d',
@@ -242,7 +245,7 @@ const assets = {
                 gtoken_img_url: 'gtoken_dai.png',
             },
             gcDAI: {
-                type: 1,
+                type: types.TYPE1,
                 pair_address: "0x9896bd979f9da57857322cc15e154222c4658a5a",
                 base_address: '0xf0d0eb522cfa50b716b3b1604c4f0fa6f04376ad',
                 gtoken_address: '0x6620A56BfC69C0694c15495c3d311C2F8EeC0261',
@@ -260,7 +263,7 @@ const assets = {
                 gtoken_img_url: 'gctoken_dai.png',
             },
             gUSDC: {
-                type: 2,
+                type: types.PMT,
                 pair_address: "0x9896bd979f9da57857322cc15e154222c4658a5a",
                 base_address: '0xb7a4f3e9097c08da09517b5ab877f7a917224ede',
                 gtoken_address: '0x7AE53D7076c5Df0762A7e85fa24c01408A63c1e8', 
@@ -278,7 +281,7 @@ const assets = {
                 gtoken_img_url: 'gtoken_usdc.png',
             },
             gcUSDC: {
-                type: 1,
+                type: types.TYPE1,
                 pair_address: "0x9896bd979f9da57857322cc15e154222c4658a5a",
                 base_address: '0x4a92E71227D294F041BD82dd8f78591B75140d63',
                 gtoken_address: '0x151ac053B6EEEB604c957f2E1F69F797834DB39b',
@@ -296,14 +299,16 @@ const assets = {
                 gtoken_img_url: 'gctoken_usdc.png',
             },
             gETH: {
-                type: 2,
+                type: types.GETH,
                 pair_address: "0x9896bd979f9da57857322cc15e154222c4658a5a",
                 base_address: '0xd0a1e359811322d97991e03f863a0c30c2cf029c',
-                gtoken_address: '0x71910006C4A68bb0d49160270999e4B935c27b0d', 
+                gtoken_address: '0x4104F56839F8FD1FD67297713213DE447C33556E', 
                 underlying_address: '0xd0a1e359811322d97991e03f863a0c30c2cf029c',
+                bridge_address: "0x0026750c741F2Cde78302E97EcCAAb127235051f",
                 base_abi: WETH,
                 gtoken_abi: GToken,
                 underlying_abi: WETH,
+                bridge_abi: GEtherBridge,
                 underlying_decimals: 1e18,
                 base_decimals: 1e18,
                 native: 'ETH',
@@ -314,7 +319,7 @@ const assets = {
                 gtoken_img_url: 'gtoken_eth.png',
             },
             gcETH: {
-                type: 1,
+                type: types.TYPE_ETH,
                 pair_address: "0x9896bd979f9da57857322cc15e154222c4658a5a",
                 base_address: '0x41b5844f4680a8c38fbb695b7f9cfd1f64474a72',
                 gtoken_address: '0x1A190b13C9665db98F83FA5cB6B91402878ca924', 
@@ -332,7 +337,7 @@ const assets = {
                 gtoken_img_url: 'gctoken_eth.png',
             },
             gWBTC: {
-                type: 2,
+                type: types.PMT,
                 pair_address: "0x9896bd979f9da57857322cc15e154222c4658a5a",
                 base_address: '0xd3a691c852cdb01e281545a27064741f0b7f6825',
                 gtoken_address: '0xE45d930b67269CeBf207aAB4dCc200463f439634', 
@@ -342,6 +347,7 @@ const assets = {
                 underlying_abi: WBTC,
                 underlying_decimals: 1e8,
                 base_decimals: 1e8  ,
+                ui_decimals: 1e8,
                 native: 'wBTC',
                 base_asset: 'wBTC',
                 g_asset: 'gwBTC',
@@ -350,7 +356,7 @@ const assets = {
                 gtoken_img_url: 'gtoken_wbtc.png',
             },
             gcWBTC: {
-                type: 1,
+                type: types.TYPE1,
                 pair_address: "0x9896bd979f9da57857322cc15e154222c4658a5a",
                 base_address: '0xa1faa15655b0e7b6b6470ed3d096390e6ad93abb',
                 gtoken_address: '0x36A0fce9910362aF55b9e68A44C35EB7F14a4154', 

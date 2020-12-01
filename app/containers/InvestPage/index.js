@@ -24,7 +24,12 @@ import styled from 'styled-components';
 import ConfirmationModal from 'components/ConfirmationModal';
 import {AssetList, InvestHeader} from './components';
 import NetworkData from 'contracts';
-import { getTokens, changePage, searchAssets, mintGTokenFromCToken, mintGTokenFromUnderlying, redeemGTokenToCToken, redeemGTokenToUnderlying, approveToken, getTokenStats } from './actions';
+import { 
+  getTokens, changePage, searchAssets, 
+  mintGTokenFromCToken, mintGTokenFromUnderlying, mintGTokenFromBridge, 
+  redeemGTokenToCToken, redeemGTokenToUnderlying, redeemGTokenToBridge,
+  approveToken, getTokenStats 
+} from './actions';
 import { addCurrentSwap, dismissSwap, addCurrentApproval, dismissApproval } from '../App/actions';
 import Loader from 'react-loader-spinner';
 import { stubTrue } from 'lodash';
@@ -176,8 +181,10 @@ function mapDispatchToProps(dispatch) {
     searchAssets: (search) => dispatch(searchAssets(search)),
     mintGTokenFromCToken: (payload) => dispatch(mintGTokenFromCToken(payload)),
     mintGTokenFromUnderlying: (payload) => dispatch(mintGTokenFromUnderlying(payload)),
+    mintGTokenFromBridge: (payload) => dispatch(mintGTokenFromBridge(payload)),
     redeemGTokenToCToken: (payload) => dispatch(redeemGTokenToCToken(payload)),
     redeemGTokenToUnderlying: (payload) => dispatch(redeemGTokenToUnderlying(payload)),
+    redeemGTokenToBridge: (payload) => dispatch(redeemGTokenToBridge(payload)),
     approveToken: (payload) => dispatch(approveToken(payload)),
     getTokenStats: (payload) => dispatch(getTokenStats(payload))
   };
