@@ -170,7 +170,6 @@ export default class AmountInpunt extends Component {
             this.handleInputChange(value_native)
           } else {
             const min_decimals = asset.ui_decimals ? 0.0001 : 0.01;
-            console.log(min_decimals)
             const has_low_amount = (Number(asset_balance) / asset.base_decimals) < min_decimals;
             if (has_low_amount) return;
             const value_base = asset_balance / asset.base_decimals;

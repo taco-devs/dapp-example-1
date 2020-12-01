@@ -22,14 +22,22 @@ const ApproveRow = styled.div`
   flex-direction: row;
   justify-content: center;
   border-radius: 5px;
-  background-color: ${props => props.asset.type === types.STKGRO ? '#ffe391' : '#00d395'};
+  background-color: ${props => {
+    if (props.asset.type === types.STKGRO) return '#ffe391';
+    if (props.modal_type === 'mint') return '#00d395';
+    if (props.modal_type === 'redeem') return '#161d6b';
+  }};
   padding: 0;
   margin: 1em 0 0 0;
   width: 300px;
   color: ${props => props.asset.type === types.STKGRO ? '#21262b' : 'white'};
   border-width: 3px;
   border-style: solid;
-  border-color:#161d6b;
+  border-color: ${props => {
+    if (props.asset.type === types.STKGRO) return '#ffe391';
+    if (props.modal_type === 'mint') return '#161d6b';
+    if (props.modal_type === 'redeem') return '#00d395';
+  }};
   
   &:hover {
     opacity: 0.85;
@@ -40,7 +48,11 @@ const ApproveRow = styled.div`
 const ApproveConfirmButton = styled.div`
   display: flex;
   flex-direction: row;
-  background-color: ${props => props.asset.type === types.STKGRO ? '#ffe391' : '#00d395'};
+  background-color: ${props => {
+    if (props.asset.type === types.STKGRO) return '#ffe391';
+    if (props.modal_type === 'mint') return '#00d395';
+    if (props.modal_type === 'redeem') return '#161d6b';
+  }};
 `
 
 const ApproveAction = styled.div`
@@ -127,16 +139,17 @@ class ApproveContainer extends React.Component {
   }
 
   render() {
-    const {currentApproval, asset} = this.props;
+    const {currentApproval, asset, modal_type} = this.props;
     return (
       <ApproveRow
         asset={asset}
+        modal_type={modal_type}
         onClick={() => {
           if (!currentApproval) this.handleApprove();
           if (currentApproval && currentApproval.status === 'receipt') return this.openLink(currentApproval.hash);
         }}
       >
-          <ApproveConfirmButton asset={asset}>
+          <ApproveConfirmButton asset={asset} modal_type={modal_type}>
             {!currentApproval && <p>APPROVE TOKENS</p>}
             {currentApproval && currentApproval.status === 'loading' && (
               <ApproveAction>
