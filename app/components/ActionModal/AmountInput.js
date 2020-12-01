@@ -129,7 +129,8 @@ export default class AmountInpunt extends Component {
     handleInputChange = (value) => {
         const {
             handleChange,
-            modal_type, is_native
+            modal_type, is_native, 
+            getWei,
         } = this.props;
         
         if (value < 0) {
@@ -155,11 +156,11 @@ export default class AmountInpunt extends Component {
         }
     }
 
-    setMax = () => {
+    setMax = async () => {
         const { 
             handleMultiChange, 
             asset,
-            modal_type, is_native, underlying_balance, asset_balance, g_balance,
+            modal_type, is_native, underlying_balance, asset_balance, g_balance, web3,
          } = this.props;
         
         if (modal_type === 'mint') {
@@ -181,7 +182,14 @@ export default class AmountInpunt extends Component {
     
         if (modal_type === 'redeem') {
           if ((Number(g_balance) / asset.base_decimals) < 0.01) return;
-          const value_redeem = g_balance / asset.base_decimals;
+
+          let value_redeem;
+          if (asset.base_decimals === 1e18) {
+            value_redeem = await web3.utils.fromWei(g_balance, 'ether');
+          } else {
+            value_redeem = g_balance / asset.base_decimals;
+          }
+          
           handleMultiChange({value_redeem});
           this.calculateBurningTotal(value_redeem);
         }

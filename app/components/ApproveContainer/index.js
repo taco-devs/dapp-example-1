@@ -75,7 +75,11 @@ const StyledText = styled.p`
 `
 
 const CustomLink = styled.a`
-    color: #161d6b;
+    color: ${props => {
+      if (props.asset.type === types.STKGRO) return 'black';
+      if (props.modal_type === 'mint') return '#161d6b';
+      if (props.modal_type === 'redeem') return '#00d395';
+    }};
     text-decoration: none;
 
     margin: 0 15px 10px 0;
@@ -166,7 +170,7 @@ class ApproveContainer extends React.Component {
                 <ApproveActionColumn >
                   <StyledText>APPROVAL SUBMITTED</StyledText>
                   <ApproveAction>
-                    <CustomLink>{this.parseHash(currentApproval.hash)}</CustomLink>
+                    <CustomLink asset={asset} modal_type={modal_type}>{this.parseHash(currentApproval.hash)}</CustomLink>
                     <Icon icon={shareSquareO} size="1.3em"/>
                   </ApproveAction>
                 </ApproveActionColumn>

@@ -406,7 +406,7 @@ export default class Summary extends Component {
                     <PrimaryLabel>{asset.base_asset} RESERVE</PrimaryLabel>
                 </SummaryColumn>
                 <SummaryColumn align="flex-end">
-                    <PrimaryLabel spacing="1px">{total_reserve ?  this.parseNumber(total_reserve, asset.base_decimals, 1).toLocaleString('En-en') : '-'} {asset.base_asset}</PrimaryLabel>
+                    <PrimaryLabel spacing="1px">{total_reserve ?  this.parseNumber(total_reserve, asset.base_decimals, asset.ui_decimals) : '-'} {asset.base_asset}</PrimaryLabel>
                 </SummaryColumn>
                 </SummaryRow>
                 <SummaryRow>
@@ -414,7 +414,7 @@ export default class Summary extends Component {
                     <PrimaryLabel>{asset.g_asset} SUPPLY</PrimaryLabel>
                 </SummaryColumn>
                 <SummaryColumn align="flex-end">
-                    <PrimaryLabel spacing="1px">{total_supply ? this.parseNumber(total_supply, asset.base_decimals, 1).toLocaleString('En-en') : '-'} {asset.g_asset}</PrimaryLabel>
+                    <PrimaryLabel spacing="1px">{total_supply ? this.parseNumber(total_supply, asset.base_decimals, asset.ui_decimals) : '-'} {asset.g_asset}</PrimaryLabel>
                 </SummaryColumn>
                 </SummaryRow>
                 <SummaryRow>

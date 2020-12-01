@@ -228,7 +228,7 @@ class ActionModal extends React.Component {
       if (asset.type === types.GETH) {
         asset_balance = await web3.eth.getBalance(address);
         asset_allowance = 1000000 * 1e18;
-        bridge_allowance = await BaseContractInstance.methods.allowance(address, asset.bridge_address).call();
+        bridge_allowance = await GContract.methods.allowance(address, asset.bridge_address).call();
       } else {
         asset_balance = await BaseContractInstance.methods.balanceOf(address).call();
         asset_allowance = await BaseContractInstance.methods.allowance(address, asset.gtoken_address).call();
