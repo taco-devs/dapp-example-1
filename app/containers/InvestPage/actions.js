@@ -13,6 +13,7 @@ import {
   MINT_GTOKEN_FROM_UNDERLYING_BRIDGE, MINT_GTOKEN_FROM_UNDERLYING_BRIDGE_SUCCESS, MINT_GTOKEN_FROM_UNDERLYING_BRIDGE_ERROR,
   REDEEM_GTOKEN_TO_BRIDGE, REDEEM_GTOKEN_TO_BRIDGE_SUCCESS, REDEEM_GTOKEN_TO_BRIDGE_ERROR,
   REDEEM_GTOKEN_TO_CTOKEN, REDEEM_GTOKEN_TO_UNDERLYING,
+  REDEEM_GTOKEN_TO_UNDERLYING_BRIDGE, REDEEM_GTOKEN_TO_UNDERLYING_BRIDGE_SUCCESS, REDEEM_GTOKEN_TO_UNDERLYING_BRIDGE_ERROR,
   APPROVE_TOKEN, APPROVE_TOKEN_SUCCESS, APPROVE_TOKEN_ERROR,
   GET_TOKEN_STATS_REQUEST, GET_TOKEN_STATS_SUCCESS, GET_TOKEN_STATS_ERROR
 } from './constants';
@@ -209,6 +210,28 @@ export function redeemGTokenToUnderlyingSuccess(success) {
 export function redeemGTokenToUnderlyingError(error) {
   return {
     type: REDEEM_GTOKEN_TO_UNDERLYING_ERROR,
+    error
+  }
+}
+
+// REDEEM GTOKEN TO UNDERLYING BRIDGE
+export function redeemGTokenToUnderlyingBridge(payload) {
+  return {
+    type: REDEEM_GTOKEN_TO_UNDERLYING_BRIDGE,
+    payload
+  }
+}
+
+export function redeemGTokenToUnderlyingBridgeSuccess(success) {
+  return {
+    type: REDEEM_GTOKEN_TO_UNDERLYING_BRIDGE_SUCCESS,
+    success
+  }
+}
+
+export function redeemGTokenToUnderlyingBridgeError(error) {
+  return {
+    type: REDEEM_GTOKEN_TO_UNDERLYING_BRIDGE_ERROR,
     error
   }
 }

@@ -133,10 +133,10 @@ export default class Summary extends Component {
     // Check if a button should be disabled
     isDisabled = () => {
         const {
-            asset,
+            asset, 
             modal_type, is_native,
             value_base, value_native, value_redeem,
-            underlying_balance, asset_balance, g_balance
+            underlying_balance, asset_balance, g_balance,
         } = this.props;
 
         // Validate when input a mint function
@@ -152,9 +152,10 @@ export default class Summary extends Component {
         }
 
         if (modal_type === 'redeem') {
-        if (!value_redeem) return true;
-        return Number(value_redeem * asset.base_decimals) > Number(g_balance);
+            if (!value_redeem) return true;
+            return Number(value_redeem * asset.base_decimals) > Number(g_balance);
         }
+
         return true;
     }
 
@@ -164,6 +165,7 @@ export default class Summary extends Component {
           mintGTokenFromCToken,
           mintGTokenFromUnderlying,
           mintGTokenFromBridge,
+          mintGTokenFromUnderlyingBridge,
           is_native, value_base, value_native, total_native, total_base,
           // Functions
           getWei, toggleModal
@@ -174,27 +176,50 @@ export default class Summary extends Component {
         
         // Handle depending the asset
         if (is_native) {
-    
-          const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
-          const _cost = getWei(value_native, asset.underlying_decimals);
-        
-          mintGTokenFromUnderlying({
-            GContractInstance, 
-            _cost, 
-            address,
-            web3,
-            asset: {
-              from: asset.native,
-              to: asset.g_asset,
-              sending: _cost,
-              receiving: total_native,
-              fromDecimals: asset.underlying_decimals,
-              toDecimals: asset.base_decimals,
-              fromImage: asset.native_img_url,
-              toImage: asset.gtoken_img_url,
-            },
-            toggle: toggleModal
-          })
+
+            let GContractInstance;
+            const _cost = getWei(value_native, asset.underlying_decimals);
+
+            if (asset.type === types.TYPE_ETH) {
+                GContractInstance = await new web3.eth.Contract(asset.bridge_abi, asset.bridge_address);
+                mintGTokenFromUnderlyingBridge({
+                    GContractInstance, 
+                    _cost, 
+                    growthToken: asset.gtoken_address,
+                    address,
+                    web3,
+                    asset: {
+                    from: asset.native,
+                    to: asset.g_asset,
+                    sending: _cost,
+                    receiving: total_native,
+                    fromDecimals: asset.underlying_decimals,
+                    toDecimals: asset.base_decimals,
+                    fromImage: asset.native_img_url,
+                    toImage: asset.gtoken_img_url,
+                    },
+                    toggle: toggleModal
+                })
+            } else {
+                GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+                mintGTokenFromUnderlying({
+                    GContractInstance, 
+                    _cost, 
+                    address,
+                    web3,
+                    asset: {
+                    from: asset.native,
+                    to: asset.g_asset,
+                    sending: _cost,
+                    receiving: total_native,
+                    fromDecimals: asset.underlying_decimals,
+                    toDecimals: asset.base_decimals,
+                    fromImage: asset.native_img_url,
+                    toImage: asset.gtoken_img_url,
+                    },
+                    toggle: toggleModal
+                })
+            }          
     
         } else {
             let GContractInstance;
@@ -252,6 +277,7 @@ export default class Summary extends Component {
         redeemGTokenToCToken,
         redeemGTokenToUnderlying,
         redeemGTokenToBridge,
+        redeemGTokenToUnderlyingBridge,
         is_native, value_redeem, total_native_cost_redeem, total_base_cost_redeem, total_native_redeem, total_base_redeem,
         toggleModal,
     } = this.props;
@@ -262,25 +288,50 @@ export default class Summary extends Component {
 
     // Handle depending the asset
     if (is_native) {
-        const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+        let GContractInstance;
         
-        redeemGTokenToUnderlying({
-            GContractInstance, 
-            _grossShares: getWei(value_redeem, asset.base_decimals),
-            address,
-            web3,
-            asset: {
-                from: asset.g_asset,
-                to: asset.native,
-                sending: total_native_cost_redeem,
-                receiving: total_native_redeem,
-                fromDecimals: asset.base_decimals,
-                toDecimals: asset.underlying_decimals,
-                fromImage: asset.gtoken_img_url,
-                toImage: asset.native_img_url,
-            },
-            toggle: toggleModal
-        })
+        if (asset.type === types.TYPE_ETH) {
+            GContractInstance = await new web3.eth.Contract(asset.bridge_abi, asset.bridge_address);
+            redeemGTokenToUnderlyingBridge({
+                GContractInstance, 
+                _grossShares: getWei(value_redeem, asset.base_decimals),
+                growthToken: asset.gtoken_address,
+                address,
+                web3,
+                asset: {
+                    from: asset.g_asset,
+                    to: asset.native,
+                    sending: total_native_cost_redeem,
+                    receiving: total_native_redeem,
+                    fromDecimals: asset.base_decimals,
+                    toDecimals: asset.underlying_decimals,
+                    fromImage: asset.gtoken_img_url,
+                    toImage: asset.native_img_url,
+                },
+                toggle: toggleModal
+            })
+
+        } else {
+            GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+            redeemGTokenToUnderlying({
+                GContractInstance, 
+                _grossShares: getWei(value_redeem, asset.base_decimals),
+                address,
+                web3,
+                asset: {
+                    from: asset.g_asset,
+                    to: asset.native,
+                    sending: total_native_cost_redeem,
+                    receiving: total_native_redeem,
+                    fromDecimals: asset.base_decimals,
+                    toDecimals: asset.underlying_decimals,
+                    fromImage: asset.gtoken_img_url,
+                    toImage: asset.native_img_url,
+                },
+                toggle: toggleModal
+            })
+        }
+        
 
 
     } else {
@@ -376,8 +427,13 @@ export default class Summary extends Component {
     }
 
     hasEnoughBridgeAllowance = () => {
-        const {asset, bridge_allowance} = this.props;
+        const {asset, bridge_allowance, is_native} = this.props;
+
+        // If it should use any bridge
         if ([types.GETH, types.TYPE_ETH].indexOf(asset.type) < 0) return true;
+
+        // If is an ETH strategy
+        if (asset.type === types.TYPE_ETH && !is_native) return true;
 
         return bridge_allowance > 0;
     }

@@ -212,7 +212,7 @@ class ActionModal extends React.Component {
       if (asset.type === types.TYPE_ETH) {
         underlying_balance = await web3.eth.getBalance(address);
         underlying_allowance = 1000000 * 1e18;
-
+        bridge_allowance = await GContract.methods.allowance(address, asset.bridge_address).call();
       } else {
         underlying_balance = await UnderlyingContractInstance.methods.balanceOf(address).call(); 
         underlying_allowance = await UnderlyingContractInstance.methods.allowance(address, asset.gtoken_address).call();
@@ -363,7 +363,7 @@ class ActionModal extends React.Component {
           >
             <InputSection>
               <InputSectionColumn
-                flex="3.25"
+                flex="3"
               >
                 <Balance 
                   {...this.props}

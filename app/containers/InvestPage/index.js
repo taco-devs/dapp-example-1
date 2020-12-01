@@ -26,8 +26,8 @@ import {AssetList, InvestHeader} from './components';
 import NetworkData from 'contracts';
 import { 
   getTokens, changePage, searchAssets, 
-  mintGTokenFromCToken, mintGTokenFromUnderlying, mintGTokenFromBridge, 
-  redeemGTokenToCToken, redeemGTokenToUnderlying, redeemGTokenToBridge,
+  mintGTokenFromCToken, mintGTokenFromUnderlying, mintGTokenFromBridge, mintGTokenFromUnderlyingBridge,
+  redeemGTokenToCToken, redeemGTokenToUnderlying, redeemGTokenToBridge, redeemGTokenToUnderlyingBridge,
   approveToken, getTokenStats 
 } from './actions';
 import { addCurrentSwap, dismissSwap, addCurrentApproval, dismissApproval } from '../App/actions';
@@ -182,9 +182,11 @@ function mapDispatchToProps(dispatch) {
     mintGTokenFromCToken: (payload) => dispatch(mintGTokenFromCToken(payload)),
     mintGTokenFromUnderlying: (payload) => dispatch(mintGTokenFromUnderlying(payload)),
     mintGTokenFromBridge: (payload) => dispatch(mintGTokenFromBridge(payload)),
+    mintGTokenFromUnderlyingBridge: (payload) => dispatch(mintGTokenFromUnderlyingBridge(payload)),
     redeemGTokenToCToken: (payload) => dispatch(redeemGTokenToCToken(payload)),
     redeemGTokenToUnderlying: (payload) => dispatch(redeemGTokenToUnderlying(payload)),
     redeemGTokenToBridge: (payload) => dispatch(redeemGTokenToBridge(payload)),
+    redeemGTokenToUnderlyingBridge: (payload) => dispatch(redeemGTokenToUnderlyingBridge(payload)),
     approveToken: (payload) => dispatch(approveToken(payload)),
     getTokenStats: (payload) => dispatch(getTokenStats(payload))
   };

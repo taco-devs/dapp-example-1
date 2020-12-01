@@ -95,15 +95,22 @@ class ApproveContainer extends React.Component {
 
   handleApprove = async () => {
     const { web3, asset, is_native, approveToken, address, updateApprovalBalance, bridgeApproval } = this.props;
+    
+
 
     if ( is_native ) {
-      const UnderlyingContractInstance = await new web3.eth.Contract(asset.underlying_abi, asset.underlying_address);
+
+      let abi = bridgeApproval ? asset.gtoken_abi : asset.underlying_abi;
+      let abi_address = bridgeApproval ? asset.gtoken_address : asset.underlying_address;
+      let approval_address = bridgeApproval ? asset.bridge_address : asset.gtoken_address;
+
+      const UnderlyingContractInstance = await new web3.eth.Contract(abi, abi_address);
       const total_supply = await UnderlyingContractInstance.methods.totalSupply().call();
       await approveToken({
         Contract: UnderlyingContractInstance,
         total_supply,
         address,
-        asset,
+        approval_address,
         updateApprovalBalance,
         web3
       })
