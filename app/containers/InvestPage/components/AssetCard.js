@@ -47,6 +47,12 @@ const CardColumn = styled.div`
 const AssetLogo = styled.img`
     width: ${props => props.isMobile ? '40px' : '50px'};
     height: auto;
+    ${props => props.disabled && (
+        `
+        -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+        filter: grayscale(100%);
+        `
+    )}
 `
 
 const PrimaryLabel = styled.p`
@@ -88,6 +94,12 @@ const ChartButton = styled.div`
         background-color: black;
         opacity: 0.75em;
     }
+`
+
+const LabelContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 `
 
 export default class AssetCard extends Component {
@@ -250,7 +262,7 @@ export default class AssetCard extends Component {
                                     flex="1.2"
                                 >
                                     {asset.gtoken_img_url && (
-                                        <AssetLogo src={require(`images/tokens/${asset.gtoken_img_url}`)} isMobile={isMobile} />
+                                        <AssetLogo disabled={asset.disabled} src={require(`images/tokens/${asset.gtoken_img_url}`)} isMobile={isMobile} />
                                     )}
                                     <CardColumn>
                                         <PrimaryLabel type={asset.type}>{asset.g_asset}</PrimaryLabel>
@@ -296,9 +308,13 @@ export default class AssetCard extends Component {
                             >                           
                                       
                                 {asset.gtoken_img_url && (
-                                    <AssetLogo src={require(`images/tokens/${asset.gtoken_img_url}`)} isMobile={isMobile} />
+                                    <AssetLogo disabled={asset.disabled} src={require(`images/tokens/${asset.gtoken_img_url}`)} isMobile={isMobile} />
                                 )}
-                                <PrimaryLabel type={asset.type}>{asset.card_name || `${asset.g_asset} ${!isMobile && '/'} ${asset.base_asset}`}</PrimaryLabel>
+                                <LabelContainer>
+                                    <PrimaryLabel type={asset.type}>{asset.card_name || `${asset.g_asset} ${!isMobile && '/'} ${asset.base_asset}`}</PrimaryLabel>
+                                    {asset.label && <SecondaryLabel>{asset.label}</SecondaryLabel>}
+                                </LabelContainer>
+                                
                             </CardColumn>
                             <CardColumn 
                                 direction="column"
@@ -314,14 +330,17 @@ export default class AssetCard extends Component {
                             </CardColumn>
                             <CardColumn 
                                 direction="row"
+                                justify="flex-end"
                             >
-                                <ActionModal 
-                                    {...this.props}
-                                    type="mint"
-                                    text={asset.type === types.STKGRO ? "STAKE" : "MINT"}
-                                    data={data}
-                                    asset={asset}
-                                />
+                                {!asset.disabled && (
+                                    <ActionModal 
+                                        {...this.props}
+                                        type="mint"
+                                        text={asset.type === types.STKGRO ? "STAKE" : "MINT"}
+                                        data={data}
+                                        asset={asset}
+                                    />
+                                )}
                                 <ActionModal 
                                     {...this.props}
                                     type="redeem"
