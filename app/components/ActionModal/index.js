@@ -315,9 +315,9 @@ class ActionModal extends React.Component {
   updateApprovalBalance = (total_supply) => {
     const {is_native} = this.state;
     if (is_native) {
-      this.setState({underlying_allowance: total_supply});
+      this.setState({underlying_allowance: total_supply, bridge_allowance: total_supply});
     } else {
-      this.setState({asset_allowance: total_supply});
+      this.setState({asset_allowance: total_supply, bridge_allowance: total_supply});
     }
   }
 

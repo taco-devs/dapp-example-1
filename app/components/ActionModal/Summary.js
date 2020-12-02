@@ -481,8 +481,8 @@ export default class Summary extends Component {
                     </SummaryRow>
                 </SummaryColumn>
                 <SummaryColumn align="flex-end" flex="2">
-                    {modal_type === 'mint' && <PrimaryLabel spacing="1px">{this.parseNumber(this.calculateFee(), 1e18, 1000)} {is_native ? asset.native : asset.base_asset}  ({this.parseNumber(deposit_fee, 1e16, 1).toFixed(2)}%)</PrimaryLabel>}
-                    {modal_type === 'redeem' && <PrimaryLabel spacing="1px">{this.parseNumber(this.calculateFee(), 1e18, 1000)} {asset.g_asset}  ({this.parseNumber(withdrawal_fee, 1e16, 1)}%)</PrimaryLabel>}   
+                    {modal_type === 'mint' && <PrimaryLabel spacing="1px">{this.parseNumber(this.calculateFee(), 1e18, 1e8)} {is_native ? asset.native : asset.base_asset}  ({this.parseNumber(deposit_fee, 1e16, 1).toFixed(2)}%)</PrimaryLabel>}
+                    {modal_type === 'redeem' && <PrimaryLabel spacing="1px">{this.parseNumber(this.calculateFee(), 1e18, 1e8)} {asset.g_asset}  ({this.parseNumber(withdrawal_fee, 1e16, 1)}%)</PrimaryLabel>}   
                 </SummaryColumn>
                 </SummaryRow>
                 <SummaryRow>
