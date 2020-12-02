@@ -1,3 +1,5 @@
+import {isMobile} from 'react-device-detect';
+
 const getGasInfo = async (method, values, address, web3, value) => {
     try {
       const SAFE_MULTIPLIER = 1.15;
@@ -79,6 +81,8 @@ export const deposit = async (ContractInstance, connectionStatusChannel, _cost, 
 export const bridge_deposit = async (ContractInstance, connectionStatusChannel, _cost, growthToken, address, asset, web3, functions) => {
     let stored_hash;
 
+    console.log({ContractInstance, connectionStatusChannel, _cost, growthToken, address, asset, web3, functions});
+
     const {gas, gasPrice} = await getGasInfo(ContractInstance.methods.deposit, [growthToken], address, web3, _cost);
   
     return ContractInstance.methods.deposit(growthToken).send({ from: address, gasPrice, gas, value: _cost})
@@ -122,7 +126,7 @@ export const bridge_deposit = async (ContractInstance, connectionStatusChannel, 
   
           // Timeout to autoclose the modal in 5s
           
-          let timeout = isMobile ? 1000 : 5000;
+          let timeout = isMobile ? 1000 : 3000;
           setTimeout(() => {
             connectionStatusChannel.put(functions.dismissSwap());
             connectionStatusChannel.put(functions.getBalances(address, web3));
@@ -183,8 +187,8 @@ export const deposit_underlying = async (ContractInstance, connectionStatusChann
         // Timeout to autoclose the modal in 5s
         let timeout = isMobile ? 1000 : 5000;
         setTimeout(() => {
-        connectionStatusChannel.put(functions.dismissSwap());
-        connectionStatusChannel.put(functions.getBalances(address, web3));
+            connectionStatusChannel.put(functions.dismissSwap());
+            connectionStatusChannel.put(functions.getBalances(address, web3));
         }, timeout)
     })
     .on("confirmation", (confirmation) => {
@@ -432,7 +436,6 @@ export const withdraw_underlying = async (ContractInstance, _cost, address, asse
 
 export const withdraw_underlying_bridge = async (ContractInstance, connectionStatusChannel, _grossShares, growthToken, address, asset, web3, functions) => {
     let stored_hash;
-    console.log({ContractInstance, connectionStatusChannel, _grossShares, growthToken, address, asset, web3, functions})
     const {gas, gasPrice} = await getGasInfo(ContractInstance.methods.withdrawUnderlying, [growthToken, _grossShares], address, web3);
     return ContractInstance.methods.withdrawUnderlying(growthToken, _grossShares).send({ from: address, gas, gasPrice})
         .on("transactionHash", (hash) => {

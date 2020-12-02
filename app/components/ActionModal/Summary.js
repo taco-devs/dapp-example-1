@@ -493,10 +493,10 @@ export default class Summary extends Component {
                     </SummaryRow>
                 </SummaryColumn>
                 <SummaryColumn align="flex-end" flex="2">
-                    {modal_type === 'mint'&& is_native && <PrimaryLabel spacing="1px">{total_native ? this.parseNumber(total_native, asset.base_decimals, asset.ui_decimals) : '-'} {asset.g_asset}</PrimaryLabel>}
-                    {modal_type === 'mint'&& !is_native && <PrimaryLabel spacing="1px">{total_base ? this.parseNumber(total_base, asset.base_decimals, asset.ui_decimals) : '-'} {asset.g_asset}</PrimaryLabel>}
-                    {modal_type === 'redeem'&& is_native && <PrimaryLabel spacing="1px">{total_native_redeem ? this.parseNumber(total_native_redeem, asset.underlying_decimals, asset.ui_decimals) : '-'} {asset.native}</PrimaryLabel>}
-                    {modal_type === 'redeem'&& !is_native && <PrimaryLabel spacing="1px">{total_base_redeem ? this.parseNumber(total_base_redeem, asset.base_decimals, asset.ui_decimals) : '-'} {asset.base_asset}</PrimaryLabel>} 
+                    {modal_type === 'mint'&& is_native && <PrimaryLabel spacing="1px">{total_native ? this.parseNumber(total_native, asset.base_decimals, 1e8) : '-'} {asset.g_asset}</PrimaryLabel>}
+                    {modal_type === 'mint'&& !is_native && <PrimaryLabel spacing="1px">{total_base ? this.parseNumber(total_base, asset.base_decimals, 1e8) : '-'} {asset.g_asset}</PrimaryLabel>}
+                    {modal_type === 'redeem'&& is_native && <PrimaryLabel spacing="1px">{total_native_redeem ? this.parseNumber(total_native_redeem, asset.underlying_decimals, 1e8) : '-'} {asset.native}</PrimaryLabel>}
+                    {modal_type === 'redeem'&& !is_native && <PrimaryLabel spacing="1px">{total_base_redeem ? this.parseNumber(total_base_redeem, asset.base_decimals, 1e8) : '-'} {asset.base_asset}</PrimaryLabel>} 
                 </SummaryColumn>
                 </SummaryRow>
                 <SummaryRow justify="center" flex="2">

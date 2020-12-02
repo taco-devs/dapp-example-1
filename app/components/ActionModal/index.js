@@ -176,6 +176,7 @@ class ActionModal extends React.Component {
   fetchBalance = async () => {
 
     const { asset, web3, address } = this.props;
+
     
     const GContract = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
     const UnderlyingContractInstance = await new web3.eth.Contract(asset.underlying_abi, asset.underlying_address);

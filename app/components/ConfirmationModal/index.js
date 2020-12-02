@@ -173,7 +173,7 @@ const customStyles = {
     borderWidth: 0,
     padding: 0,
     borderRadius: '5px',
-    width: '450px',
+    width: '500px',
     height: '35vh',
   },
   overlay: {
@@ -185,7 +185,7 @@ class ConfirmationModal extends React.Component {
 
   parseNumber = (number, decimals) => {
     const float_number = Number(number) / Number(decimals);
-    return Math.round(float_number * 100) / 100;
+    return Math.round(float_number * 1e6) / 1e6;
   }
 
   parseHash = (address) => {
