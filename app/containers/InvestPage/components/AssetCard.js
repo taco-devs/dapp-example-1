@@ -42,6 +42,8 @@ const CardColumn = styled.div`
     justify-content: ${props => props.justify || 'center'};
     align-items: ${props => props.align || 'center'};
     margin: ${props => props.margin || '0'};
+    width: 100%;
+    ${props => props.isMobile && 'min-width: 300px;'}
 `
 
 const AssetLogo = styled.img`
@@ -368,6 +370,7 @@ export default class AssetCard extends Component {
                             <CardColumn 
                                 direction="row"
                                 justify="flex-end"
+                                style={{minWidth: 300}}
                             >
                                 {!asset.disabled && (
                                     <ActionModal 

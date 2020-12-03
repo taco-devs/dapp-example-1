@@ -189,6 +189,7 @@ const assets = {
                 img_url: 'cdai.png',
                 native_img_url: 'dai.png',
                 gtoken_img_url: 'gctoken_dai.png',
+                card_name: 'gcDAIv2 / cDAI'
             },
             gcUSDCv2: {
                 contract_name: "growth cUSDC v2",
@@ -211,6 +212,7 @@ const assets = {
                 img_url: 'cusdc.png',
                 native_img_url: 'usdc.png',
                 gtoken_img_url: 'gctoken_usdc.png',
+                card_name: 'gcUSDCv2 / cUSDC'
             },
             gcDAI: {
                 contract_name: "growth cDAI",
