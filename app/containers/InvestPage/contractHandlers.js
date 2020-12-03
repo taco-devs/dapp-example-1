@@ -2,11 +2,12 @@ import {isMobile} from 'react-device-detect';
 
 const getGasInfo = async (method, values, address, web3, value) => {
     try {
-      const SAFE_MULTIPLIER = 1.15;
-      const raw_gas = await method(...values).estimateGas({from: address, value});
-      const gas = web3.utils.BN(raw_gas).mul(SAFE_MULTIPLIER);
-      const raw_gasPrice = await web3.eth.getGasPrice();
-      const gasPrice = web3.utils.BN(raw_gasPrice).mul(SAFE_MULTIPLIER); 
+        console.log({method, values, address, web3, value})
+        const SAFE_MULTIPLIER = 1.15;
+        const raw_gas = await method(...values).estimateGas({from: address, value});
+        const gas = web3.utils.BN(raw_gas).mul(SAFE_MULTIPLIER);
+        const raw_gasPrice = await web3.eth.getGasPrice();
+        const gasPrice = web3.utils.BN(raw_gasPrice).mul(SAFE_MULTIPLIER); 
   
       return {gas, gasPrice};
     } catch(e) {
@@ -375,7 +376,7 @@ export const withdraw_bridge = async (ContractInstance, connectionStatusChannel,
 }
 
 
-export const withdraw_underlying = async (ContractInstance, _cost, address, asset, web3, functions) => {
+export const withdraw_underlying = async (ContractInstance, connectionStatusChannel, _cost, address, asset, web3, functions) => {
     let stored_hash;
     const {gas, gasPrice} = await getGasInfo(ContractInstance.methods.withdrawUnderlying, [_cost], address, web3);
     return ContractInstance.methods.withdrawUnderlying(_cost).send({ from: address, gas, gasPrice})

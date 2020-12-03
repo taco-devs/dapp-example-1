@@ -126,27 +126,47 @@ export default class AssetCard extends Component {
 
         if (!prices || !tokens) return '-';
 
-        const token = tokens.find(token => token.symbol === asset_key);
+        const token = tokens.find(token => token.symbol === asset_key || token.name === asset.contract_name);
 
         if (!token) return '-';
 
+        // Check for PMT
+        if (asset.type === types.PMT) {
+            if (!relevantPrices || !ethPrice) return '-';
+            const assetPrice = relevantPrices.pairs.find(pair => pair.token0.symbol.toUpperCase() === asset.native.toUpperCase());
+            const price = ethPrice * assetPrice.token1Price;
+            return `$${Math.round((token.totalReserve / token.totalSupply) * (token.totalSupply / asset.base_decimals) * price).toLocaleString('en-En')}`; 
+        }
+
+        if (asset.type === types.GETH) {
+            if (!ethPrice) return '-';
+            return `$${Math.round((token.totalReserve / token.totalSupply) * (token.totalSupply / asset.base_decimals) * ethPrice).toLocaleString('en-En')}`;  
+        }
+
         // Check for stkGRO
-        if (token.symbol === 'stkGRO') {
+        if (asset.type === types.STKGRO) {
             if (!relevantPrices || !ethPrice) return '-'
             const GRO = relevantPrices.pairs.find(price => price.token0.symbol === 'GRO');
             const groPrice = ethPrice * GRO.token1Price;
             return `$${Math.round((token.totalReserve / token.totalSupply) * (token.totalSupply / asset.base_decimals) * groPrice).toLocaleString('en-En')}`; 
         };
 
-        const asset_data = prices.markets && prices.markets.find(market => market.symbol === asset.base_asset);
+        // Check for type 1
+        if (asset.type === types.TYPE1 || asset.type === types.TYPE_ETH) {
 
-        if (!asset_data) return '-';
-        const reservePrice = Number(asset_data.exchangeRate) / Number(asset_data.underlyingPriceUSD);
-        const market_cap = (Number(token.totalReserve) / asset.base_decimals) * reservePrice;
+            const asset_data = prices.markets && prices.markets.find(market => market.id === asset.compound_id);
 
-        if (!market_cap || market_cap <= 1) return 'N/A'
 
-        return `$${Math.round(market_cap).toLocaleString('en-En')}`;
+            if (!asset_data) return '-';
+            const reservePrice = Number(asset_data.exchangeRate) * Number(asset_data.underlyingPriceUSD);
+            const market_cap = (Number(token.totalReserve) / asset.base_decimals) * reservePrice;
+
+            if (!market_cap || market_cap <= 1) return 'N/A'
+
+            return `$${Math.round(market_cap).toLocaleString('en-En')}`;
+        }
+
+        return '-'
     }
 
     // Get the total supply for an asset
@@ -154,7 +174,7 @@ export default class AssetCard extends Component {
         const {tokens, asset, asset_key} = this.props;
         if (!tokens) return '-'
         
-        const token = tokens.find(token => token.symbol === asset_key);
+        const token = tokens.find(token => token.symbol === asset_key || token.name === asset.contract_name);
 
         if (!token) return '-';
 
@@ -171,7 +191,7 @@ export default class AssetCard extends Component {
         const {tokens, asset, asset_key} = this.props;
         if (!tokens) return '-'
         
-        const token = tokens.find(token => token.symbol === asset_key);
+        const token = tokens.find(token => token.symbol === asset_key );
 
         if (!token) return '-';
 

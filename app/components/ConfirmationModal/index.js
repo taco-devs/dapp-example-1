@@ -184,8 +184,14 @@ const customStyles = {
 class ConfirmationModal extends React.Component {
 
   parseNumber = (number, decimals) => {
+    let rounding;
+
+    if (number < 1000) rounding = 1e6;
+    if (number >= 1000 && number < 100000) rounding = 100;
+    if (number >= 100000) rounding = 1;
+
     const float_number = Number(number) / Number(decimals);
-    return Math.round(float_number * 1e6) / 1e6;
+    return Math.round(float_number * rounding) / rounding;
   }
 
   parseHash = (address) => {
