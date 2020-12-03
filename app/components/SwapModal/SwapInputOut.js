@@ -110,7 +110,7 @@ export default class SwapInputOut extends Component {
           const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
           const result = await GContractInstance.methods.balanceOf(address).call();
           handleMultipleChange({
-              balanceOut: result / 1e8,
+              balanceOut: result / asset.base_decimals,
           })
         }
     }
@@ -136,22 +136,25 @@ export default class SwapInputOut extends Component {
     }
 
     parseBalance = (amount) => {
-        if (!amount) return '-';
+        if (!amount) return 0;
         return amount;
     }
 
 
-    getConversion = (assetIn, amountInput) => {
+    getConversion = (assetOut, amountInput) => {
       
-      if (assetIn === 'GRO') {
+      const {Network} = this.props;
+
+      if (assetOut === 'GRO') {
         return amountInput / 1e18;
       } else {
-        return amountInput / 1e8;
+        const asset = Network.available_assets[assetOut];
+        return amountInput / asset.base_decimals;
       }
     }
 
     getTokens = (assetOut, amountOutput, tokens) => {
-      const {getWei} = this.props;
+      const {getWei, Network} = this.props;
 
       let tokenIn;
       let tokenOut;
@@ -164,9 +167,10 @@ export default class SwapInputOut extends Component {
         tokenOut = tokens[0]; 
         _amountOutput = getWei(amountOutput, 1e18);
       } else {
+        const asset = Network.available_assets[assetOut];
         tokenIn = tokens[0];
         tokenOut = tokens[1]; 
-        _amountOutput = getWei(amountOutput, 1e8)
+        _amountOutput = getWei(amountOutput, asset.base_decimals);
       }
 
       return {tokenIn, tokenOut, _amountOutput};
@@ -191,15 +195,6 @@ export default class SwapInputOut extends Component {
       let tokenWeightIn = await BPoolInstance.methods.getNormalizedWeight(tokenIn).call();
       let tokenWeightOut = await BPoolInstance.methods.getNormalizedWeight(tokenOut).call();
 
-      console.log({
-        tokenBalanceIn,
-        tokenWeightIn,
-        tokenBalanceOut,
-        tokenWeightOut,
-        _amountOutput,
-        swapFee
-      })
-
       // CalcOutGivenIn
       const _amountInput = await BPoolInstance.methods.calcInGivenOut(
         tokenBalanceIn, //tokenBalanceIn
@@ -211,7 +206,7 @@ export default class SwapInputOut extends Component {
       ).call();
 
       
-      let amountInput = this.getConversion(assetIn, _amountInput);  
+      let amountInput = this.getConversion(assetOut, _amountInput);  
 
       handleMultipleChange({
         amountInput,

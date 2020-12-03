@@ -167,6 +167,8 @@ export default class SwapCard extends Component {
         const gToken = tokens.find(token => token.symbol.toUpperCase() === gtoken_pool.symbol.toUpperCase());
         const gToken_market = markets.find(market => market.symbol.toUpperCase() === symbol.toUpperCase());
 
+        if (!gToken_market) return 0;
+
         const gTokenPrice = gToken.totalReserve / gToken.totalSupply;
         const basePrice = gToken_market.exchangeRate * gToken_market.underlyingPriceUSD;
 
@@ -184,6 +186,8 @@ export default class SwapCard extends Component {
         // Search by id
         const pool = pools.find(pool => pool.id === asset.liquidity_pool_address);
         
+        if (!pool) return '-';
+
         const GROLiquidity = this.getGRORate(pool.tokens[0]);
         const GTokenLiquidty = this.getGTokenRate(pool.tokens[1]);
 
@@ -279,7 +283,7 @@ export default class SwapCard extends Component {
                                     asset={asset}
                                 />
                                 <SwapTitle>
-                                  <PrimaryLabel>GRO {'/'} {asset.g_asset}</PrimaryLabel>  
+                                  <PrimaryLabel>{asset.swap_card_name || `GRO ${'/'} ${asset.g_asset}`} </PrimaryLabel>  
                                   <SecondaryLabel>Balancer</SecondaryLabel>
                                 </SwapTitle>
                                 
@@ -313,7 +317,7 @@ export default class SwapCard extends Component {
                                         if (!web3) return alert('Please connect your wallet');
                                         this.handleToggleModal();
                                     }}
-                                    >
+                                >
                                         SWAP
                                 </ActionButton>
                             </CardColumn>

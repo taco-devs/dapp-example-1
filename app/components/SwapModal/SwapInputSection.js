@@ -91,7 +91,7 @@ export default class SwapInputSection extends Component {
             const outputAsset = Network.available_assets[assetOut];
     
             const spotPrice_rate = await BPoolInstance.methods.getSpotPrice(inputAsset.address, outputAsset.gtoken_address).call();
-            const spotPrice = (1 * 1e18) / (spotPrice_rate / 1e18) / 1e8;        
+            const spotPrice = (1 * 1e18) / (spotPrice_rate / 1e18) / outputAsset.base_decimals;        
             handleMultipleChange({spotPrice, spotPrice_rate});
         } else {
             const inputAsset = Network.available_assets[assetIn];
@@ -99,7 +99,7 @@ export default class SwapInputSection extends Component {
     
             const spotPrice_rate = await BPoolInstance.methods.getSpotPrice(inputAsset.gtoken_address, outputAsset.address).call();
             
-            const spotPrice = 1 / (spotPrice_rate / 1e8);
+            const spotPrice = 1 / (spotPrice_rate / inputAsset.base_decimals);
             
             handleMultipleChange({spotPrice, spotPrice_rate});
         }

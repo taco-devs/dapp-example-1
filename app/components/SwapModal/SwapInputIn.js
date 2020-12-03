@@ -108,7 +108,7 @@ export default class SwapInputIn extends Component {
         const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
         const result = await GContractInstance.methods.balanceOf(address).call();
         handleMultipleChange({
-          balanceIn: result / 1e8,
+          balanceIn: result / asset.base_decimals,
         })
       }
     }
@@ -121,25 +121,27 @@ export default class SwapInputIn extends Component {
           const asset = Network.growth_token;
           return {
             name: assetIn,
-            img: asset.img_url
+            img: asset.img_url,
+            decimals: 1e18,
           }
         } else {
           const asset = Network.available_assets[assetIn];
           return {
             name: asset.g_asset,
             img: asset.gtoken_img_url,
+            decimals: asset.base_decimals,
           }
         }
       }
     }
 
     parseBalance = (amount) => {
-      if (!amount) return '-';
+      if (!amount) return 0;
       return amount;
     }
 
     getTokens = (assetIn, amountInput, tokens) => {
-      const {getWei} = this.props;
+      const {getWei, Network} = this.props;
 
       let tokenIn;
       let tokenOut;
@@ -152,25 +154,30 @@ export default class SwapInputIn extends Component {
         tokenOut = tokens[1]; 
         _amountInput = getWei(amountInput, 1e18);
       } else {
+        const asset = Network.available_assets[assetIn];
         tokenIn = tokens[1];
         tokenOut = tokens[0]; 
-        _amountInput = getWei(amountInput, 1e8)
+        _amountInput = getWei(amountInput, asset.base_decimals)
       }
 
       return {tokenIn, tokenOut, _amountInput};
     }
 
-    getConversion = (assetIn, amountOutput) => {
-      
-      if (assetIn === 'GRO') {
-        return amountOutput / 1e8;
-      } else {
+    getConversion = (assetOut, amountOutput) => {
+
+      const { Network } = this.props;
+
+      let asset = Network.available_assets[assetOut];
+
+      if (assetOut === 'GRO') {
         return amountOutput / 1e18;
+      } else {
+        return amountOutput / asset.base_decimals;
       }
     }
 
     handleInputChange = debounce(async (amountInput) => {
-      const {handleMultipleChange, liquidity_pool_address, web3, assetIn } = this.props;
+      const {handleMultipleChange, liquidity_pool_address, web3, assetIn, assetOut } = this.props;
 
       // Init LP Contract
       const BPoolInstance = await new web3.eth.Contract(BPool, liquidity_pool_address);  
@@ -196,8 +203,9 @@ export default class SwapInputIn extends Component {
         _amountInput,// tokenAmountIn
         swapFee//
       ).call();
+
       
-      let amountOutput = this.getConversion(assetIn, _amountOutput);  
+      let amountOutput = this.getConversion(assetOut, _amountOutput);  
 
       handleMultipleChange({
         amountOutput,
@@ -226,7 +234,7 @@ export default class SwapInputIn extends Component {
           <InputSection>
             <InputRow>
               <InputSectionColumn flex="2.5" align="flex-start">
-                <BalanceLabel>BALANCE: {this.parseBalance(balanceIn)}</BalanceLabel>
+                <BalanceLabel>BALANCE: {this.parseBalance(balanceIn, asset)}</BalanceLabel>
               </InputSectionColumn>
               <InputSectionColumn align="flex-end">
                 <BalanceLabel>FROM</BalanceLabel>
