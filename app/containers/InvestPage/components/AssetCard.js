@@ -200,7 +200,14 @@ export default class AssetCard extends Component {
         if (abbreviate) {
             return this.abbreviateNumber(Math.round(token.totalSupply / asset.base_decimals));
         } else {
-            return Math.round(token.totalSupply / asset.base_decimals).toLocaleString('en-En');
+            const supply = token.totalSupply / asset.base_decimals;
+
+            if (supply < 100) {
+                return Math.round(supply * 1e4) / 1e4;
+            } else {
+                return Math.round(token.totalSupply / asset.base_decimals).toLocaleString('en-En');
+            }
+            
         }
         
     }
