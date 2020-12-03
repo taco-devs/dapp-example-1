@@ -238,7 +238,7 @@ const assets = {
                 img_url: 'cdai.png',
                 native_img_url: 'dai.png',
                 gtoken_img_url: 'gctoken_dai.png',
-                label: '( DEPRECATED )',
+                label: '( OLD )',
                 disabled: true,
             },
             gcUSDC: {
@@ -261,7 +261,7 @@ const assets = {
                 img_url: 'cusdc.png',
                 native_img_url: 'usdc.png',
                 gtoken_img_url: 'gctoken_usdc.png',
-                label: '( DEPRECATED )',
+                label: '( OLD )',
                 disabled: true,
             },
         }

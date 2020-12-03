@@ -234,6 +234,8 @@ export default class AssetCard extends Component {
 
         const dayDelta = (TODAY_DATE - FIRST_DATE) / SECONDS_IN_DAY;
 
+        if (dayDelta < 5) return '-';
+
         const increase = (token.cumulativeDailyChange / (dayDelta)) * 100 * 365;
         return Math.round(increase * 100) / 100;
     }
