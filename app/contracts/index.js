@@ -213,6 +213,7 @@ const assets = {
                 gtoken_img_url: 'gctoken_usdc.png',
             },
             gcDAI: {
+                contract_name: "growth cDAI",
                 type: types.TYPE1,
                 pair_address: "0x9896bd979f9da57857322cc15e154222c4658a5a",
                 compound_id: '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643',
@@ -235,6 +236,7 @@ const assets = {
                 disabled: true,
             },
             gcUSDC: {
+                contract_name: "growth cUSDC",
                 type: types.TYPE1,
                 pair_address: "0x477fa5406598f8eb1945291867e1654c4d931659",
                 compound_id: '0x39aa39c021dfbae8fac545936693ac917d5e7563',

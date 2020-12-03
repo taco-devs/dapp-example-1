@@ -119,6 +119,23 @@ export default class AssetCard extends Component {
         toggleExtension(asset, asset_key);
     }
 
+    getToken = (asset) => {
+        const {tokens} = this.props;
+
+        if (!tokens) return;
+
+        let token;
+
+        // Try to find by name
+        token = tokens.find(token =>  token.name === asset.contract_name);
+
+        // If not default to gtoken name
+        if (!token) {
+            token = tokens.find(token => token.symbol.toUpperCase() === asset.g_asset.toUpperCase());
+        }
+
+        return token;
+    } 
 
     // Get the market size for this asset
     getMarketSize = () => {
@@ -126,7 +143,7 @@ export default class AssetCard extends Component {
 
         if (!prices || !tokens) return '-';
 
-        const token = tokens.find(token => token.symbol === asset_key || token.name === asset.contract_name);
+        const token = this.getToken(asset);
 
         if (!token) return '-';
 
@@ -174,7 +191,7 @@ export default class AssetCard extends Component {
         const {tokens, asset, asset_key} = this.props;
         if (!tokens) return '-'
         
-        const token = tokens.find(token => token.symbol === asset_key || token.name === asset.contract_name);
+        const token = this.getToken(asset);
 
         if (!token) return '-';
 
@@ -191,7 +208,7 @@ export default class AssetCard extends Component {
         const {tokens, asset, asset_key} = this.props;
         if (!tokens) return '-'
         
-        const token = tokens.find(token => token.symbol === asset_key );
+        const token = this.getToken(asset);
 
         if (!token) return '-';
 
@@ -217,7 +234,7 @@ export default class AssetCard extends Component {
         const {tokens, asset, asset_key} = this.props;
         if (!tokens) return '-'
         
-        const token = tokens.find(token => token.symbol === asset_key);
+        const token = this.getToken(asset);
 
         if (!token) return '-';
 
