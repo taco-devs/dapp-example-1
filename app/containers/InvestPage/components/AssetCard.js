@@ -202,7 +202,7 @@ export default class AssetCard extends Component {
         } else {
             const supply = token.totalSupply / asset.base_decimals;
 
-            if (supply < 100) {
+            if (supply < 1000) {
                 return Math.round(supply * 1e4) / 1e4;
             } else {
                 return Math.round(token.totalSupply / asset.base_decimals).toLocaleString('en-En');
