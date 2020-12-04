@@ -192,6 +192,7 @@ const assets = {
                 native_img_url: 'dai.png',
                 gtoken_img_url: 'gctoken_dai.png',
                 card_name: 'gcDAIv2 / cDAI',
+                mobile_card_name: 'gcDAIv2',
                 swap_card_name: 'GRO / gcDAIv2'
             },
             gcUSDCv2: {
@@ -216,6 +217,7 @@ const assets = {
                 native_img_url: 'usdc.png',
                 gtoken_img_url: 'gctoken_usdc.png',
                 card_name: 'gcUSDCv2 / cUSDC',
+                mobile_card_name: 'gcUSDCv2',
                 swap_card_name: 'GRO / gcUSDCv2'
             },
             gcDAI: {

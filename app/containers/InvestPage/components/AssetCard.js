@@ -285,9 +285,17 @@ export default class AssetCard extends Component {
         return newValue;
     }
 
+    getSize = (asset) => {
+        if (asset.mobile_card_name && asset.mobile_card_name.length > 6 ) return '0.85em';
+        if (asset.g_asset && asset.g_asset.length > 6) return '0.85em';
+        return '1em';
+    }
+
+
     render() {
         const {asset, data, isMobile, asset_key, currentOpenExtension, web3} = this.props;
         const {isMobileDrawerOpen} = this.state;
+        const size = this.getSize(asset);
         return (
             <React.Fragment>
                 {isMobile ? (
@@ -320,7 +328,12 @@ export default class AssetCard extends Component {
                                         <AssetLogo disabled={asset.disabled} src={require(`images/tokens/${asset.gtoken_img_url}`)} isMobile={isMobile} />
                                     )}
                                     <CardColumn align="flex-start">
-                                        <PrimaryLabel type={asset.type}>{asset.g_asset}</PrimaryLabel>
+                                        <PrimaryLabel 
+                                            type={asset.type}
+                                            size={size}
+                                        >
+                                            {asset.mobile_card_name || asset.g_asset}
+                                        </PrimaryLabel>
                                         <SecondaryLabel type={asset.type}>{asset.label}</SecondaryLabel>
                                     </CardColumn>
                                     
