@@ -149,22 +149,24 @@ export default class AssetCard extends Component {
 
         if (!token) return '-';
 
+        console.log(token)
+
         // Check for PMT
         if (asset.type === types.PMT) {
-            if (!relevantPrices || !ethPrice) return '-';
+            if (!relevantPrices || !ethPrice) return `$${Math.round(token.cumulativeTotalValueLockedUSD).toLocaleString('en-En')}`;
             const assetPrice = relevantPrices.pairs.find(pair => pair.token0.symbol.toUpperCase() === asset.native.toUpperCase());
             const price = ethPrice * assetPrice.token1Price;
             return `$${Math.round((token.totalReserve / token.totalSupply) * (token.totalSupply / asset.base_decimals) * price).toLocaleString('en-En')}`; 
         }
 
         if (asset.type === types.GETH) {
-            if (!ethPrice) return '-';
+            if (!ethPrice) return `$${Math.round(token.cumulativeTotalValueLockedUSD).toLocaleString('en-En')}`;
             return `$${Math.round((token.totalReserve / token.totalSupply) * (token.totalSupply / asset.base_decimals) * ethPrice).toLocaleString('en-En')}`;  
         }
 
         // Check for stkGRO
         if (asset.type === types.STKGRO) {
-            if (!relevantPrices || !ethPrice) return '-'
+            if (!relevantPrices || !ethPrice) return `$${Math.round(token.cumulativeTotalValueLockedUSD).toLocaleString('en-En')}`;
             const GRO = relevantPrices.pairs.find(price => price.token0.symbol === 'GRO');
             const groPrice = ethPrice * GRO.token1Price;
             return `$${Math.round((token.totalReserve / token.totalSupply) * (token.totalSupply / asset.base_decimals) * groPrice).toLocaleString('en-En')}`; 
@@ -255,7 +257,6 @@ export default class AssetCard extends Component {
         let last30daysTDD = token.tokenDailyDatas && token.tokenDailyDatas.length > 0 && token.tokenDailyDatas[0];
 
         if (last30daysTDD) {
-            console.log(last30daysTDD)
             const priceDelta = 1 + ( token.lastAvgPrice - last30daysTDD.avgPrice );
             
             const mathFactor = Math.pow(priceDelta, 1 / 30);

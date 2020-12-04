@@ -75,6 +75,7 @@ function* getTokensSaga(params) {
         depositFee
         withdrawalFee
         listingDate
+        cumulativeTotalValueLockedUSD
         countTokenDailyDatas
         cumulativeDailyChange
         hasMiningToken
@@ -546,8 +547,6 @@ function* getTokenStatsSaga(params) {
   const {payload} = params;
   const {token} = payload;
   
-  console.log(token);
-
   const parsed_where = `
     where: {
       token: "${token.toLowerCase()}"
