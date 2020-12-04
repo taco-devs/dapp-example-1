@@ -312,9 +312,9 @@ export default class AssetCard extends Component {
                                     {asset.gtoken_img_url && (
                                         <AssetLogo disabled={asset.disabled} src={require(`images/tokens/${asset.gtoken_img_url}`)} isMobile={isMobile} />
                                     )}
-                                    <CardColumn>
+                                    <CardColumn align="flex-start">
                                         <PrimaryLabel type={asset.type}>{asset.g_asset}</PrimaryLabel>
-                                        <SecondaryLabel type={asset.type}>{asset.base_asset}</SecondaryLabel>
+                                        <SecondaryLabel type={asset.type}>{asset.label}</SecondaryLabel>
                                     </CardColumn>
                                     
                                 </CardColumn>
