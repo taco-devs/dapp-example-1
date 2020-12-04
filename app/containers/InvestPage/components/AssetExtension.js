@@ -263,12 +263,12 @@ export default class AssetExtension extends Component {
     }
 
     render() {
-        const {asset, asset_key, isLoadingChart, tokenData, total_supply, total_reserve, deposit_fee, withdrawal_fee, tokens} = this.props;
+        const {asset, asset_key, isLoadingChart, tokenData, total_supply, total_reserve, deposit_fee, withdrawal_fee, tokens, getToken} = this.props;
         const data= this.formatData();
         const domain = this.getDomain(data);
         let token;
         if (tokens) {
-            token = tokens.find(token => token.symbol === asset_key);
+            token = getToken(asset);
         }
         return (
             <ExtensionContainer>
@@ -339,7 +339,7 @@ export default class AssetExtension extends Component {
                     {token && token.hasMiningToken && (
                         <ExtensionColumn align="flex-start">
                             <StatLabel>THRESHOLD</StatLabel>
-                            <Stat>{token && tokenData && (Math.round(tokenData[tokenData.length - 1].miningTokenBalance / 1e18 * 100) / 100).toLocaleString('En-en')} / 20 COMP</Stat>
+                            <Stat>{token && tokenData && tokenData[tokenData.length - 1] && (Math.round(tokenData[tokenData.length - 1].miningTokenBalance / 1e18 * 100) / 100).toLocaleString('En-en')} / 20 COMP</Stat>
                         </ExtensionColumn>
                     )}
                     <ExtensionColumn align="flex-start">

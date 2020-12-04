@@ -201,7 +201,7 @@ const assets = {
                 pair_address: "0x477fa5406598f8eb1945291867e1654c4d931659",
                 compound_id: '0x39aa39c021dfbae8fac545936693ac917d5e7563',
                 base_address: '0x39aa39c021dfbae8fac545936693ac917d5e7563',
-                gtoken_address: '0x0e93b2D3969A0a6b71CE21Aa5be417cd4cAC38D0',
+                gtoken_address: '0x0e93b2d3969a0a6b71ce21aa5be417cd4cac38d0',
                 underlying_address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
                 liquidity_pool_address: '0xf43b1bbcefbe88a9bb8ae6d479a3242bcfe05fa0',
                 base_abi: CToken,

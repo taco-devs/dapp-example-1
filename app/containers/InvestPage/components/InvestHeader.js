@@ -120,18 +120,20 @@ export default class InvestHeader extends Component {
     }
 
     render() {
-        const {search, isMobile} = this.props;
+        const {search, isMobile, isTop} = this.props;
         return (
             <InvestHeaderRow isMobile={isMobile}>
                 <InvestHeaderColumn flex={isMobile ? 2.5 : 1}>
-                    <SearchContainer isMobile={isMobile}>
-                        <Icon icon={ic_search} size="1.5em" style={{margin: isMobile ? '0 8px 0 8px' : '0 15px 0 15px'}} />
-                        <StyledSearchBox 
-                            placeholder={isMobile ? "FILTER ASSETS" : "FILTER BY TOKEN OR PROTOCOL"}
-                            value={search}
-                            onChange={(e) => this.handleSearch(e.target.value)}
-                        />
-                    </SearchContainer>
+                    {isTop && (
+                        <SearchContainer isMobile={isMobile}>
+                            <Icon icon={ic_search} size="1.5em" style={{margin: isMobile ? '0 8px 0 8px' : '0 15px 0 15px'}} />
+                            <StyledSearchBox 
+                                placeholder={isMobile ? "FILTER ASSETS" : "FILTER BY TOKEN OR PROTOCOL"}
+                                value={search}
+                                onChange={(e) => this.handleSearch(e.target.value)}
+                            />
+                        </SearchContainer>
+                    )}
                 </InvestHeaderColumn>
                 <InvestHeaderColumn flex={1}>
                     <PaginationButtons>

@@ -109,6 +109,7 @@ class InvestPage extends React.Component {
             {...this.props} 
             isMobile={isMobile}
             assets={assets}
+            isTop={true}
           />
           <InvestContainer>
             {true ? (
@@ -130,6 +131,11 @@ class InvestPage extends React.Component {
               
             )}
           </InvestContainer>
+          <InvestHeader 
+            {...this.props} 
+            isMobile={isMobile}
+            assets={assets}
+          />
           {error && <ErrorMessage>{error}</ErrorMessage>}
         </Invest>
         {!isMobile && (

@@ -417,6 +417,7 @@ export default class AssetCard extends Component {
                                     {...this.props}
                                     {...this.state}
                                     asset={asset}
+                                    getToken={this.getToken}
                                 />
                             </CardRow>
                         )}
