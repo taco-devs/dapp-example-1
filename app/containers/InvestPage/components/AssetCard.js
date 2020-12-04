@@ -234,11 +234,14 @@ export default class AssetCard extends Component {
 
         const dayDelta = (TODAY_DATE - FIRST_DATE) / SECONDS_IN_DAY;
 
-        if (dayDelta < 5) return '-';
+        const mathFactor = Math.pow(token.lastAvgPrice, 1 / (dayDelta));
+        const apy = (mathFactor - 1) * 365 * 100;
 
-        const increase = (token.cumulativeDailyChange / (dayDelta)) * 100 * 365;
-        return Math.round(increase * 100) / 100;
-    }
+        if (dayDelta < 7 && apy < 0) return '-';
+
+        // const increase = (token.cumulativeDailyChange / (dayDelta)) * 100 * 365;
+        return `${Math.round(apy * 100) / 100} % AVG`;
+    } 
 
     // Get the 7 day % increase
     calculate1MonthAPY = () => {
@@ -252,11 +255,15 @@ export default class AssetCard extends Component {
         let last30daysTDD = token.tokenDailyDatas && token.tokenDailyDatas.length > 0 && token.tokenDailyDatas[0];
 
         if (last30daysTDD) {
-            let delta = (token.lastAvgPrice / last30daysTDD.avgPrice) - 1;
-            const increase = delta * 100 * 12;
-            return `${Math.round(increase * 100) / 100} %`;
+            console.log(last30daysTDD)
+            const priceDelta = 1 + ( token.lastAvgPrice - last30daysTDD.avgPrice );
+            
+            const mathFactor = Math.pow(priceDelta, 1 / 30);
+            const apy = (mathFactor - 1) * 365 * 100;
+
+            return `${Math.round(apy * 100) / 100} %  30D AVG`;
         } else {
-            return '-'
+            return 'Unstable'
         }
     }
 
@@ -329,8 +336,8 @@ export default class AssetCard extends Component {
                                     direction="column"
                                     flex="1.2"
                                 >
-                                <PrimaryLabel type={asset.type}>{this.calculateAvgAPY()}% AVG</PrimaryLabel>
-                                <SecondaryLabel type={asset.type}>{this.calculate1MonthAPY()} 30D AVG</SecondaryLabel>
+                                <PrimaryLabel type={asset.type}>{this.calculateAvgAPY()}</PrimaryLabel>
+                                <SecondaryLabel type={asset.type}>{this.calculate1MonthAPY()}</SecondaryLabel>
                                 </CardColumn>
                             </CardRow>
                             
@@ -373,8 +380,8 @@ export default class AssetCard extends Component {
                             <CardColumn 
                                 direction="column"
                             >
-                                <PrimaryLabel spacing="1px" type={asset.type}>{this.calculateAvgAPY()}% AVG</PrimaryLabel>
-                                <SecondaryLabel spacing="1px" type={asset.type}>{this.calculate1MonthAPY()} 30D AVG</SecondaryLabel>
+                                <PrimaryLabel spacing="1px" type={asset.type}>{this.calculateAvgAPY()}</PrimaryLabel>
+                                <SecondaryLabel spacing="1px" type={asset.type}>{this.calculate1MonthAPY()}</SecondaryLabel>
                             </CardColumn>
                             <CardColumn 
                                 direction="row"
