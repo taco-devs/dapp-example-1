@@ -38,7 +38,7 @@ class Announcement extends React.Component {
   render() {
     return (
       <AnnouncementContainer>
-        <p>Growth DeFi is currently running a Bug Bounty. Check the details <StyledLink href="https://growthdefi.medium.com/gtokens-bug-bounty-up-to-100-000-caa914fb765b" target="_blank">here</StyledLink>. This is a project currently on BETA, please use at your own risk.</p>
+        <p>Growth DeFi is currently undergoing a full audit by <StyledLink href="https://consensys.net/diligence/" target="_blank">Consensys Dilligence</StyledLink>, and also running a Bug Bounty, check the details <StyledLink href="https://growthdefi.medium.com/gtokens-bug-bounty-up-to-100-000-caa914fb765b" target="_blank">here</StyledLink>.</p>
       </AnnouncementContainer>
     )
   }

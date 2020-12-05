@@ -133,7 +133,6 @@ class SwapModal extends React.Component {
       return web3.utils.toWei(value);
     }
     if (decimals === 1e8) {
-      // Horrible hack to avoid precision error on js
       return value_number * 1e8;
     }
     if (decimals === 1e6) {

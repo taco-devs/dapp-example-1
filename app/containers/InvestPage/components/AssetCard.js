@@ -149,8 +149,6 @@ export default class AssetCard extends Component {
 
         if (!token) return '-';
 
-        console.log(token)
-
         // Check for PMT
         if (asset.type === types.PMT) {
             if (!relevantPrices || !ethPrice) return `$${Math.round(token.cumulativeTotalValueLockedUSD).toLocaleString('en-En')}`;
@@ -264,7 +262,7 @@ export default class AssetCard extends Component {
 
             return `${Math.round(apy * 100) / 100} %  30D AVG`;
         } else {
-            return 'Unstable'
+            return 'Fluid APY'
         }
     }
 

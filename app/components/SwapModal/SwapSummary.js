@@ -130,8 +130,6 @@ export default class SwapSummary extends Component {
           return web3.utils.toWei(value);
         }
         if (decimals === 1e8) {
-          // Horrible hack to avoid precision error on js
-          console.log(value_number * 1e8)
           return value_number * 1e8;
         }
         if (decimals === 1e6) {

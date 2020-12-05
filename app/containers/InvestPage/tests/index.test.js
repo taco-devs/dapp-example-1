@@ -37,6 +37,6 @@ describe('Initial List', () => {
       
       // query* functions will return the element or null if it cannot be found
       // get* functions will return the element or throw an error if it cannot be found
-      expect(queryAllByText('gcwBTC / cwBTC')).toBeInTheDocument()
+      expect(queryByText('gcwBTC / cwBTC')).toBeInTheDocument()
     })
 });
