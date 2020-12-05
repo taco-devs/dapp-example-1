@@ -404,7 +404,7 @@ export default class AssetCard extends Component {
                                     <ActionModal 
                                         {...this.props}
                                         type="mint"
-                                        text={asset.type === types.STKGRO ? "STAKE" : "MINT"}
+                                        text={asset.type === types.STKGRO ? "STAKE" : "DEPOSIT"}
                                         data={data}
                                         asset={asset}
                                     />
@@ -412,7 +412,7 @@ export default class AssetCard extends Component {
                                 <ActionModal 
                                     {...this.props}
                                     type="redeem"
-                                    text={asset.type === types.STKGRO ? "UNSTAKE" : "REDEEM"}
+                                    text={asset.type === types.STKGRO ? "UNSTAKE" : "WITHDRAW"}
                                     data={data}
                                     asset={asset}
                                 />

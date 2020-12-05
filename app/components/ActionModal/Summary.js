@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Icon } from 'react-icons-kit';
 import {info} from 'react-icons-kit/icomoon/info';
 import ApproveContainer from 'components/ApproveContainer';
+import ReactTooltip from 'react-tooltip';
 import types from 'contracts/token_types.json';
 
 const PrimaryLabel = styled.b`
@@ -477,7 +478,15 @@ export default class Summary extends Component {
                 <SummaryColumn>
                     <SummaryRow>
                     <PrimaryLabel margin="0 5px 0 0">FEE</PrimaryLabel>
-                    <Icon icon={info} style={{color: '#BEBEBE' }} />
+                    <Icon 
+                        icon={info} 
+                        style={{color: '#BEBEBE' }} 
+                        data-tip={`
+                            - 0.5% distributed between holders
+                            <br />
+                            - 0.5% sent to the Liquidity Pool
+                        `} 
+                    />
                     </SummaryRow>
                 </SummaryColumn>
                 <SummaryColumn align="flex-end" flex="2">
@@ -489,7 +498,13 @@ export default class Summary extends Component {
                 <SummaryColumn>
                     <SummaryRow>
                     <BalanceLabel margin="0 5px 0 0">TOTAL</BalanceLabel>
-                    <Icon icon={info} style={{color: '#BEBEBE' }} />
+                    <Icon 
+                        icon={info} 
+                        style={{color: '#BEBEBE' }} 
+                        data-tip={`
+                            Total received after fees.
+                        `} 
+                    />
                     </SummaryRow>
                 </SummaryColumn>
                 <SummaryColumn align="flex-end" flex="2">
@@ -541,6 +556,7 @@ export default class Summary extends Component {
                         </React.Fragment>
                     )}
                 </SummaryRow>
+                <ReactTooltip multiline={true} place="right"/>
             </SummaryContainer>
         )
     }

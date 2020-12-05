@@ -55,7 +55,7 @@ export default class ModalHeader extends Component {
                     }} 
                 >
                     <p>
-                        {asset.type === types.STKGRO ? 'STAKE' : 'MINT'}
+                        {asset.type === types.STKGRO ? 'STAKE' : 'DEPOSIT'}
                     </p>
                 </ModalHeaderOption>
                 <ModalHeaderOption
@@ -68,7 +68,7 @@ export default class ModalHeader extends Component {
                     }} 
                 >
                      <p>
-                        {asset.type === types.STKGRO ? 'UNSTAKE' : 'REDEEM'}
+                        {asset.type === types.STKGRO ? 'UNSTAKE' : 'WITHDRAW'}
                     </p>
                 </ModalHeaderOption>
             </ModalHeaderContainer>
