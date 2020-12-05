@@ -481,7 +481,13 @@ export default class Summary extends Component {
                     <Icon 
                         icon={info} 
                         style={{color: '#BEBEBE' }} 
-                        data-tip={`
+                        data-tip={asset.type === types.STKGRO ? 
+                            `
+                            - 5% distributed between holders
+                            <br />
+                            - 5% burned forever
+                            ` : 
+                            `
                             - 0.5% distributed between holders
                             <br />
                             - 0.5% sent to the Liquidity Pool
