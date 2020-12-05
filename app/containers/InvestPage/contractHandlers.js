@@ -2,7 +2,6 @@ import {isMobile} from 'react-device-detect';
 
 const getGasInfo = async (method, values, address, web3, value) => {
     try {
-        console.log({method, values, address, web3, value})
         const SAFE_MULTIPLIER = 1.15;
         const raw_gas = await method(...values).estimateGas({from: address, value});
         const gas = web3.utils.BN(raw_gas).mul(SAFE_MULTIPLIER);

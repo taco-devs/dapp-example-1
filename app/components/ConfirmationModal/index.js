@@ -186,11 +186,11 @@ class ConfirmationModal extends React.Component {
   parseNumber = (number, decimals) => {
     let rounding;
 
-    if (number < 1000) rounding = 1e6;
-    if (number >= 1000 && number < 100000) rounding = 100;
-    if (number >= 100000) rounding = 1;
-
     const float_number = Number(number) / Number(decimals);
+
+    if (float_number < 1000) rounding = 1e6;
+    if (float_number >= 1000 && float_number < 100000) rounding = 100;
+    if (float_number >= 100000) rounding = 1;
 
     console.log(Math.round(float_number * rounding) / rounding)
 

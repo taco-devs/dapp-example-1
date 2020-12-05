@@ -136,6 +136,7 @@ class ActionModal extends React.Component {
 
   state = {
     show: false,
+    isLoadingCalc: false,
     isLoading: false,
     modal_type: 'mint',
     // Calc from Cost
