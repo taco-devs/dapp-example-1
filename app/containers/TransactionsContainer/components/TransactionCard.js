@@ -220,7 +220,7 @@ export default class TransactionCard extends Component {
                                             <TransactionLogo src={require(`images/tokens/${asset.gtoken_img_url}`)}/>
                                         </TransactionContainerColumn>
                                         <TransactionContainerColumn>
-                                            <PrimaryLabel>{this.abbreviateNumber(transaction.sent / asset.base_decimals)}</PrimaryLabel>
+                                            <PrimaryLabel>- {this.parseAmount(transaction.sent, asset.base_decimals)}</PrimaryLabel>
                                             <SecondaryLabel>{asset.g_asset}</SecondaryLabel>
                                         </TransactionContainerColumn>
                                     </TransactionContainer>
@@ -278,7 +278,7 @@ export default class TransactionCard extends Component {
                                         </TransactionContainerColumn>
                                         { transaction.type === 'base' && (
                                             <TransactionContainerColumn>
-                                                <PrimaryLabel>{this.abbreviateNumber(this.parseAmount(transaction.received, asset.base_decimals))}</PrimaryLabel>
+                                                <PrimaryLabel>+ {this.parseAmount(transaction.received, asset.base_decimals)}</PrimaryLabel>
                                                 <SecondaryLabel>{asset.base_asset}</SecondaryLabel>
                                             </TransactionContainerColumn>
                                         )}
