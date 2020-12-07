@@ -539,21 +539,23 @@ export default class ActionDrawer extends Component {
       const {is_native, modal_type, deposit_fee, withdrawal_fee, value_native, value_base, value_redeem, total_supply, total_reserve } = this.state;
   
       if (!deposit_fee || !withdrawal_fee) return 0;
+
+      const assetPrice = total_reserve / total_supply;
   
       // Validate when input a mint function
       if (modal_type === 'mint') {
         // Validate against native balance
         if (is_native) {
           if (!value_native || Number(value_native) <= 0) return true;
-          return  Number(value_native * asset.underlying_decimals) * (deposit_fee / 1e18);
+          return  Number(value_native * asset.underlying_decimals) * (deposit_fee / 1e18) * assetPrice;
         } else {
           if (!value_base || Number(value_base) <= 0) return true;
-          return Number(value_base * asset.base_decimals) * (deposit_fee / 1e18);
+          return Number(value_base * asset.base_decimals) * (deposit_fee / 1e18) * assetPrice;
         }
       }
   
       if (modal_type === 'redeem') {
-        return Number(value_redeem * asset.base_decimals) * (withdrawal_fee / asset.base_decimals);
+        return Number(value_redeem * asset.base_decimals) * (withdrawal_fee / asset.base_decimals) * assetPrice;
       }
     }
 
@@ -686,7 +688,7 @@ export default class ActionDrawer extends Component {
                               </SummaryColumn>
                               <SummaryColumn align="flex-end" flex="2.5">
                                 <SummaryRow>
-                                  <PrimaryLabel margin="0 5px 0 5px">{this.getPrice(is_native)}</PrimaryLabel>
+                                  <PrimaryLabel margin="0 5px 0 5px">{this.getPrice(is_native, true)}</PrimaryLabel>
                                 </SummaryRow>
                               </SummaryColumn>
                             </SummaryRow>
@@ -695,7 +697,7 @@ export default class ActionDrawer extends Component {
                                 <PrimaryLabel>{asset.base_asset} RESERVE</PrimaryLabel>
                               </SummaryColumn>
                               <SummaryColumn align="flex-end">
-                                <PrimaryLabel>{total_reserve && Math.round(total_reserve / asset.base_decimals).toLocaleString('En-en')} {asset.g_asset}</PrimaryLabel>
+                                <PrimaryLabel>{total_reserve && Math.round(total_reserve / asset.base_decimals).toLocaleString('En-en')} {asset.base_asset}</PrimaryLabel>
                               </SummaryColumn>
                             </SummaryRow>
                             <SummaryRow>
@@ -704,7 +706,7 @@ export default class ActionDrawer extends Component {
                               </SummaryColumn>
                               <SummaryColumn align="flex-end">
                                 <PrimaryLabel>
-                                  {total_supply && Math.round(total_supply / asset.base_decimals).toLocaleString('En-en')} {asset.base_asset}
+                                  {total_supply && Math.round(total_supply / asset.base_decimals).toLocaleString('En-en')} {asset.g_asset}
                                 </PrimaryLabel>
                               </SummaryColumn>
                             </SummaryRow>
