@@ -341,8 +341,8 @@ export default class AssetCard extends Component {
                                     direction="column"
                                     flex="1.1"
                                 >
-                                    <PrimaryLabel spacing="1px" type={asset.type}>{this.getMarketSize()}</PrimaryLabel>
-                                    <SecondaryLabel spacing="1px" type={asset.type}>{this.getSupply(true)} {asset.g_asset}</SecondaryLabel>
+                                    <PrimaryLabel spacing="1.5px" type={asset.type}>{this.getMarketSize()}</PrimaryLabel>
+                                    <SecondaryLabel spacing="1px" type={asset.type}>{this.getSupply()} {asset.g_asset}</SecondaryLabel>
                                 </CardColumn>
                                 <CardColumn 
                                     direction="column"
