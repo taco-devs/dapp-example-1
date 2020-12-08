@@ -270,7 +270,7 @@ class GrowthDashboard extends React.Component {
                   <XAxis dataKey="x_axis_label" hide={true}/>
                   <YAxis hide={true} domain={[0, this.getMax(tvl_history)]}/>
                   <Tooltip content={<CustomTooltip />}/>
-                  <Area type="monotone" dataKey="y_value" stroke="#161d6b" fill="#00d395" />
+                  <Area type="monotone" dataKey="y_value" stroke="#161d6b" fill="#00d395"  strokeWidth={1.5}  />
                 </AreaChart>
               </ResponsiveContainer>
             </div>

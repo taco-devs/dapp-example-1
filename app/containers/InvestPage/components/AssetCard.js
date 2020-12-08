@@ -237,7 +237,7 @@ export default class AssetCard extends Component {
         const mathFactor = Math.pow(token.lastAvgPrice, 1 / (dayDelta));
         const apy = (mathFactor - 1) * 365 * 100;
 
-        if (dayDelta < 7 && apy < 0) return '-';
+        if (apy < 0) return '-';
 
         // const increase = (token.cumulativeDailyChange / (dayDelta)) * 100 * 365;
         return `${Math.round(apy * 100) / 100} % AVG`;

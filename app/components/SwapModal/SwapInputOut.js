@@ -226,7 +226,7 @@ export default class SwapInputOut extends Component {
         return (
           <InputSection>
             <InputRow>
-                <InputSectionColumn flex="2.5" align="flex-start">
+                <InputSectionColumn flex="3" align="flex-start">
                 <BalanceLabel>BALANCE: {this.parseBalance(balanceOut)}</BalanceLabel> 
                 </InputSectionColumn>
                 <InputSectionColumn align="flex-end">
