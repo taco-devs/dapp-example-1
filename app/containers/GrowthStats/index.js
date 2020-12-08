@@ -14,14 +14,14 @@ import { compose } from 'redux';
 
 import injectSaga from 'utils/injectSaga';
 import injectReducer from 'utils/injectReducer';
-import makeSelectGrowthStats from './selectors';
+import makeSelectGrowthStats, { makeSelectIsLoadingTVL } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
 import messages from './messages';
 import StatsContainer from 'components/StatsContainer';
 import { getUserStats, getBalances, getTVL, getPrices, getGraph, getRelevantPrices } from './actions';
 import { makeSelectHideBalances, makeSelectAddGRO } from '../App/selectors';
-import { makeSelectBalances, makeSelectEthPrice, makeSelectTvl, makeSelectTvlHistory } from '../GrowthStats/selectors';
+import { makeSelectBalances, makeSelectEthPrice, makeSelectTvl, makeSelectTvlHistory, makeSelectTvlError } from '../GrowthStats/selectors';
 
 import { makeSelectCurrrentNetwork } from '../App/selectors'
  
@@ -74,6 +74,8 @@ const mapStateToProps = createStructuredSelector({
   eth_price: makeSelectEthPrice(),
   hideBalances: makeSelectHideBalances(),
   addGRO: makeSelectAddGRO(),
+  isLoadingTVL: makeSelectIsLoadingTVL(),
+  tvl_error: makeSelectTvlError(),
 });
 
 function mapDispatchToProps(dispatch) {

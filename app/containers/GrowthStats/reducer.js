@@ -24,6 +24,9 @@ export const initialState = fromJS({
   tvl_history: null,
   prices: null,
   relevant_prices: null,
+  // Errors
+  isLoadingTVL: null,
+  tvl_error: null,
 });
 
 
@@ -56,14 +59,20 @@ function statsReducer(state = initialState, action) {
         .set('isLoadingBalances', false)
         .set('balancesError', action.error);
     case GET_TVL_REQUEST: 
-      return state;
+      return state
+        .set('tvl', null)
+        .set('tvl_history', null)
+        .set('tvl_error', null)
+        .set('isLoadingTVL', true);
     case GET_TVL_SUCCESS: 
       return state
+        .set('isLoadingTVL', false)
         .set('tvl', action.tvl)
         .set('tvl_history', action.tvl_history)
     case GET_TVL_ERROR: 
       return state
-        .set('error', action.error);
+        .set('isLoadingTVL', false)
+        .set('tvl_error', "There was an error loading this chart");
     case GET_ETH_PRICE: 
       return state.set('eth_price', action.eth_price);
     case GET_RELEVANT_PRICES_SUCCESS: 

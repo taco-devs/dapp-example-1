@@ -376,7 +376,6 @@ function* getBalancesSaga(params) {
 
     if (Network) {
 
-
         // Get the correct pairs to fetch price
         const PAIRS = get_pairs(Network);
         const markets_query = get_markets(Network);

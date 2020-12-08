@@ -59,6 +59,16 @@ const assets = {
                 img_url: 'wbtc.png',
                 native_img_url: 'wbtc.png',
                 gtoken_img_url: 'gtoken_wbtc.png',
+                portfolio: [
+                    {
+                        asset: 'gWBTC',
+                        percentage: 10
+                    },
+                    {
+                        asset: 'gcWBTC',
+                        percentage: 90
+                    }
+                ]
             },
             gETH: {
                 label: 'PMT',
@@ -82,6 +92,16 @@ const assets = {
                 img_url: 'eth.png',
                 native_img_url: 'eth.png',
                 gtoken_img_url: 'gtoken_eth.png',
+                portfolio: [
+                    {
+                        asset: 'gETH',
+                        percentage: 10
+                    },
+                    {
+                        asset: 'gcETH',
+                        percentage: 90
+                    }
+                ]
             },
             gDAI: {
                 label: 'PMT',
@@ -103,6 +123,16 @@ const assets = {
                 img_url: 'dai.png',
                 native_img_url: 'dai.png',
                 gtoken_img_url: 'gtoken_dai.png',
+                portfolio: [
+                    {
+                        asset: 'gDAI',
+                        percentage: 10
+                    },
+                    {
+                        asset: 'gcDAIv2',
+                        percentage: 90
+                    }
+                ]
             },
             gUSDC: {
                 label: 'PMT',
@@ -124,6 +154,16 @@ const assets = {
                 img_url: 'usdc.png',
                 native_img_url: 'usdc.png',
                 gtoken_img_url: 'gtoken_usdc.png',
+                portfolio: [
+                    {
+                        asset: 'gUSDC',
+                        percentage: 10
+                    },
+                    {
+                        asset: 'gcUSDCv2',
+                        percentage: 90
+                    }
+                ]
             },
             gcWBTC: {
                 label: 'STRATEGY',

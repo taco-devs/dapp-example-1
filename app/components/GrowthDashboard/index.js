@@ -12,11 +12,14 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import styled from 'styled-components';
 import {isMobile} from 'react-device-detect';
+import { Icon } from 'react-icons-kit';
+import {repeat} from 'react-icons-kit/fa/repeat'
 
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
 import moment from 'moment';
+import Loader from 'react-loader-spinner';
 
 const data_dummy = [
   {
@@ -103,6 +106,28 @@ const StyledTooltip = styled.div`
   border-style: solid;
   border-width: 1px;
   border-color: rgb(22,29,107);
+`
+
+const ErrorContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  justify-content: center;
+  width: 100%; 
+`
+
+const TryAgain = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  justify-content: center;
+  border-radius: 5px;
+  padding: 0 1em 0 1em;
+
+  &:hover {
+    cursor: pointer;
+    opacity: 0.5;
+  }
 `
 
 const CustomTooltip = ({ active, payload, label }) => {
@@ -236,10 +261,13 @@ class GrowthDashboard extends React.Component {
     return Math.max(...data);
   }
 
+  reloadTVL = () => {
+    const {getTVL} = this.props;
+    getTVL();
+  }
 
-
-    render () {
-    const {tvl, tvl_history} = this.props;
+  render () {
+    const {tvl, tvl_history, tvl_error, isLoadingTVL} = this.props;
     const data = this.parseTVLData(tvl_history);
     const growth = isMobile ? 'TVL' : 'GROWTH TVL';
     const value = tvl ? this.parseTVL(tvl.totalValueLockedUSD) : '-';
@@ -256,7 +284,15 @@ class GrowthDashboard extends React.Component {
           <span>{growth} ( <span style={{letterSpacing: '2.5px'}}>$ {value} USD</span> )</span>
         </GrowthDashboardHeader>
         <GrowthDashboardStats>
-          {data && data.length > 0 && (
+          {isLoadingTVL && (
+            <Loader
+              type="TailSpin"
+              color={'#00d395'}
+              height={120}
+              width={120}
+            />
+          ) }
+          {!tvl_error && data && data.length > 0 && (
             <div style={{ width: '100%', height: isMobile ? '180px' : '100%' }}>
               <ResponsiveContainer>
                 <AreaChart
@@ -274,6 +310,15 @@ class GrowthDashboard extends React.Component {
                 </AreaChart>
               </ResponsiveContainer>
             </div>
+          )}
+          { tvl_error && (
+              <ErrorContainer>
+                <p>{tvl_error}</p>
+                <TryAgain onClick={this.reloadTVL}>
+                  <Icon icon={repeat} />
+                  <p>Try Again</p>
+                </TryAgain>
+              </ErrorContainer>
           )}
         </GrowthDashboardStats>
       </GrowthContainer>

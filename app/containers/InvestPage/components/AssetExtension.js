@@ -61,6 +61,25 @@ const data = [
     }
 ];
 
+
+const PrimaryLabel = styled.p`
+    color: ${props => props.type ===  types.STKGRO ? 'white' : '#161d6b'};
+    margin: 0 1em 0 1em;
+    text-align: center;
+    ${props => props.size && `font-size: ${props.size}`}
+    ${props => props.spacing && `letter-spacing: ${props.spacing};`}
+`
+
+const SecondaryLabel = styled.p`
+    color: ${props => props.type ===  types.STKGRO ? 'white' : '#161d6b'};
+    opacity: 0.75;
+    margin: 0 1em 0 1em;
+    text-align: center;
+    font-size: 0.85em;
+    ${props => props.spacing && `letter-spacing: ${props.spacing};`}
+`
+
+
 const ExtensionContainer = styled.div`
     display: flex;
     flex-direction: column;
@@ -262,6 +281,28 @@ export default class AssetExtension extends Component {
 
     }
 
+    getComposition = () => {
+        const {asset, Network} = this.props;
+        
+        if (!asset.portfolio) return '-';
+
+        return asset.portfolio.map(portfolioAsset => {
+            return (
+                <ExtensionRow style={{width: 150}}>
+                    <img style={{width: 35, height: 35}} src={require(`images/tokens/${Network.available_assets[portfolioAsset.asset].gtoken_img_url}`)}/>
+                    <ExtensionColumn>
+                        <PrimaryLabel>
+                            {portfolioAsset.percentage} %
+                        </PrimaryLabel>
+                        <SecondaryLabel>
+                            {Network.available_assets[portfolioAsset.asset].g_asset}
+                        </SecondaryLabel>
+                    </ExtensionColumn>
+                </ExtensionRow>
+            )
+        })
+    }
+
     render() {
         const {asset, asset_key, isLoadingChart, tokenData, total_supply, total_reserve, deposit_fee, withdrawal_fee, tokens, getToken} = this.props;
         const data= this.formatData();
@@ -272,6 +313,19 @@ export default class AssetExtension extends Component {
         }
         return (
             <ExtensionContainer>
+                {(asset.type === types.PMT || asset.type === types.GETH) && (
+                    <Divider />
+                )}
+                {(asset.type === types.PMT || asset.type === types.GETH) && (
+                    <ExtensionRow>
+                        <div style={{width: '300px'}}>
+                            <p>TOKEN COMPOSITION</p>
+                        </div>
+                        <ExtensionRow justify="flex-start">
+                            {this.getComposition()}
+                        </ExtensionRow>
+                    </ExtensionRow>
+                )}
                 <Divider
                     color={asset.type === types.STKGRO && '#ffe391'}
                 />

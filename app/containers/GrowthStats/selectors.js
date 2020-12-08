@@ -62,6 +62,18 @@ const makeSelectStatus = () =>
     }
   );
 
+const makeSelectIsLoadingTVL = () =>
+  createSelector(selectStatsPage, statsState => {
+      return statsState.get('isLoadingTVL')
+    }
+  );
+
+const makeSelectTvlError = () =>
+  createSelector(selectStatsPage, statsState => {
+      return statsState.get('tvl_error')
+    }
+  );
+
 export { 
   makeSelectBalancesError,
   makeSelectIsLoadingBalances,
@@ -73,4 +85,6 @@ export {
   makeSelectPrices,
   makeSelectStatus,
   makeSelectRelevantPrices,
+  makeSelectTvlError,
+  makeSelectIsLoadingTVL
 };
