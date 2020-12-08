@@ -11,7 +11,7 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import styled from 'styled-components';
-import {isMobile} from 'react-device-detect';
+import {isMobile, isMacOs} from 'react-device-detect';
 import { Icon } from 'react-icons-kit';
 import {repeat} from 'react-icons-kit/fa/repeat'
 
@@ -20,6 +20,8 @@ import {
 } from 'recharts';
 import moment from 'moment';
 import Loader from 'react-loader-spinner';
+
+import { VictoryArea } from 'victory'; 
 
 const data_dummy = [
   {
@@ -271,6 +273,8 @@ class GrowthDashboard extends React.Component {
     const data = this.parseTVLData(tvl_history);
     const growth = isMobile ? 'TVL' : 'GROWTH TVL';
     const value = tvl ? this.parseTVL(tvl.totalValueLockedUSD) : '-';
+    const showInitialChart = isMacOs || isMobile;
+
     return (
       <GrowthContainer>
         <GrowthDashboardHeader>
@@ -292,7 +296,7 @@ class GrowthDashboard extends React.Component {
               width={120}
             />
           ) }
-          {!tvl_error && data && data.length > 0 && (
+          {!tvl_error && (isMacOs || isMobile) && data && data.length > 0 && (
             <div style={{ width: '100%', height: isMobile ? '180px' : '100%' }}>
               <ResponsiveContainer>
                 <AreaChart
@@ -306,10 +310,25 @@ class GrowthDashboard extends React.Component {
                   <XAxis dataKey="x_axis_label" hide={true}/>
                   <YAxis hide={true} domain={[0, this.getMax(tvl_history)]}/>
                   <Tooltip content={<CustomTooltip />}/>
-                  <Area type="natural" dataKey="y_value" stroke="white" fill="#00d395" fillOpacity={1} strokeWidth={1.5}  />
+                  <Area type="monotone" dataKey="y_value" stroke="white" fill="#00d395" fillOpacity={1} strokeWidth={1.5}  />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
+          )}
+          {!tvl_error && !(isMacOs || isMobile) && data && data.length > 0 && (
+            <AreaChart
+              height={180}
+              width={800}
+              data={data}
+              margin={{
+                top: 10, right: 0, left: 0, bottom: 0,
+              }}
+            >
+              <XAxis dataKey="x_axis_label" hide={true}/>
+              <YAxis hide={true} domain={[0, this.getMax(tvl_history)]}/>
+              <Tooltip content={<CustomTooltip />}/>
+              <Area type="monotone" dataKey="y_value" stroke="white" fill="#00d395" fillOpacity={1} strokeWidth={1.5}  />
+            </AreaChart>
           )}
           { tvl_error && (
               <ErrorContainer>

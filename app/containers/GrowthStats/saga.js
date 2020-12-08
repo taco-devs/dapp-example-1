@@ -133,6 +133,9 @@ const balanceChecker = (ContractInstance, address) => {
   return ContractInstance.methods.balanceOf(address);
 }
 
+const exchangeRateTypes = [
+  types.TYPE1, types.TYPE2, types.TYPE_ETH
+]
 
 const fetch_balances = async (available_assets, user_balances, web3, address) => {
   // Iterate through the contracts
@@ -150,7 +153,7 @@ const fetch_balances = async (available_assets, user_balances, web3, address) =>
 
       let exchange_rate;
 
-      if (asset.type !== types.STKGRO) {
+      if (exchangeRateTypes.indexOf(asset.type) > -1) {
         exchange_rate = await ContractInstance.methods.exchangeRate().call();
       }
      
