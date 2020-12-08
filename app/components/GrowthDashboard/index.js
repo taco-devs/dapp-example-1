@@ -85,14 +85,14 @@ const GrowthDashboardStats = styled.div`
   align-items: center;
   justify-content: center;
   flex: 1;
-  background-color: white;
+  background-color: rgba(0,0,0, 0.25);
   border-radius: 5px;
   margin: 0.5em 0 0 0;
   width: 100%;
   color: white;
-  -webkit-box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
-  -moz-box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
-  box-shadow: 0px 0px 5px 5px rgba(0,0,0,0.75);
+  -webkit-box-shadow: inset 0px 0px 2px 2px rgba(0,0,0,0.75);
+  -moz-box-shadow: inset 0px 0px 2px 2px rgba(0,0,0,0.75);
+  box-shadow: inset 0px 0px 2px 2px rgba(0,0,0,0.75);
 `
 
 const StyledTooltip = styled.div`
@@ -270,7 +270,7 @@ class GrowthDashboard extends React.Component {
                   <XAxis dataKey="x_axis_label" hide={true}/>
                   <YAxis hide={true} domain={[0, this.getMax(tvl_history)]}/>
                   <Tooltip content={<CustomTooltip />}/>
-                  <Area type="monotone" dataKey="y_value" stroke="#161d6b" fill="#00d395"  strokeWidth={1.5}  />
+                  <Area type="natural" dataKey="y_value" stroke="white" fill="#00d395" fillOpacity={1} strokeWidth={1.5}  />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
