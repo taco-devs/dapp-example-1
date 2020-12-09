@@ -201,13 +201,13 @@ class GrowthDashboard extends React.Component {
     return chart_data;
 }
 
-  parseTVLData = (tvl_history) => {
-    try {
+parseTVLData = (tvl_history) => {
+  try {
 
-      if (!tvl_history) return [];
-      if (tvl_history.length < 1) return [];
+      if (!tvl_history) return null;
+      if (tvl_history.length < 1) return null;
 
-      const SECONDS_IN_DAY = 86400;
+      /* const SECONDS_IN_DAY = 86400;
       let TODAY = new Date();
       TODAY = new Date(TODAY.getTime() + TODAY.getTimezoneOffset() * 60000);
       TODAY.setHours(0,0,0,0);
@@ -215,19 +215,20 @@ class GrowthDashboard extends React.Component {
       
       let FIRST_DAY = new Date(tvl_history[0].date * 1000);
       FIRST_DAY.setHours(0,0,0,0);
-      const FIRST_DATE = Math.round(FIRST_DAY.getTime() / 1000);
+      const FIRST_DATE = Math.round(FIRST_DAY.getTime() / 1000); */
 
-      const dayDelta = (TODAY_DATE - FIRST_DATE) / SECONDS_IN_DAY;
- 
+      const SECONDS_IN_DAY = 86400;
+      let TODAY = moment();
+      let FIRST_DATE = moment(tvl_history[0].date * 1000);
+
+      let dayDelta = TODAY.diff(FIRST_DATE, 'days'); 
       
       // Chart Array
       let chart_data = new Array(dayDelta);
       let current_days = 0;
 
-      console.log(chart_data);
-
       for (let day of chart_data) {
-        const today_timestamp = FIRST_DATE + (SECONDS_IN_DAY * current_days);
+        const today_timestamp = FIRST_DATE.unix() + (SECONDS_IN_DAY * current_days);
         const tomorrow_timestamp = today_timestamp + SECONDS_IN_DAY;
 
         const day_data = tvl_history.find(curr_day => curr_day.date > today_timestamp && curr_day.date <= tomorrow_timestamp);
@@ -264,9 +265,9 @@ class GrowthDashboard extends React.Component {
       return chart_data;
     } catch (e) {
       console.log(e);
-      return [];
+      return null;
     }
-  }
+}
 
   getMax = (tvl_history) => {
 
@@ -289,8 +290,7 @@ class GrowthDashboard extends React.Component {
     const data = this.parseTVLData(tvl_history);
     const growth = isMobile ? 'TVL' : 'GROWTH TVL';
     const value = tvl ? this.parseTVL(tvl.totalValueLockedUSD) : '-';
-    const showInitialChart = isMacOs || isMobile;
-
+    
     return (
       <GrowthContainer>
         <GrowthDashboardHeader>
