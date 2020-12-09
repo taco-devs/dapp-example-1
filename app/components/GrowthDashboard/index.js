@@ -204,48 +204,64 @@ class GrowthDashboard extends React.Component {
   parseTVLData = (tvl_history) => {
     try {
 
-    if (!tvl_history) return [];
-    if (tvl_history.length < 1) return [];
+      if (!tvl_history) return [];
+      if (tvl_history.length < 1) return [];
 
-    const SECONDS_IN_DAY = 86400;
-    let TODAY = new Date();
-    TODAY = new Date(TODAY.getTime() + TODAY.getTimezoneOffset() * 60000);
-    TODAY.setHours(0,0,0,0);
-    const TODAY_DATE = Math.round(TODAY.getTime() / 1000);
-    
-    let FIRST_DAY = new Date(tvl_history[0].date * 1000);
-    FIRST_DAY.setHours(0,0,0,0);
-    const FIRST_DATE = Math.round(FIRST_DAY.getTime() / 1000);
+      const SECONDS_IN_DAY = 86400;
+      let TODAY = new Date();
+      TODAY = new Date(TODAY.getTime() + TODAY.getTimezoneOffset() * 60000);
+      TODAY.setHours(0,0,0,0);
+      const TODAY_DATE = Math.round(TODAY.getTime() / 1000);
+      
+      let FIRST_DAY = new Date(tvl_history[0].date * 1000);
+      FIRST_DAY.setHours(0,0,0,0);
+      const FIRST_DATE = Math.round(FIRST_DAY.getTime() / 1000);
 
-    const dayDelta = (TODAY_DATE - FIRST_DATE) / SECONDS_IN_DAY;
-    
-    // Chart Array
-    let chart_data = new Array(dayDelta);
-    let current_days = 0;
+      const dayDelta = (TODAY_DATE - FIRST_DATE) / SECONDS_IN_DAY;
+ 
+      
+      // Chart Array
+      let chart_data = new Array(dayDelta);
+      let current_days = 0;
 
+      console.log(chart_data);
 
-    for (let day of chart_data) {
-      const today_timestamp = FIRST_DATE + (SECONDS_IN_DAY * current_days);
-      const tomorrow_timestamp = today_timestamp + SECONDS_IN_DAY;
+      for (let day of chart_data) {
+        const today_timestamp = FIRST_DATE + (SECONDS_IN_DAY * current_days);
+        const tomorrow_timestamp = today_timestamp + SECONDS_IN_DAY;
 
-      const day_data = tvl_history.find(curr_day => curr_day.date > today_timestamp && curr_day.date <= tomorrow_timestamp);
+        const day_data = tvl_history.find(curr_day => curr_day.date > today_timestamp && curr_day.date <= tomorrow_timestamp);
 
-      let x_axis_label;
-      let y_value;
+        let x_axis_label;
+        let y_value;
 
-      if (day_data) {
-          x_axis_label = moment((day_data.date + SECONDS_IN_DAY) * 1000).format('MMM DD');
-          y_value = day_data.cumulativeTotalValueLockedUSD;
-      } else {
-          x_axis_label = moment(tomorrow_timestamp * 1000).utc(0).format('MMM DD');
-          y_value = chart_data[current_days - 1].y_value;
+        if (day_data) {
+            x_axis_label = moment((day_data.date + SECONDS_IN_DAY) * 1000).format('MMM DD');
+            y_value = day_data.cumulativeTotalValueLockedUSD;
+        } else {
+            x_axis_label = moment(tomorrow_timestamp * 1000).utc(0).format('MMM DD');
+
+            try {
+              y_value = chart_data[current_days - 1].y_value;
+            } catch (e) {
+              console.log('247', e);
+              y_value = tvl_history[tvl_history.length - 1].cumulativeTotalValueLockedUSD;
+            }
+            
+        }
+
+        try {
+          chart_data[current_days] = {x_axis_label, y_value};
+        } catch (e) {
+          console.log(e);
+          continue;
+        }
+        
+        current_days++;
       }
 
-      chart_data[current_days] = {x_axis_label, y_value};
-      current_days++;
-    }
 
-    return chart_data;
+      return chart_data;
     } catch (e) {
       console.log(e);
       return [];
