@@ -143,11 +143,14 @@ export default class AssetCard extends Component {
     getMarketSize = () => {
         const {asset, tokens, prices, asset_key, relevantPrices, ethPrice} = this.props;
 
-        if (!prices || !tokens) return '-';
+        if (!tokens) return '-';
 
         const token = this.getToken(asset);
 
         if (!token) return '-';
+        
+        if (!prices) return `$${Math.round(token.cumulativeTotalValueLockedUSD).toLocaleString('en-En')}`;
+
 
         // Check for PMT
         if (asset.type === types.PMT) {
@@ -172,9 +175,7 @@ export default class AssetCard extends Component {
 
         // Check for type 1
         if (asset.type === types.TYPE1 || asset.type === types.TYPE_ETH) {
-
             const asset_data = prices.markets && prices.markets.find(market => market.id === asset.compound_id);
-
 
             if (!asset_data) return '-';
             const reservePrice = Number(asset_data.exchangeRate) * Number(asset_data.underlyingPriceUSD);
