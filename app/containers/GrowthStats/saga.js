@@ -35,11 +35,10 @@ const USER_STATS = (address) => {
     {
       users (
         where: {
-          address: "${address}"
+          id: "${address.toLowerCase()}"
         }
       ){
         id
-        address
         transactions
       }
     }

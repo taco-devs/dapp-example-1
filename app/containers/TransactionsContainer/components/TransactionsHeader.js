@@ -73,7 +73,8 @@ export default class TransactionsHeader extends Component {
 
     showPagination = () => {
         const {user, pagination} = this.props;
-        if (!user) return '-'
+        console.log(this.props)
+        if (!user) return '-';
 
         const page_number = Math.ceil(Number(user.transactions) / 10);
         if (page_number < 1) return '1 / 1';
