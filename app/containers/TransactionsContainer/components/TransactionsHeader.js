@@ -72,10 +72,10 @@ const StyledIcon = ({Icon}) => {
 export default class TransactionsHeader extends Component {
 
     showPagination = () => {
-        const {user, pagination, transactions} = this.props;
+        const {user, pagination} = this.props;
         if (!user) return '-'
 
-        const page_number = Math.ceil(Number(transactions.length) / 10);
+        const page_number = Math.ceil(Number(user.transactions) / 10);
         if (page_number < 1) return '1 / 1';
         return `${pagination + 1} / ${page_number}`;
     }
