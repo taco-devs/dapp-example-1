@@ -75,22 +75,25 @@ class WalletDashboard extends React.Component {
         balances
           .reduce((acc, curr) => {
              // If not available balance
-             if (Number(curr.balance) <= 0 ) return acc; 
+             if (Number(curr.web3_balance) <= 0 ) return acc; 
              // If it GRO
              if (addGRO && curr.name === 'GRO') {
-               return acc + Number(curr.balance / 1e18) / Number(curr.price_eth) * eth_price; 
+               return acc + Number(curr.web3_balance / 1e18) / Number(curr.price_eth) * eth_price; 
              } 
              if (curr.name === 'stkGRO') {
                const ratio = curr.total_reserve / curr.total_supply;
                const gro = balances.find(balance => balance.name === 'GRO');
-               return acc + (curr.balance / 1e18 ) * ratio / Number(gro.price_eth) * eth_price;
+               return acc + (curr.web3_balance / 1e18 ) * ratio / Number(gro.price_eth) * eth_price;
              }
-             if (curr.balance > 0 && curr.base_price_usd) {
-                return acc + Number(curr.balance / 1e8 * curr.base_price_usd);
+             if (curr.web3_balance > 0 && curr.base_price_usd) {
+                return acc + Number(curr.web3_balance / curr.decimals * curr.base_price_usd);
              }
              return acc;
           }, 0);
-        
+
+
+    
+
     return (Math.round(portfolio_value * 100) / 100).toLocaleString('en-En');
   }
 
@@ -107,12 +110,13 @@ class WalletDashboard extends React.Component {
 
     const gToken_balances = 
         balances
+          .filter(balance => balance.apy > 0)
           .filter(balance => blacklisted_balance.indexOf(balance.name) < 0);
 
     if (gToken_balances.length < 1) return '-';
 
     const portfolio_value = 
-      balances
+      gToken_balances
         .reduce((acc, curr) => {
             // If not available balance
             if (Number(curr.balance) <= 0 ) return acc; 
@@ -121,7 +125,7 @@ class WalletDashboard extends React.Component {
               return acc + Number(curr.balance / 1e18 * curr.base_price_usd);
             }
             if (curr.balance > 0 && curr.base_price_usd) {
-              return acc + Number(curr.balance / 1e8 * curr.base_price_usd);
+              return acc + Number(curr.web3_balance / curr.decimals * curr.base_price_usd);
             }
             return acc;
         }, 0);
@@ -131,8 +135,8 @@ class WalletDashboard extends React.Component {
         gToken_balances
           .map((curr) => {
 
-            let assetDecimals = curr.name === 'stkGRO' ? 1e18 : 1e8;
-            const allocPercentage = Number(curr.balance / assetDecimals * curr.base_price_usd) / portfolio_value;
+            let assetDecimals = curr.name === 'stkGRO' ? 1e18 : curr.decimals;
+            const allocPercentage = Number(curr.web3_balance / assetDecimals * curr.base_price_usd) / portfolio_value;
 
             return {
               ...curr,

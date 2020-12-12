@@ -64,6 +64,7 @@ const BALANCES = (address) => {
           depositFee
           withdrawalFee
           listingDate
+          lastAvgPrice
           countTokenDailyDatas
           cumulativeDailyChange
         }
@@ -179,8 +180,10 @@ const fetch_balances = async (available_assets, user_balances, web3, address) =>
       const FIRST_DATE = Math.round(FIRST_DAY.getTime() / 1000);
 
       const dayDelta = (TODAY_DATE - FIRST_DATE) / SECONDS_IN_DAY;
-      
-      const apy = balance && balance.token ? (balance.token.cumulativeDailyChange / dayDelta * 100 * 365) : 1;
+
+      const mathFactor = balance && balance.token ? Math.pow(balance.token.lastAvgPrice, 1 / (dayDelta)) : 1;
+      const apy = (mathFactor - 1) * 365 * 100;
+
 
       balances.push({
         name: balance.token.symbol,
@@ -196,6 +199,7 @@ const fetch_balances = async (available_assets, user_balances, web3, address) =>
         total_reserve,
         total_supply,
         liquidation_price,
+        decimals: asset.base_decimals,
       })
 
     } catch (e) {
@@ -264,11 +268,6 @@ const get_prices = async (asset_balances, data, pairs_data, web3) => {
             }
             // Get the redeeming rate
             
-            console.log({
-              ...asset,
-              base_price_eth,
-              base_price_usd,
-            })
 
             return {
               ...asset,
