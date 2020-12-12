@@ -140,7 +140,6 @@ export default class BalanceCard extends Component {
         }
        
         let std_balances = addGRO ? balances : gToken_balances;
-        
 
         const portfolio_value = 
             std_balances
@@ -151,14 +150,14 @@ export default class BalanceCard extends Component {
                         return acc + Number(curr.balance / 1e18) / Number(curr.price_eth) * eth_price; 
                     } 
                     // Balances
-                    if (curr.balance > 0 && curr.base_price_usd) {
-                        return acc + Number(curr.web3_balance / asset.decimals * curr.base_price_usd);
+                    if (curr.web3_balance > 0 && curr.base_price_usd) {
+                        return acc + Number(curr.web3_balance / curr.decimals * curr.base_price_usd);
                     }
                     return acc;
                 }, 0);            
+                
 
         const allocPercentage = Number(asset.web3_balance / asset.decimals * asset.base_price_usd) / portfolio_value * 100;
-        
                 
         return Math.round(allocPercentage * 100) / 100;
     }
@@ -253,7 +252,7 @@ export default class BalanceCard extends Component {
                                     {asset.type === types.STKGRO ? (
                                         `$${this.stkGROPrice()} USD`
                                     ) : (
-                                        `$${Math.round(asset.base_price_usd * 100) / 100} USD`
+                                        `$${(Math.round(asset.base_price_usd * 100) / 100).toLocaleString('en-En')} USD`
                                     )}
                                     
                                 </PrimaryLabel>
