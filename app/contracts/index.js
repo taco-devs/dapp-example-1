@@ -47,7 +47,7 @@ const assets = {
                 base_address: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
                 gtoken_address: '0xe567B3174af8eA368ed536998a597147Ec29De8f', 
                 underlying_address: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-                liquidity_pool_address: '0xC5DfD2921b48BF2F9c7cA684Cfa904FB878D3338',
+                liquidity_pool_address: '0xc5dfd2921b48bf2f9c7ca684cfa904fb878d3338',
                 base_abi: WBTC,
                 gtoken_abi: GToken,
                 underlying_abi: WBTC,
