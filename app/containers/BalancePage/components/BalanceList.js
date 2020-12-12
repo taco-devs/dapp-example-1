@@ -63,7 +63,7 @@ export default class BalanceList extends Component {
 
         // Get the assets that have balances greater than 0
         const filtered_asset = balances
-            .filter(asset => Number(asset.balance) > 0 && asset.name !== 'GRO');
+            .filter(asset => Number(asset.web3_balance) > 0 && asset.name !== 'GRO');
         
         if (!filtered_asset) return;
 

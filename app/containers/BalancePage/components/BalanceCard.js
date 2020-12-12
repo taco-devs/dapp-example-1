@@ -77,7 +77,10 @@ export default class BalanceCard extends Component {
 
     parseNumber = (number, decimals) => {
         const float_number = number / decimals;
-        return Math.round(float_number * 100) / 100;
+        if (float_number < 1000) {
+            return Math.round(float_number * 1e6) / 1e6;
+        }
+        return (Math.round(float_number * 1e6) / 1e6).toLocaleString('en-En');
     }
 
     gTokenToBase = (asset) => {
@@ -185,7 +188,7 @@ export default class BalanceCard extends Component {
                                             {hideBalances ? 'PERCENTAGE' : 'HOLDINGS'}
                                         </SecondaryLabel>
                                         <PrimaryLabel>
-                                            {hideBalances ? `${this.getPercentage()} %` : this.parseNumber(asset.web3_balance, asset.base_decimals).toLocaleString('En-en')}
+                                            {hideBalances ? `${this.getPercentage()} %` : this.parseNumber(asset.web3_balance, asset.base_decimals)}
                                         </PrimaryLabel>
                                     </React.Fragment>
                                     
@@ -238,7 +241,7 @@ export default class BalanceCard extends Component {
                             <CardColumn>
                                 {asset.balance && (
                                     <PrimaryLabel>
-                                        {hideBalances ? `${this.getPercentage()} %` : this.parseNumber(asset.web3_balance, asset.base_decimals).toLocaleString('En-en')}
+                                        {hideBalances ? `${this.getPercentage()} %` : this.parseNumber(asset.web3_balance, asset.base_decimals)}
                                     </PrimaryLabel>
                                 )}
                                 
@@ -248,7 +251,7 @@ export default class BalanceCard extends Component {
                                     {asset.type === types.STKGRO ? (
                                         `$${this.stkGROPrice()} USD`
                                     ) : (
-                                        `$${Math.round(asset.base_price_usd * 100000) / 100000} USD`
+                                        `$${Math.round(asset.base_price_usd * 100) / 100} USD`
                                     )}
                                     
                                 </PrimaryLabel>

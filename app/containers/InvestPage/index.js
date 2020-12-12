@@ -72,7 +72,11 @@ const Title = styled.p`
 class InvestPage extends React.Component {
 
   componentDidMount = () => {
-    this.handleGetTokens();
+    const {tokens} = this.props; 
+
+    if (!tokens) {
+      this.handleGetTokens();
+    }
   }
 
   /* Parse the assets */

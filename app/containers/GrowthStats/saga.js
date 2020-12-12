@@ -81,6 +81,7 @@ const COMPOUND_MARKETS = (markets) => {
         id
         exchangeRate
         symbol
+        underlyingSymbol
         underlyingPrice
         underlyingPriceUSD
       }
@@ -183,6 +184,7 @@ const fetch_balances = async (available_assets, user_balances, web3, address) =>
 
       balances.push({
         name: balance.token.symbol,
+        type: asset.type,
         base: asset.base_asset,
         underlying: asset.native,
         gtoken_address: balance.token.id,
@@ -239,20 +241,35 @@ const get_prices = async (asset_balances, data, pairs_data, web3) => {
             const gTokenPrice = Number(asset.total_reserve) / Number(asset.total_supply);
 
             // Needs a router
-            if (asset.name === 'stkGRO') {
+            if (asset.type === types.STKGRO) {
               const GRO = pairs_data.pairs.find(pair => pair.token0.symbol === 'GRO');
               const ETH = pairs_data.pairs.find(pair => pair.token0.symbol === 'WETH');
 
               base_price_eth = GRO.token1Price * gTokenPrice;
               base_price_usd = ETH.token1Price * GRO.token1Price * gTokenPrice;
+            } 
 
-            } else {
+            if (asset.type === types.PMT || asset.type === types.GETH) {
+              market = markets.find(market => market.underlyingSymbol.toUpperCase() === asset.base.toUpperCase());
+              const baseAssetPrice = market ? market.underlyingPriceUSD : 0;
+              base_price_eth = market ? market.underlyingPrice : 0;
+              base_price_usd = gTokenPrice * baseAssetPrice
+            }  
+            
+            if (asset.type === types.TYPE1) {
               market = markets.find(market => market.symbol === asset.base);
               const baseAssetPrice = market ? market.exchangeRate * market.underlyingPriceUSD : 0;
               base_price_eth = market ? market.exchangeRate : 0;
               base_price_usd = gTokenPrice * baseAssetPrice
             }
             // Get the redeeming rate
+            
+            console.log({
+              ...asset,
+              base_price_eth,
+              base_price_usd,
+            })
+
             return {
               ...asset,
               base_price_eth,
@@ -429,21 +446,21 @@ function* getBalancesSaga(params) {
 
         // Fetch all balances
         if (balances_data) {
-        const asset_balances = yield fetch_balances(Network.available_assets, balances_data.userBalances, web3, address);
+          const asset_balances = yield fetch_balances(Network.available_assets, balances_data.userBalances, web3, address);
 
-        // Calculate the asset price
-        const balances_with_rate = yield get_prices(asset_balances, c_data, data, web3, address);
+          // Calculate the asset price
+          const balances_with_rate = yield get_prices(asset_balances, c_data, data, web3, address);
 
-        const balances = [
-          {
-            name: 'GRO',
-            balance: gro_balance,
-            price_eth: data.pairs[1].token0Price,
-          },
-          ...balances_with_rate
-        ]
+          const balances = [
+            {
+              name: 'GRO',
+              balance: gro_balance,
+              price_eth: data.pairs[1].token0Price,
+            },
+            ...balances_with_rate
+          ]
 
-        yield put(getBalancesSuccess(balances))
+          yield put(getBalancesSuccess(balances))
       }
     }
 
