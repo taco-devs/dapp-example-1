@@ -141,7 +141,6 @@ export default class BalanceCard extends Component {
        
         let std_balances = addGRO ? balances : gToken_balances;
         
-        console.log(std_balances)
 
         const portfolio_value = 
             std_balances
@@ -149,11 +148,10 @@ export default class BalanceCard extends Component {
                     // If not available balance
                     if (Number(curr.balance) <= 0 ) return acc; 
                     if (curr.name === 'GRO') {
-                        return acc + Number(curr.web3_balance / 1e18) / Number(curr.price_eth) * eth_price; 
+                        return acc + Number(curr.balance / 1e18) / Number(curr.price_eth) * eth_price; 
                     } 
                     // Balances
                     if (curr.balance > 0 && curr.base_price_usd) {
-                        console.log(curr, curr.web3_balance , asset.decimals, curr.base_price_usd)
                         return acc + Number(curr.web3_balance / asset.decimals * curr.base_price_usd);
                     }
                     return acc;

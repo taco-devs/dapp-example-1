@@ -132,16 +132,6 @@ export default class GroBalanceCard extends Component {
         if (!balances) return '-';
         if (balances.length < 1) return;
         const GRO = balances.find((balance) => balance.name === 'GRO');
-
-        /* const blacklisted_balance = [
-        'GRO'
-        ]
-
-        const gToken_balances = 
-            balances
-            .filter(balance => blacklisted_balance.indexOf(balance.name) < 0);
-
-        if (gToken_balances.length < 1) return '-'; */ 
         
         const portfolio_value = 
             balances
@@ -153,7 +143,7 @@ export default class GroBalanceCard extends Component {
                     } 
                     // Balances
                     if (curr.balance > 0 && curr.base_price_usd) {
-                    return acc + Number(curr.balance / 1e8 * curr.base_price_usd);
+                    return acc + Number(curr.web3_balance / curr.decimals * curr.base_price_usd);
                     }
                     return acc;
                 }, 0);            

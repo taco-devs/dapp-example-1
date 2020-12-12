@@ -69,16 +69,16 @@ class WalletDashboard extends React.Component {
 
     if (!balances) return '-';
     if (balances.length < 1) return;
+
     
     // Calculate price by usd
     const portfolio_value = 
         balances
           .reduce((acc, curr) => {
-             // If not available balance
-             if (Number(curr.web3_balance) <= 0 ) return acc; 
+
              // If it GRO
              if (addGRO && curr.name === 'GRO') {
-               return acc + Number(curr.web3_balance / 1e18) / Number(curr.price_eth) * eth_price; 
+               return acc + Number(curr.balance / 1e18) / Number(curr.price_eth) * eth_price; 
              } 
              if (curr.name === 'stkGRO') {
                const ratio = curr.total_reserve / curr.total_supply;
