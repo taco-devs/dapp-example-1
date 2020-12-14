@@ -222,6 +222,7 @@ export default class ActionDrawer extends Component {
     underlying_conversion: null,
     underlying_allowance: null,
     asset_allowance: null,
+    bridge_allowance: null,
   }
 
     componentDidMount = () => {
@@ -256,6 +257,7 @@ export default class ActionDrawer extends Component {
       let total_reserve;  
       let total_reserve_underlying;
       let g_balance;
+      let bridge_allowance;
       
       if (GContractInstance) {
         total_supply    = await GContractInstance.methods.totalSupply().call();
@@ -264,7 +266,7 @@ export default class ActionDrawer extends Component {
         total_reserve   = await GContractInstance.methods.totalReserve().call();
         g_balance       = await GContractInstance.methods.balanceOf(address).call(); 
 
-        if (asset.type === types.TYPE1) {
+        if (asset.type === types.TYPE1 || asset.type === types.TYPE_ETH) {
           exchange_rate   = await GContractInstance.methods.exchangeRate().call();
           total_reserve_underlying = await GContractInstance.methods.totalReserveUnderlying().call();
         }
@@ -274,19 +276,38 @@ export default class ActionDrawer extends Component {
       let underlying_allowance;
   
       if (UnderlyingContractInstance) {
-        underlying_balance = await UnderlyingContractInstance.methods.balanceOf(address).call(); 
-        underlying_allowance = await UnderlyingContractInstance.methods.allowance(address, asset.gtoken_address).call();
+
+        if (asset.type === types.TYPE_ETH) {
+          underlying_balance = await web3.eth.getBalance(address);
+          underlying_allowance = 1000000 * 1e18;
+          bridge_allowance = await GContractInstance.methods.allowance(address, asset.bridge_address).call();
+        } else {
+          underlying_balance = await UnderlyingContractInstance.methods.balanceOf(address).call(); 
+          underlying_allowance = await UnderlyingContractInstance.methods.allowance(address, asset.gtoken_address).call();
+        }
+        
       }
       
       let asset_balance;
       let asset_allowance;
   
       if (BaseContractInstance) {
-        asset_balance = await BaseContractInstance.methods.balanceOf(address).call();
-        asset_allowance = await BaseContractInstance.methods.allowance(address, asset.gtoken_address).call();
+        if (asset.type === types.GETH) {
+          asset_balance = await web3.eth.getBalance(address);
+          asset_allowance = 1000000 * 1e18;
+          bridge_allowance = await GContractInstance.methods.allowance(address, asset.bridge_address).call();
+        } else {
+          asset_balance = await BaseContractInstance.methods.balanceOf(address).call();
+          asset_allowance = await BaseContractInstance.methods.allowance(address, asset.gtoken_address).call();
+        }
       }
   
-      this.setState({total_supply, deposit_fee, withdrawal_fee, exchange_rate, total_reserve, total_reserve_underlying, underlying_balance, asset_balance, g_balance, isLoading: false, underlying_allowance, asset_allowance});
+      this.setState({
+        total_supply, deposit_fee, withdrawal_fee, exchange_rate, total_reserve, 
+        total_reserve_underlying, underlying_balance, 
+        asset_balance, g_balance, isLoading: false, 
+        underlying_allowance, asset_allowance, bridge_allowance
+      });
     }
   
     toggleModal = (modal_type) => {
@@ -360,14 +381,22 @@ export default class ActionDrawer extends Component {
   
     parseNumber = (number, decimals) => {
       const float_number = number / decimals;
-      return Math.round(float_number * 100) / 100;
+      
+      if (float_number < 1000) {
+        return Math.round(float_number * 1e6) / 1e6;
+      } else {
+        return (Math.round(float_number * 100) / 100).toLocaleString('en-En');
+      }
+      
     }
   
     handleDeposit = async () => {
       const {
         asset, web3, address,
         mintGTokenFromCToken,
+        mintGTokenFromBridge,
         mintGTokenFromUnderlying,
+        mintGTokenFromUnderlyingBridge
       } = this.props;
   
       const { is_native, value_base, value_native, total_native, total_base } = this.state;
@@ -378,46 +407,94 @@ export default class ActionDrawer extends Component {
       // Handle depending the asset
       if (is_native) {
   
-        const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+        let GContractInstance;
         const _cost = this.getWei(value_native, asset.underlying_decimals);
-        mintGTokenFromUnderlying({
-          GContractInstance, 
-          _cost, 
-          address,
-          web3,
-          asset: {
-            from: asset.native,
-            to: asset.g_asset,
-            sending: _cost,
-            receiving: total_native,
-            fromDecimals: asset.underlying_decimals,
-            toDecimals: asset.base_decimals,
-            fromImage: asset.native_img_url,
-            toImage: asset.gtoken_img_url,
-          },
-          toggle: this.toggleModal
-        })
-  
+
+          if (asset.type === types.TYPE_ETH) {
+              GContractInstance = await new web3.eth.Contract(asset.bridge_abi, asset.bridge_address);
+              mintGTokenFromUnderlyingBridge({
+                  GContractInstance, 
+                  _cost, 
+                  growthToken: asset.gtoken_address,
+                  address,
+                  web3,
+                  asset: {
+                  from: asset.native,
+                  to: asset.g_asset,
+                  sending: _cost,
+                  receiving: total_native,
+                  fromDecimals: asset.underlying_decimals,
+                  toDecimals: asset.base_decimals,
+                  fromImage: asset.native_img_url,
+                  toImage: asset.gtoken_img_url,
+                  },
+                  toggle: this.toggleModal
+              })
+          } else {
+              GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+              mintGTokenFromUnderlying({
+                  GContractInstance, 
+                  _cost, 
+                  address,
+                  web3,
+                  asset: {
+                  from: asset.native,
+                  to: asset.g_asset,
+                  sending: _cost,
+                  receiving: total_native,
+                  fromDecimals: asset.underlying_decimals,
+                  toDecimals: asset.base_decimals,
+                  fromImage: asset.native_img_url,
+                  toImage: asset.gtoken_img_url,
+                  },
+                  toggle: this.toggleModal
+              })
+          }          
+
       } else {
-        const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+        let GContractInstance;
         const _cost = this.getWei(value_base, asset.base_decimals);
-        mintGTokenFromCToken({
-          GContractInstance, 
-          _cost, 
-          address,
-          web3,
-          asset: {
-            from: asset.base_asset,
-            to: asset.g_asset,
-            sending: _cost,
-            receiving: total_base,
-            fromDecimals: asset.base_decimals,
-            toDecimals: asset.base_decimals,
-            fromImage: asset.img_url,
-            toImage: asset.gtoken_img_url,
-          },
-          toggle: this.toggleModal
-        })
+
+        if (asset.type === types.GETH) {
+            GContractInstance = await new web3.eth.Contract(asset.bridge_abi, asset.bridge_address);
+            mintGTokenFromBridge({
+                GContractInstance, 
+                _cost,
+                growthToken: asset.gtoken_address,
+                address,
+                web3,
+                asset: {
+                    from: asset.base_asset ,
+                    to: asset.g_asset,
+                    sending: _cost,
+                    receiving: total_base,
+                    fromDecimals: asset.base_decimals,
+                    toDecimals: asset.base_decimals,
+                    fromImage: asset.img_url,
+                    toImage: asset.gtoken_img_url,
+                },
+                toggle: this.toggleModal
+            }) 
+        } else {
+            GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+            mintGTokenFromCToken({
+                GContractInstance, 
+                _cost, 
+                address,
+                web3,
+                asset: {
+                from: asset.base_asset ,
+                to: asset.g_asset,
+                sending: _cost,
+                receiving: total_base,
+                fromDecimals: asset.base_decimals,
+                toDecimals: asset.base_decimals,
+                fromImage: asset.img_url,
+                toImage: asset.gtoken_img_url,
+                },
+                toggle: this.toggleModal
+            }) 
+        }
       }
     }
   
@@ -427,6 +504,8 @@ export default class ActionDrawer extends Component {
         asset, web3, address,
         redeemGTokenToCToken,
         redeemGTokenToUnderlying,
+        redeemGTokenToBridge,
+        redeemGTokenToUnderlyingBridge
       } = this.props;
   
       const { is_native, value_redeem, total_native_cost_redeem, total_base_cost_redeem, total_native_redeem, total_base_redeem } = this.state;
@@ -436,45 +515,96 @@ export default class ActionDrawer extends Component {
   
       // Handle depending the asset
       if (is_native) {
-  
-        const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
-        redeemGTokenToUnderlying({
-          GContractInstance, 
-          _grossShares: total_native_cost_redeem,
-          address,
-          web3,
-          asset: {
-            from: asset.g_asset,
-            to: asset.native,
-            sending: total_native_cost_redeem,
-            receiving: total_native_redeem,
-            fromDecimals: asset.base_decimals,
-            toDecimals: asset.underlying_decimals,
-            fromImage: asset.gtoken_img_url,
-            toImage: asset.native_img_url,
-          },
-          toggle: this.toggleModal
-        })
-  
-      } else {
-        const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
-        redeemGTokenToCToken({
-          GContractInstance, 
-          _grossShares: total_native_cost_redeem,
-          address,
-          web3,
-          asset: {
-            from: asset.g_asset,
-            to: asset.base_asset,
-            sending: total_native_cost_redeem,
-            receiving: total_base_redeem,
-            fromDecimals: asset.base_decimals,
-            toDecimals: asset.base_decimals,
-            fromImage: asset.gtoken_img_url,
-            toImage: asset.img_url,
-          },
-          toggle: this.toggleModal
-        })
+        let GContractInstance;
+        
+        if (asset.type === types.TYPE_ETH) {
+            GContractInstance = await new web3.eth.Contract(asset.bridge_abi, asset.bridge_address);
+            redeemGTokenToUnderlyingBridge({
+                GContractInstance, 
+                _grossShares: this.getWei(value_redeem, asset.base_decimals),
+                growthToken: asset.gtoken_address,
+                address,
+                web3,
+                asset: {
+                    from: asset.g_asset,
+                    to: asset.native,
+                    sending: total_native_cost_redeem,
+                    receiving: total_native_redeem,
+                    fromDecimals: asset.base_decimals,
+                    toDecimals: asset.underlying_decimals,
+                    fromImage: asset.gtoken_img_url,
+                    toImage: asset.native_img_url,
+                },
+                toggle: this.toggleModal
+            })
+
+        } else {
+            GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+            redeemGTokenToUnderlying({
+                GContractInstance, 
+                _grossShares: this.getWei(value_redeem, asset.base_decimals),
+                address,
+                web3,
+                asset: {
+                    from: asset.g_asset,
+                    to: asset.native,
+                    sending: total_native_cost_redeem,
+                    receiving: total_native_redeem,
+                    fromDecimals: asset.base_decimals,
+                    toDecimals: asset.underlying_decimals,
+                    fromImage: asset.gtoken_img_url,
+                    toImage: asset.native_img_url,
+                },
+                toggle: this.toggleModal
+            })
+        }
+        
+
+
+    } else {
+
+        let GContractInstance;
+
+        if (asset.type === types.GETH) {
+            GContractInstance = await new web3.eth.Contract(asset.bridge_abi, asset.bridge_address);
+            redeemGTokenToBridge({
+                GContractInstance, 
+                _grossShares: this.getWei(value_redeem, asset.base_decimals),
+                growthToken: asset.gtoken_address,
+                address,
+                web3,
+                asset: {
+                    from: asset.g_asset,
+                    to: asset.base_asset,
+                    sending: total_native_cost_redeem,
+                    receiving: total_base_redeem,
+                    fromDecimals: asset.base_decimals,
+                    toDecimals: asset.base_decimals,
+                    fromImage: asset.gtoken_img_url,
+                    toImage: asset.img_url,
+                },
+                toggle: this.toggleModal
+            })
+        } else {
+            GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+            redeemGTokenToCToken({
+                GContractInstance, 
+                _grossShares: this.getWei(value_redeem, asset.base_decimals),
+                address,
+                web3,
+                asset: {
+                    from: asset.g_asset,
+                    to: asset.base_asset,
+                    sending: total_native_cost_redeem,
+                    receiving: total_base_redeem,
+                    fromDecimals: asset.base_decimals,
+                    toDecimals: asset.base_decimals,
+                    fromImage: asset.gtoken_img_url,
+                    toImage: asset.img_url,
+                },
+                toggle: this.toggleModal
+            })
+        }   
       }
     }
     
@@ -633,7 +763,7 @@ export default class ActionDrawer extends Component {
                           handleChange={this.handleChange}
                           getWei={this.getWei}
                         />
-                        {asset.type === types.TYPE1 && (
+                        {(asset.type === types.TYPE1 || asset.type === types.TYPE_ETH) && (
                           <AssetTypeToggle 
                             {...this.props}
                             {...this.state}
@@ -650,7 +780,7 @@ export default class ActionDrawer extends Component {
                                   <SwapLogo src={require(`images/tokens/${currentSwap.fromImage}`)}/>
                                 </SwapColumn>
                                 <SwapColumn flex="3">
-                                  <StyledText size="1.5em">{Math.round(currentSwap.sending / currentSwap.fromDecimals * 100) / 100}</StyledText>
+                                  <StyledText size="1em">{this.parseNumber(currentSwap.sending, currentSwap.fromDecimals)}</StyledText>
                                   <StyledText>{currentSwap.from}</StyledText>
                                 </SwapColumn>
                               </SwapSection>
@@ -662,7 +792,7 @@ export default class ActionDrawer extends Component {
                                   <SwapLogo src={require(`images/tokens/${currentSwap.toImage}`)}/>
                                 </SwapColumn>
                                 <SwapColumn flex="3">
-                                  <StyledText size="1.5em">{Math.round(currentSwap.receiving / currentSwap.toDecimals * 100) / 100}</StyledText>
+                                  <StyledText size="1em">{this.parseNumber(currentSwap.receiving, currentSwap.toDecimals)}</StyledText>
                                   <StyledText>{currentSwap.to}</StyledText>
                                 </SwapColumn>
                               </SwapSection>
@@ -729,10 +859,10 @@ export default class ActionDrawer extends Component {
                                 </SummaryRow>
                               </SummaryColumn>
                               <SummaryColumn align="flex-end" flex="3">
-                                {modal_type === 'mint'&& is_native && <PrimaryLabel spacing="1px">{total_native ? this.parseNumber(total_native, asset.base_decimals).toLocaleString('en-En') : '-'} {asset.g_asset}</PrimaryLabel>}
-                                {modal_type === 'mint'&& !is_native && <PrimaryLabel spacing="1px">{total_base ? this.parseNumber(total_base, asset.base_decimals).toLocaleString('en-En') : '-'} {asset.g_asset}</PrimaryLabel>}
-                                {modal_type === 'redeem'&& is_native && <PrimaryLabel spacing="1px">{total_native_redeem ? this.parseNumber(total_native_redeem, asset.underlying_decimals).toLocaleString('en-En') : '-'} {asset.native}</PrimaryLabel>}
-                                {modal_type === 'redeem'&& !is_native && <PrimaryLabel spacing="1px">{total_base_redeem ? this.parseNumber(total_base_redeem, asset.base_decimals).toLocaleString('en-En') : '-'} {asset.base_asset}</PrimaryLabel>}
+                                {modal_type === 'mint'&& is_native && <PrimaryLabel spacing="1px">{total_native ? this.parseNumber(total_native, asset.base_decimals) : '-'} {asset.g_asset}</PrimaryLabel>}
+                                {modal_type === 'mint'&& !is_native && <PrimaryLabel spacing="1px">{total_base ? this.parseNumber(total_base, asset.base_decimals) : '-'} {asset.g_asset}</PrimaryLabel>}
+                                {modal_type === 'redeem'&& is_native && <PrimaryLabel spacing="1px">{total_native_redeem ? this.parseNumber(total_native_redeem, asset.underlying_decimals) : '-'} {asset.native}</PrimaryLabel>}
+                                {modal_type === 'redeem'&& !is_native && <PrimaryLabel spacing="1px">{total_base_redeem ? this.parseNumber(total_base_redeem, asset.base_decimals) : '-'} {asset.base_asset}</PrimaryLabel>}
                               </SummaryColumn>
                             </SummaryRow>
                             <SummaryRow justify="center" flex="2">
@@ -745,7 +875,7 @@ export default class ActionDrawer extends Component {
                                     onClick={() => this.handleDeposit()}
                                     disabled={this.isDisabled()}
                                   >
-                                    {this.isDisabled() ? 'NOT ENOUGH BALANCE' : asset.type === types.STKGRO ? 'CONFIRM MINT' : 'CONFIRM STAKE'}
+                                    {this.isDisabled() ? 'NOT ENOUGH BALANCE' : asset.type === types.STKGRO ? 'CONFIRM STAKE' : 'CONFIRM MINT'}
                                   </ActionConfirmButton>
                                 ) : (
                                   <ApproveContainer 
@@ -763,7 +893,7 @@ export default class ActionDrawer extends Component {
                                 onClick={() => this.handleRedeem()}
                                 disabled={this.isDisabled()}
                               >
-                                {this.isDisabled() ? 'NOT ENOUGH BALANCE' :  asset.type === types.STKGRO ? 'CONFIRM REDEEM' : 'CONFIRM UNSTAKE'}
+                                {this.isDisabled() ? 'NOT ENOUGH BALANCE' :  asset.type === types.STKGRO ? 'CONFIRM UNSTAKE' : 'CONFIRM REDEEM'}
                               </ActionConfirmButton>
                             )}
                             </SummaryRow>

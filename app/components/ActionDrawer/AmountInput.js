@@ -229,15 +229,23 @@ export default class AmountInputContainer extends Component {
         
         if (modal_type === 'mint') {
           if (is_native) {
-            if ((Number(underlying_balance) / asset.underlying_decimals) < 0.01) return;
-            const value_native = ((underlying_balance) / asset.underlying_decimals);
+            let balance = asset.type === types.TYPE_ETH ? underlying_balance - (0.05 * 1e18) : underlying_balance;
+            if ((Number(balance) / asset.underlying_decimals) < 0.01) return;
+            const value_native = ((balance) / asset.underlying_decimals);
             handleChange({value_native});
             this.handleInputChange(value_native)
           } else {
-            if ((Number(asset_balance) / asset.base_decimals) < 0.01) return;
-            const value_base = asset_balance / asset.base_decimals;
+
+            // If GETH remove 0.05 safe margin for gas
+            let balance = asset.type === types.GETH ? asset_balance - (0.05 * 1e18) : asset_balance;
+            const min_decimals = asset.ui_decimals ? 0.0001 : 0.01;
+            const has_low_amount = (Number(balance) / asset.base_decimals) < min_decimals;
+            if (has_low_amount) return;
+            const value_base = balance / asset.base_decimals;
+
             handleChange({value_base});
             this.handleInputChange(value_base)
+
           }
         }
     
@@ -246,6 +254,7 @@ export default class AmountInputContainer extends Component {
           const value_redeem = g_balance / asset.base_decimals;
           handleChange({value_redeem});
           this.calculateBurningTotal(value_redeem);
+          
         }
       }
 
