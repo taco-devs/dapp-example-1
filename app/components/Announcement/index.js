@@ -14,16 +14,13 @@ const AnnouncementContainer = styled.div`
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  background-color: #21262b;
+  background-color: rgb(0,0,0,0.25);
   height: 100%;
   width: 100%;
   border-radius: 5px;
   margin: 0.5em 0 0 0;
   padding: 0 1em 0 1em;
   color: white;
-  -webkit-box-shadow: 0px 0px 2.5px 2.5px rgba(0,0,149,0.75);
-  -moz-box-shadow: 0px 0px 2.5px 2.5px rgba(0,211,149,0.75);
-  box-shadow: 0px 0px 2.5px 2.5px rgba(0,211,149,0.75);
 `
 
 const StyledLink = styled.a`
@@ -34,11 +31,26 @@ const StyledLink = styled.a`
   }
 `
 
+const StyledImage = styled.img`
+  height: 30px;
+  width: auto;
+  margin: 0 1em 0 1em;
+`
+
 class Announcement extends React.Component {
   render() {
     return (
       <AnnouncementContainer>
-        <p>Growth DeFi is currently undergoing a full audit by <StyledLink href="https://consensys.net/diligence/" target="_blank">Consensys Dilligence</StyledLink>, and also running a Bug Bounty, check the details <StyledLink href="https://growthdefi.medium.com/gtokens-bug-bounty-up-to-100-000-caa914fb765b" target="_blank">here</StyledLink>.</p>
+        <p>
+          Growth DeFi was <span style={{color: '#00d395'}}>successfully</span> audited by 
+          <StyledLink href="https://consensys.net/diligence/" target="_blank">
+            <StyledImage src="https://consensys.net/diligence/images/logo/logo.svg" />
+          </StyledLink>
+          read the full report{' '}
+          <StyledLink href="https://consensys.net/diligence/audits/2020/12/growth-defi-v1/" target="_blank">
+            here
+          </StyledLink>.
+        </p>
       </AnnouncementContainer>
     )
   }
