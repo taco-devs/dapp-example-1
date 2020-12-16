@@ -227,7 +227,7 @@ export default class GroBalanceCard extends Component {
                                 direction="row"
                             >
                                 <ActionButton
-                                    href="https://mooniswap.info/pair/0x5a0124b5f8af341d9c1f0faab194b438c8d27468"
+                                    href="https://info.uniswap.org/pair/0x208Bd5Dc470EbA21571ddB439801A614ed346376"
                                     target="_blank"
                                 >
                                     GET GRO
