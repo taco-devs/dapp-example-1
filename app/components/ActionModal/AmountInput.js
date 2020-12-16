@@ -158,7 +158,7 @@ export default class AmountInpunt extends Component {
 
     setMax = async () => {
         const { 
-            handleMultiChange, 
+            handleMultiChange, getWei,
             asset,
             modal_type, is_native, underlying_balance, asset_balance, g_balance, web3,
          } = this.props;
@@ -176,7 +176,7 @@ export default class AmountInpunt extends Component {
             const min_decimals = asset.ui_decimals ? 0.0001 : 0.01;
             const has_low_amount = (Number(balance) / asset.base_decimals) < min_decimals;
             if (has_low_amount) return;
-            const value_base = balance / asset.base_decimals;
+            const value_base = getWei(balance, asset.base_decimals);
 
             
 

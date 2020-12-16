@@ -174,7 +174,7 @@ const customStyles = {
     padding: 0,
     borderRadius: '5px',
     width: '500px',
-    height: '35vh',
+    height: '350px',
   },
   overlay: {
     backgroundColor: 'rgb(0,0,0, 0.50)'
