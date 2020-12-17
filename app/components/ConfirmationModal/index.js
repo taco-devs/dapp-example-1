@@ -192,8 +192,6 @@ class ConfirmationModal extends React.Component {
     if (float_number >= 1000 && float_number < 100000) rounding = 100;
     if (float_number >= 100000) rounding = 1;
 
-    console.log(Math.round(float_number * rounding) / rounding)
-
     return Math.round(float_number * rounding) / rounding;
   }
 

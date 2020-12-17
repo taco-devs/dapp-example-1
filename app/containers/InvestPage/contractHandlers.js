@@ -199,7 +199,6 @@ export const deposit_underlying = async (ContractInstance, connectionStatusChann
 
 export const bridge_deposit_underlying = async (ContractInstance, connectionStatusChannel, _cost, growthToken, address, asset, web3, functions) => {
     let stored_hash;
-    console.log({ContractInstance, connectionStatusChannel, _cost, growthToken, address, asset, web3, functions})
     const {gas, gasPrice} = await getGasInfo(ContractInstance.methods.depositUnderlying, [growthToken], address, web3, _cost);
 
     return ContractInstance.methods.depositUnderlying(growthToken).send({ from: address, gas, gasPrice, value: _cost})
@@ -316,7 +315,6 @@ export const withdraw = async (ContractInstance, connectionStatusChannel, _cost,
 
 export const withdraw_bridge = async (ContractInstance, connectionStatusChannel, _grossShares, growthToken, address, asset, web3, functions) => {
     let stored_hash;
-    console.log({ContractInstance, connectionStatusChannel, _grossShares, growthToken, address, asset, web3, functions});
     const {gas, gasPrice} = await getGasInfo(ContractInstance.methods.withdraw, [growthToken, _grossShares], address, web3);
     return ContractInstance.methods.withdraw(growthToken, _grossShares).send({ from: address, gas, gasPrice})
       .on("transactionHash", (hash) => {

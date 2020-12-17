@@ -358,6 +358,7 @@ function* redeemGTokenToCTokenSaga(params) {
       });
 
   } catch (error) {
+    console.log(error)
     const jsonError = yield error.response ? error.response.json() : error;
     yield put(dismissSwap());
     yield toggle();
