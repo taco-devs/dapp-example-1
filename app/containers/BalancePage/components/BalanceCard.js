@@ -263,7 +263,7 @@ export default class BalanceCard extends Component {
                                     <PrimaryLabel>***** USD</PrimaryLabel>
                                 ) : (
                                     <PrimaryLabel>{asset.type === types.STKGRO ? (
-                                        `$${(Math.round(this.parseNumber(asset.web3_balance, asset.base_decimals) * this.stkGROPrice() * 100) / 100).toLocaleString('En-en')} USD`
+                                        `$${(Math.round((asset.web3_balance / asset.base_decimals) * this.stkGROPrice() * 100) / 100).toLocaleString('En-en')} USD`
                                     ) : (
                                         `$${(Math.round(this.parseNumber(asset.web3_balance, asset.base_decimals) * asset.base_price_usd * 100) / 100).toLocaleString('En-en')} USD`
                                     )}</PrimaryLabel>
