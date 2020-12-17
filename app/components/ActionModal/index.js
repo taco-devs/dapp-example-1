@@ -8,7 +8,6 @@ import React from 'react';
 import Modal from 'react-modal';
 import PropTypes from 'prop-types';
 
-
 import { FormattedMessage } from 'react-intl';
 import debounce from 'lodash.debounce';
 import messages from './messages';
@@ -271,7 +270,6 @@ class ActionModal extends React.Component {
       return value_number * 1e8;
     }
     if (decimals === 1e6) {
-      console.log(value_number)
       const value = value_number.toString();
       return web3.utils.toWei(value, 'mwei');
     }
@@ -301,9 +299,9 @@ class ActionModal extends React.Component {
 
       if (modal_type === 'mint') {
         if (is_native) {
-          return (underlying_balance / asset.underlying_decimals).toFixed(2);
+          return BNtoNumber(underlying_balance, asset.underlying_decimals);
         } else {
-          return (asset_balance / 1e8).toFixed(2);
+          return BNtoNumber(asset_balance, asset.base_decimals);
         }
       }
 

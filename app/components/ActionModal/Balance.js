@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components'; 
 import Loader from 'react-loader-spinner';
+import { numberToBN, BNtoNumber } from 'utils/utilities';
 
 const BalanceLabel = styled.b`
   color: #161d6b;

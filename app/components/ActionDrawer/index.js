@@ -14,6 +14,7 @@ import types from 'contracts/token_types.json';
 import AssetTypeToggle from './AssetTypeToggle';
 import MobileTabs from './MobileTabs';
 import AmountInput from './AmountInput';
+import { numberToBN, BNtoNumber } from 'utils/utilities';
 
 const Container = styled.div`
   display: flex;
@@ -408,7 +409,7 @@ export default class ActionDrawer extends Component {
       if (is_native) {
   
         let GContractInstance;
-        const _cost = this.getWei(value_native, asset.underlying_decimals);
+        const _cost = numberToBN(value_native, asset.underlying_decimals);
 
           if (asset.type === types.TYPE_ETH) {
               GContractInstance = await new web3.eth.Contract(asset.bridge_abi, asset.bridge_address);
@@ -453,7 +454,7 @@ export default class ActionDrawer extends Component {
 
       } else {
         let GContractInstance;
-        const _cost = this.getWei(value_base, asset.base_decimals);
+        const _cost = numberToBN(value_base, asset.base_decimals);
 
         if (asset.type === types.GETH) {
             GContractInstance = await new web3.eth.Contract(asset.bridge_abi, asset.bridge_address);
@@ -521,7 +522,7 @@ export default class ActionDrawer extends Component {
             GContractInstance = await new web3.eth.Contract(asset.bridge_abi, asset.bridge_address);
             redeemGTokenToUnderlyingBridge({
                 GContractInstance, 
-                _grossShares: this.getWei(value_redeem, asset.base_decimals),
+                _grossShares: numberToBN(value_redeem, asset.base_decimals),
                 growthToken: asset.gtoken_address,
                 address,
                 web3,
@@ -542,7 +543,7 @@ export default class ActionDrawer extends Component {
             GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
             redeemGTokenToUnderlying({
                 GContractInstance, 
-                _grossShares: this.getWei(value_redeem, asset.base_decimals),
+                _grossShares: numberToBN(value_redeem, asset.base_decimals),
                 address,
                 web3,
                 asset: {
@@ -569,7 +570,7 @@ export default class ActionDrawer extends Component {
             GContractInstance = await new web3.eth.Contract(asset.bridge_abi, asset.bridge_address);
             redeemGTokenToBridge({
                 GContractInstance, 
-                _grossShares: this.getWei(value_redeem, asset.base_decimals),
+                _grossShares: numberToBN(value_redeem, asset.base_decimals),
                 growthToken: asset.gtoken_address,
                 address,
                 web3,
@@ -589,7 +590,7 @@ export default class ActionDrawer extends Component {
             GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
             redeemGTokenToCToken({
                 GContractInstance, 
-                _grossShares: this.getWei(value_redeem, asset.base_decimals),
+                _grossShares: numberToBN(value_redeem, asset.base_decimals),
                 address,
                 web3,
                 asset: {

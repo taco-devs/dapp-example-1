@@ -81,8 +81,6 @@ export const deposit = async (ContractInstance, connectionStatusChannel, _cost, 
 export const bridge_deposit = async (ContractInstance, connectionStatusChannel, _cost, growthToken, address, asset, web3, functions) => {
     let stored_hash;
 
-    console.log({ContractInstance, connectionStatusChannel, _cost, growthToken, address, asset, web3, functions});
-
     const {gas, gasPrice} = await getGasInfo(ContractInstance.methods.deposit, [growthToken], address, web3, _cost);
   
     return ContractInstance.methods.deposit(growthToken).send({ from: address, gasPrice, gas, value: _cost})

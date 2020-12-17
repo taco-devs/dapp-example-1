@@ -24,3 +24,25 @@ export function getChainData(chainId) {
   
     return chainData;
   }
+
+
+function RoundNum(num, length) { 
+  var number = Math.round(num * Math.pow(10, length)) / Math.pow(10, length);
+  return number;
+}
+
+export function numberToBN(value_number, decimals) {
+  return (value_number * decimals).toString();
+}
+
+export function BNtoNumber(value_number, decimals) {
+  if (decimals === 1e18) {
+    return RoundNum(value_number / decimals, 18)
+  }
+  if (decimals === 1e8) {
+    return RoundNum(value_number / decimals, 8)
+  }
+  if (decimals === 1e6) {
+    return RoundNum(value_number / decimals, 6)
+  }
+}

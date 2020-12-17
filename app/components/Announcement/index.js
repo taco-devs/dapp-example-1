@@ -21,6 +21,7 @@ const AnnouncementContainer = styled.div`
   margin: 0.5em 0 0 0;
   padding: 0 1em 0 1em;
   color: white;
+  text-align: center;
 `
 
 const StyledLink = styled.a`
@@ -46,10 +47,10 @@ class Announcement extends React.Component {
           <StyledLink href="https://consensys.net/diligence/" target="_blank">
             <StyledImage src="https://consensys.net/diligence/images/logo/logo.svg" />
           </StyledLink>
-          read the full report{' '}
+          Read the full report{' '}
           <StyledLink href="https://consensys.net/diligence/audits/2020/12/growth-defi-v1/" target="_blank">
             here
-          </StyledLink>.
+          </StyledLink>
         </p>
       </AnnouncementContainer>
     )

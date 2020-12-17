@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import Loader from 'react-loader-spinner';
 import debounce from 'lodash.debounce';
 import types from 'contracts/token_types.json';
+import { numberToBN, BNtoNumber } from 'utils/utilities';
+
 
 const InputContainer = styled.div`
   display: flex; 
@@ -120,7 +122,7 @@ export default class AmountInputContainer extends Component {
         // Calculate the total to mint
         if (modal_type === 'mint') {
           if (is_native) {
-            const netShares = getWei(value, asset.underlying_decimals);
+            const netShares = numberToBN(value, asset.underlying_decimals);
             const underlying_conversion = await GContractInstance.methods.calcCostFromUnderlyingCost(netShares, exchange_rate).call();
             const result = await GContractInstance.methods.calcDepositSharesFromCost(underlying_conversion, total_reserve, total_supply, deposit_fee).call();
             const {_netShares, _feeShares} = result;
@@ -132,7 +134,7 @@ export default class AmountInputContainer extends Component {
           } else {
             // CTokens only have 8 decimals 
             // NOTE: Standarized to gwei by converting it to 1e9 because .toWei() doesn't handle 1e8
-            const _cost = getWei(value, asset.base_decimals)
+            const _cost = numberToBN(value, asset.base_decimals)
             const result = await GContractInstance.methods.calcDepositSharesFromCost(_cost, total_reserve, total_supply, deposit_fee).call();
             const {_netShares, _feeShares} = result;
             handleChange({
@@ -155,7 +157,7 @@ export default class AmountInputContainer extends Component {
           })
         }
     
-        const netShares = getWei(value, asset.base_decimals);
+        const netShares = numberToBN(value, asset.base_decimals);
       
         const GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
         const result = await GContractInstance.methods.calcWithdrawalCostFromShares(netShares, total_reserve, total_supply, withdrawal_fee).call();
@@ -231,7 +233,7 @@ export default class AmountInputContainer extends Component {
           if (is_native) {
             let balance = asset.type === types.TYPE_ETH ? underlying_balance - (0.05 * 1e18) : underlying_balance;
             if ((Number(balance) / asset.underlying_decimals) < 0.01) return;
-            const value_native = ((balance) / asset.underlying_decimals);
+            const value_native = BNtoNumber(balance, asset.underlying_decimals);
             handleChange({value_native});
             this.handleInputChange(value_native)
           } else {
@@ -241,7 +243,7 @@ export default class AmountInputContainer extends Component {
             const min_decimals = asset.ui_decimals ? 0.0001 : 0.01;
             const has_low_amount = (Number(balance) / asset.base_decimals) < min_decimals;
             if (has_low_amount) return;
-            const value_base = balance / asset.base_decimals;
+            const value_base = BNtoNumber(balance, asset.base_decimals);
 
             handleChange({value_base});
             this.handleInputChange(value_base)
@@ -251,7 +253,7 @@ export default class AmountInputContainer extends Component {
     
         if (modal_type === 'redeem') {
           if ((Number(g_balance) / asset.base_decimals) < 0.01) return;
-          const value_redeem = g_balance / asset.base_decimals;
+          const value_redeem = BNtoNumber(g_balance, asset.base_decimals);
           handleChange({value_redeem});
           this.calculateBurningTotal(value_redeem);
           
