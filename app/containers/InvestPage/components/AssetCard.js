@@ -277,7 +277,7 @@ export default class AssetCard extends Component {
                 const mathFactor = Math.pow(priceDelta, 1 / 30);
                 const apy = (mathFactor - 1) * 365 * 100;
 
-                return `${Math.round(apy * 100) / 100} % AVG`;
+                return `${Math.round(apy * 100) / 100} 30D % AVG`;
             }
 
             return `${Math.round(apy * 100) / 100} %  30D AVG`;
