@@ -35,6 +35,56 @@ const StyledLogo = styled.img`
   }
 `
 
+const Row = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`
+
+const Column = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin: ${props => props.margin || 0};
+  cursor: pointer;
+  color: white;
+  height: 40px;
+  justify-content: center;
+
+  &:hover {
+    color: #00d395;
+    ${props => props.isSelector && `
+        border-bottom-style: solid;
+        border-bottom-width: 5px;
+        border-bottom-color: #00d395;
+    `}
+  }
+
+  ${props => props.width || '100%'}
+  ${props => props.isSelector && (
+    `
+      ${props.isSelected && `
+        border-bottom-style: solid;
+        border-bottom-width: 5px;
+        border-bottom-color: #00d395;
+      `}
+    `
+  )}
+`
+
+const Text = styled.a`
+  text-decoration: none;
+  font-size: 1em;
+  height: 25px;
+  margin: 0.5em 0 0 0;
+  color: white;
+
+  &:hover {
+    color: #00d395;
+  }
+
+`
+
+
 const LogoContainer = styled.a`
 
 `
@@ -47,12 +97,23 @@ class Header extends React.Component {
     const {address} = this.props;
     return (
       <StyledHeader>
-          <LogoContainer href="https://growthdefi.com" target='_blank'>
-            <StyledLogo 
-              src={require('images/full_logo.png')}
-              isMobile={isMobile}
-            />
-          </LogoContainer>
+          <Row>
+            <LogoContainer href="https://growthdefi.com" target='_blank'>
+              <StyledLogo 
+                src={require('images/full_logo.png')}
+                isMobile={isMobile}
+              />
+            </LogoContainer>
+            {!isMobile && (
+              <Column 
+                isSelector
+                margin="0 1em 0 1em"
+              >
+                <Text href="https://governance.growthdefi.com" target="_blank">Governance</Text>
+              </Column>
+            )}
+          </Row>
+          
           {address && isMobile ? (  
               <MenuDrawer 
                 {...this.props}

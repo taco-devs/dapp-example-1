@@ -247,7 +247,7 @@ export default class AmountInpunt extends Component {
                 )} 
                 
                 </AmountInput>
-                <MaxButton
+                {/* <MaxButton
                     asset={asset}
                     modal_type={modal_type}
                     onClick={() => {
@@ -255,7 +255,7 @@ export default class AmountInpunt extends Component {
                     }}
                 > 
                     MAX
-                </MaxButton>
+                </MaxButton> */}
             </InputRow>
         )
     }
