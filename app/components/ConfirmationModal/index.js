@@ -33,7 +33,7 @@ const HeaderSection = styled.div`
 const DataBody = styled.div`
   display: flex;
   flex-direction: column;
-  height: calc(35vh - 4em - 15px);
+  height: calc(350px - 4em - 15px);
   width: 100%;
   align-items: center;
   background-color: ${props => {

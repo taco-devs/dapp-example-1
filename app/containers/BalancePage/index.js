@@ -26,7 +26,13 @@ import { makeSelectCurrrentNetwork, makeSelectCurrrentApproval, makeSelectCurrre
 import { makeSelectIsLoadingBalances, makeSelectBalancesError } from '../GrowthStats/selectors';
 import { addCurrentApproval, addCurrentSwap, dismissApproval, dismissSwap, toggleHideBalances, toggleAddGRO } from '../App/actions'
 import { getBalances } from '../GrowthStats/actions';
-import { mintGTokenFromCToken, mintGTokenFromUnderlying, redeemGTokenToCToken, redeemGTokenToUnderlying } from '../InvestPage/actions'
+import { 
+  approveToken,
+  mintGTokenFromCToken, mintGTokenFromUnderlying,
+  mintGTokenFromBridge, mintGTokenFromUnderlyingBridge,
+  redeemGTokenToCToken, redeemGTokenToUnderlying,
+  redeemGTokenToBridge, redeemGTokenToUnderlyingBridge,
+} from '../InvestPage/actions'
 import Loader from 'react-loader-spinner';
 
 const Balance = styled.div`
@@ -167,10 +173,15 @@ function mapDispatchToProps(dispatch) {
     toggleHideBalances: () => dispatch(toggleHideBalances()),
     toggleAddGRO: () => dispatch(toggleAddGRO()),
     // Invest
+    approveToken: (payload) => dispatch(approveToken(payload)),
     mintGTokenFromCToken: (payload) => dispatch(mintGTokenFromCToken(payload)),
     mintGTokenFromUnderlying: (payload) => dispatch(mintGTokenFromUnderlying(payload)),
+    mintGTokenFromBridge: (payload) => dispatch(mintGTokenFromBridge(payload)),
+    mintGTokenFromUnderlyingBridge: (payload) => dispatch(mintGTokenFromUnderlyingBridge(payload)),
     redeemGTokenToCToken: (payload) => dispatch(redeemGTokenToCToken(payload)),
     redeemGTokenToUnderlying: (payload) => dispatch(redeemGTokenToUnderlying(payload)),
+    redeemGTokenToBridge: (payload) => dispatch(redeemGTokenToBridge(payload)),
+    redeemGTokenToUnderlyingBridge: (payload) => dispatch(redeemGTokenToUnderlyingBridge(payload)),
     // Stats
     getBalances: (address, web3) => dispatch(getBalances(address, web3)),
   };
