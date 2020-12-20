@@ -92,8 +92,13 @@ class InvestPage extends React.Component {
     let last_month = new Date(Date.now() - DAYS_RANGE * 24 * 60 * 60 * 1000);
     last_month.setHours(0,0,0,0);
     const last_month_date = Math.round(last_month.getTime() / 1000);
-
-    getTokens({last_month_date});
+    
+    const FIFTEEN_DAYS_RANGE = 7;
+    let LAST_TWO_WEEKS = new Date(Date.now() - FIFTEEN_DAYS_RANGE * 24 * 60 * 60 * 1000);
+    LAST_TWO_WEEKS.setHours(0,0,0,0);
+    const two_weeks_date = Math.round(LAST_TWO_WEEKS.getTime() / 1000);
+    
+    getTokens({last_month_date, two_weeks_date});
   }
 
   render () {

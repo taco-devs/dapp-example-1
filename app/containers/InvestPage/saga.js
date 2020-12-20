@@ -63,7 +63,7 @@ const approve = async (Contract, approval_address, total_supply, address, web3, 
 function* getTokensSaga(params) {
   const {dateRange} = params;
 
-  const {last_month_date} = dateRange;  
+  const {last_month_date, two_weeks_date} = dateRange;  
   const query = `
     {
       tokens {
@@ -81,11 +81,11 @@ function* getTokensSaga(params) {
         hasMiningToken
         lastAvgPrice
         tokenDailyDatas (
-          first: 1
           orderBy: id
           orderDirection: desc
           where: {
-            date_lte: ${last_month_date}
+            date_lte: ${two_weeks_date},
+            date_gt: ${last_month_date}
           }
         ) {
           id
@@ -468,7 +468,6 @@ function* redeemGTokenToUnderlyingBridgeSaga(params) {
   const {payload} = params;
   const {GContractInstance, _grossShares, growthToken, address, asset,  web3, toggle} = payload;
 
-  console.log('payload', payload)
 
   try { 
   

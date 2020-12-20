@@ -137,6 +137,10 @@ class ActionModal extends React.Component {
     show: false,
     isLoadingCalc: false,
     isLoading: false,
+    // Avoid dust
+    isMintMax: false,
+    isMintUnderlyingMax: false,
+    isRedeemMax: false,
     modal_type: 'mint',
     // Calc from Cost
     value_base: '',

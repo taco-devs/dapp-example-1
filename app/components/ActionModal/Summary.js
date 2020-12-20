@@ -169,6 +169,8 @@ export default class Summary extends Component {
           mintGTokenFromBridge,
           mintGTokenFromUnderlyingBridge,
           is_native, value_base, value_native, total_native, total_base,
+          underlying_balance, asset_balance, g_balance,
+          isMintMax, isMintUnderlyingMax,
           // Functions
           getWei, toggleModal
         } = this.props;
@@ -180,9 +182,9 @@ export default class Summary extends Component {
         if (is_native) {
 
             let GContractInstance;
-            const _cost = numberToBN(value_native, asset.underlying_decimals);
 
             if (asset.type === types.TYPE_ETH) {
+                const _cost =  numberToBN(value_native, asset.underlying_decimals);
                 GContractInstance = await new web3.eth.Contract(asset.bridge_abi, asset.bridge_address);
                 mintGTokenFromUnderlyingBridge({
                     GContractInstance, 
@@ -203,6 +205,7 @@ export default class Summary extends Component {
                     toggle: toggleModal
                 })
             } else {
+                const _cost = isMintUnderlyingMax ? underlying_balance : numberToBN(value_native, asset.underlying_decimals);
                 GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
                 mintGTokenFromUnderlying({
                     GContractInstance, 
@@ -225,9 +228,8 @@ export default class Summary extends Component {
     
         } else {
             let GContractInstance;
-            const _cost = numberToBN(value_base, asset.base_decimals);
-
             if (asset.type === types.GETH) {
+                const _cost = numberToBN(value_base, asset.base_decimals);
                 GContractInstance = await new web3.eth.Contract(asset.bridge_abi, asset.bridge_address);
                 mintGTokenFromBridge({
                     GContractInstance, 
@@ -248,6 +250,7 @@ export default class Summary extends Component {
                     toggle: toggleModal
                 }) 
             } else {
+                const _cost = isMintMax ? asset_balance : numberToBN(value_base, asset.base_decimals);
                 GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
                 mintGTokenFromCToken({
                     GContractInstance, 
@@ -276,6 +279,8 @@ export default class Summary extends Component {
     handleRedeem = async () => {
     const {
         asset, web3, address, getWei,
+        g_balance,
+        isRedeemMax,
         redeemGTokenToCToken,
         redeemGTokenToUnderlying,
         redeemGTokenToBridge,
@@ -288,15 +293,16 @@ export default class Summary extends Component {
     // Validate Balance
     if (this.isDisabled()) return;
 
+    const _grossShares = isRedeemMax ? g_balance : numberToBN(value_redeem, asset.base_decimals);
+
     // Handle depending the asset
     if (is_native) {
         let GContractInstance;
-        
         if (asset.type === types.TYPE_ETH) {
             GContractInstance = await new web3.eth.Contract(asset.bridge_abi, asset.bridge_address);
             redeemGTokenToUnderlyingBridge({
                 GContractInstance, 
-                _grossShares: numberToBN(value_redeem, asset.base_decimals),
+                _grossShares,
                 growthToken: asset.gtoken_address,
                 address,
                 web3,
@@ -317,7 +323,7 @@ export default class Summary extends Component {
             GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
             redeemGTokenToUnderlying({
                 GContractInstance, 
-                _grossShares: numberToBN(value_redeem, asset.base_decimals),
+                _grossShares,
                 address,
                 web3,
                 asset: {
@@ -344,7 +350,7 @@ export default class Summary extends Component {
             GContractInstance = await new web3.eth.Contract(asset.bridge_abi, asset.bridge_address);
             redeemGTokenToBridge({
                 GContractInstance, 
-                _grossShares: numberToBN(value_redeem, asset.base_decimals),
+                _grossShares,
                 growthToken: asset.gtoken_address,
                 address,
                 web3,
@@ -364,7 +370,7 @@ export default class Summary extends Component {
             GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
             redeemGTokenToCToken({
                 GContractInstance, 
-                _grossShares: numberToBN(value_redeem, asset.base_decimals),
+                _grossShares,
                 address,
                 web3,
                 asset: {

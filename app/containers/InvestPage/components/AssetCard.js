@@ -238,9 +238,17 @@ export default class AssetCard extends Component {
         const mathFactor = Math.pow(token.lastAvgPrice, 1 / (dayDelta));
         const apy = (mathFactor - 1) * 365 * 100;
 
-        if (apy < 0) return '-';
+        if (apy < 0) {
+            const prices = token.tokenDailyDatas.map(tdd => tdd.avgPrice);
+            const min = Math.min(...prices);
+            const priceDelta = 1 + ( token.lastAvgPrice - min );
+            
+            const mathFactor = Math.pow(priceDelta, 1 / 15);
+            const apy = (mathFactor - 1) * 365 * 100;
 
-        // const increase = (token.cumulativeDailyChange / (dayDelta)) * 100 * 365;
+            return `${Math.round(apy * 100) / 100} % AVG`;
+        };
+
         return `${Math.round(apy * 100) / 100} % AVG`;
     } 
 
@@ -253,13 +261,24 @@ export default class AssetCard extends Component {
 
         if (!token) return '-';
 
-        let last30daysTDD = token.tokenDailyDatas && token.tokenDailyDatas.length > 0 && token.tokenDailyDatas[0];
+        let last30daysTDD = token.tokenDailyDatas && token.tokenDailyDatas.length > 0 && token.tokenDailyDatas[token.tokenDailyDatas.length - 1];
 
         if (last30daysTDD) {
             const priceDelta = 1 + ( token.lastAvgPrice - last30daysTDD.avgPrice );
             
             const mathFactor = Math.pow(priceDelta, 1 / 30);
             const apy = (mathFactor - 1) * 365 * 100;
+
+            if (apy < 0) {
+                const prices = token.tokenDailyDatas.map(tdd => tdd.avgPrice);
+                const min = Math.min(...prices);
+                const priceDelta = 1 + ( token.lastAvgPrice - min );
+                
+                const mathFactor = Math.pow(priceDelta, 1 / 30);
+                const apy = (mathFactor - 1) * 365 * 100;
+
+                return `${Math.round(apy * 100) / 100} % AVG`;
+            }
 
             return `${Math.round(apy * 100) / 100} %  30D AVG`;
         } else {

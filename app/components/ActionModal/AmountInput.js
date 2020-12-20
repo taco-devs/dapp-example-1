@@ -169,7 +169,7 @@ export default class AmountInpunt extends Component {
             let balance = asset.type === types.TYPE_ETH ? underlying_balance - (0.05 * 1e18) : underlying_balance;
             if ((Number(balance) / asset.underlying_decimals) < 0.01) return;
             const value_native = BNtoNumber(balance, asset.underlying_decimals);
-            handleMultiChange({value_native});
+            handleMultiChange({value_native, isMintUnderlyingMax: true});
             this.handleInputChange(value_native)
           } else {
             // If GETH remove 0.05 safe margin for gas
@@ -179,7 +179,7 @@ export default class AmountInpunt extends Component {
             if (has_low_amount) return;
             const value_base = BNtoNumber(balance ,asset.base_decimals);
             
-            handleMultiChange({value_base});
+            handleMultiChange({value_base, isMintMax: true});
             this.handleInputChange(value_base)
           }
         }
@@ -190,12 +190,11 @@ export default class AmountInpunt extends Component {
           let value_redeem;
           if (asset.base_decimals === 1e18) {
             value_redeem = BNtoNumber(g_balance, asset.base_decimals);
-            console.log({value_redeem, g_balance});
           } else {
             value_redeem = BNtoNumber(g_balance, asset.base_decimals);
           }
           
-          handleMultiChange({value_redeem});
+          handleMultiChange({value_redeem, isRedeemMax: true});
           this.calculateBurningTotal(value_redeem);
         }
       }
@@ -204,7 +203,8 @@ export default class AmountInpunt extends Component {
         const {
             asset,
             modal_type, is_native, isLoading,
-            value_native, value_base, value_redeem
+            value_native, value_base, value_redeem,
+            handleMultiChange,
         } = this.props;
         return (
             <InputRow>
@@ -217,6 +217,7 @@ export default class AmountInpunt extends Component {
                         type="number"
                         onClick={e => e.stopPropagation()}
                         onChange={e => {
+                            handleMultiChange({isMintUnderlyingMax: false});
                             this.handleInputChange(e.target.value)
                         }}
                     />
@@ -229,6 +230,7 @@ export default class AmountInpunt extends Component {
                         type="number"
                         onClick={e => e.stopPropagation()}
                         onChange={e => {
+                          handleMultiChange({isMintMax: false});
                             this.handleInputChange(e.target.value)
                         }}
                     />
@@ -241,13 +243,14 @@ export default class AmountInpunt extends Component {
                         type="number"
                         onClick={e => e.stopPropagation()}
                         onChange={e => {
+                            handleMultiChange({isRedeemMax: false});
                             this.handleInputChange(e.target.value)
                         }}
                     />
                 )} 
                 
                 </AmountInput>
-                {/* <MaxButton
+                <MaxButton
                     asset={asset}
                     modal_type={modal_type}
                     onClick={() => {
@@ -255,7 +258,7 @@ export default class AmountInpunt extends Component {
                     }}
                 > 
                     MAX
-                </MaxButton> */}
+                </MaxButton>
             </InputRow>
         )
     }
