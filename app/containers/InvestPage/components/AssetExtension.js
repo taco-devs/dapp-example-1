@@ -393,7 +393,7 @@ export default class AssetExtension extends Component {
                     {token && token.hasMiningToken && (
                         <ExtensionColumn align="flex-start">
                             <StatLabel>THRESHOLD</StatLabel>
-                            <Stat>{token && tokenData && tokenData[tokenData.length - 1] && (Math.round(tokenData[tokenData.length - 1].miningTokenBalance / 1e18 * 100) / 100).toLocaleString('En-en')} / 20 COMP</Stat>
+                            <Stat>{token && (Math.round(token.miningTokenBalance / 1e18 * 100) / 100).toLocaleString('En-en')} / 20 COMP</Stat>
                         </ExtensionColumn>
                     )}
                     <ExtensionColumn align="flex-start">

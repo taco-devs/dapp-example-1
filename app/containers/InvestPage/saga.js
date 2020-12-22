@@ -79,7 +79,10 @@ function* getTokensSaga(params) {
         countTokenDailyDatas
         cumulativeDailyChange
         hasMiningToken
+        miningToken
+        miningTokenBalance
         lastAvgPrice
+        lastUSDPrice
         tokenDailyDatas (
           orderBy: id
           orderDirection: desc

@@ -7,6 +7,8 @@ import { Icon } from 'react-icons-kit';
 import {areaChart} from 'react-icons-kit/fa/areaChart'
 import types from 'contracts/token_types.json';
 
+import { getAVGApy } from '../apyCalculator';
+
 const Card = styled.div`
     display: flex;
     flex-direction: column;
@@ -215,8 +217,8 @@ export default class AssetCard extends Component {
 
     // Get the weighted APY 
     calculateAvgAPY = () => {
-        const {tokens, asset, asset_key} = this.props;
-        if (!tokens) return '-'
+        const {tokens, asset, relevantPrices} = this.props;
+        if (!tokens || !relevantPrices) return '-'
         
         const token = this.getToken(asset);
 
@@ -235,8 +237,7 @@ export default class AssetCard extends Component {
 
         const dayDelta = (TODAY_DATE - FIRST_DATE) / SECONDS_IN_DAY;
 
-        const mathFactor = Math.pow(token.lastAvgPrice, 1 / (dayDelta));
-        const apy = (mathFactor - 1) * 365 * 100;
+        const apy = getAVGApy(token, asset, relevantPrices, dayDelta);
 
         if (apy < 0) {
             const prices = token.tokenDailyDatas.map(tdd => tdd.avgPrice);
@@ -277,10 +278,10 @@ export default class AssetCard extends Component {
                 const mathFactor = Math.pow(priceDelta, 1 / 30);
                 const apy = (mathFactor - 1) * 365 * 100;
 
-                return `${Math.round(apy * 100) / 100} 30D % AVG`;
+                return `${Math.round(apy * 100) / 100} % 30D AVG`;
             }
 
-            return `${Math.round(apy * 100) / 100} %  30D AVG`;
+            return `${Math.round(apy * 100) / 100} % 30D AVG`;
         } else {
             return 'Fluid APY'
         }
