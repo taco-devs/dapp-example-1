@@ -128,6 +128,7 @@ const customStyles = {
 
 const toggleNativeAvailable = [
   types.TYPE1,
+  types.TYPE2,
   types.TYPE_ETH
 ]
 

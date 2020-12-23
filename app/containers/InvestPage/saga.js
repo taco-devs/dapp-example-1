@@ -83,6 +83,7 @@ function* getTokensSaga(params) {
         miningTokenBalance
         lastAvgPrice
         lastUSDPrice
+        gDAIReserve
         tokenDailyDatas (
           orderBy: id
           orderDirection: desc

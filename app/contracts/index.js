@@ -41,6 +41,7 @@ const assets = {
                 gtoken_img_url: 'stkgro.png',
             },
             gWBTC: {
+                contract_name: "growth WBTC",
                 label: 'PMT',
                 type: types.PMT,
                 pair_address: "0xbb2b8038a1640196fbe3e38816f3e67cba72d940",
@@ -166,8 +167,9 @@ const assets = {
                 ]
             },
             gcWBTC: {
+                contract_name: 'growth cWBTC',
                 label: 'STRATEGY',
-                type: types.TYPE1,
+                type: types.TYPE2,
                 pair_address: "0x9896bd979f9da57857322cc15e154222c4658a5a",
                 base_address: '0xc11b1268c1a384e55c48c2391d8d480264a3a7f4',
                 gtoken_address: '0x1085045eF3f1564e4dA4C7315C0B7448d82d5D32', 
@@ -188,6 +190,7 @@ const assets = {
                 gtoken_img_url: 'gtoken_cwbtc.png',
             },
             gcETH: {
+                contract_name: "growth cETH",
                 label: 'STRATEGY',
                 type: types.TYPE_ETH,
                 // pair_address: "0x477fa5406598f8eb1945291867e1654c4d931659",

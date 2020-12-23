@@ -176,7 +176,7 @@ export default class AssetCard extends Component {
         };
 
         // Check for type 1
-        if (asset.type === types.TYPE1 || asset.type === types.TYPE_ETH) {
+        if (asset.type === types.TYPE1 || asset.type === types.TYPE_ETH || asset.type === types.TYPE2) {
             const asset_data = prices.markets && prices.markets.find(market => market.id === asset.compound_id);
 
             if (!asset_data) return '-';
@@ -237,14 +237,14 @@ export default class AssetCard extends Component {
 
         const dayDelta = (TODAY_DATE - FIRST_DATE) / SECONDS_IN_DAY;
 
-        const apy = getAVGApy(token, asset, relevantPrices, dayDelta);
+        const apy = getAVGApy(token, asset, relevantPrices, tokens, dayDelta);
 
         if (apy < 0) {
             const prices = token.tokenDailyDatas.map(tdd => tdd.avgPrice);
             const min = Math.min(...prices);
             const priceDelta = 1 + ( token.lastAvgPrice - min );
             
-            const mathFactor = Math.pow(priceDelta, 1 / 15);
+            const mathFactor = Math.pow(priceDelta, 1 / 21);
             const apy = (mathFactor - 1) * 365 * 100;
 
             return `${Math.round(apy * 100) / 100} % AVG`;
