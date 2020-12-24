@@ -261,8 +261,7 @@ export default class AssetExtension extends Component {
                     let gDAIFactor = 0;
                     if (asset.type === types.TYPE2 || asset.type === types.TYPE_ETH) {
                         const gdai_price = this.getGDAIPrice();
-                        const rewardsMultiplier = dailyDAIFactor * (current_days  + 1);
-                        gDAIFactor = gdai_price * (day_data.gDAIReserve / 1e18) / (day_data.supply / 1e8) / day_data.currentPrice * rewardsMultiplier;
+                        gDAIFactor = gdai_price * (day_data.gDAIReserve / 1e18) / (day_data.supply / 1e8) / day_data.currentPrice * dailyDAIFactor;
                     }
 
                     const miningFactor = ((day_data.miningTokenBalance / 1e18) * miningPriceUSD) / (day_data.supply / 1e8) / day_data.currentPrice;
