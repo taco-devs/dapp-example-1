@@ -574,6 +574,8 @@ function* getTokenStatsSaga(params) {
         txCount
         supply
         reserve
+        gDAIReserve
+        gDAIPrice
         miningTokenBalance
         currentPrice
         token {

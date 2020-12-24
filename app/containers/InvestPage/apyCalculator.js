@@ -34,7 +34,7 @@ const apy_gDAI_fees = (tokens) => {
 }
 
 // Specific method to handle gDAI reusable for type 2 
-const apy_gDAI = (tokens, relevantPrices) => {
+export const apy_gDAI = (tokens, relevantPrices) => {
 
     const token = tokens.find(token => token.symbol === 'gDAI');
     const asset = NetworkData['eth'].available_assets['gDAI'];

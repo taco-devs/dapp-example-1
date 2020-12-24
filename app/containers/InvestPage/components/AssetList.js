@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import AssetCard from './AssetCard';
 import styled from 'styled-components';
 import NetworkData from 'contracts';
-
+import { Icon } from 'react-icons-kit';
+import {info} from 'react-icons-kit/icomoon/info';
+import ReactTooltip from 'react-tooltip';
 
 const AssetContainer = styled.div`
     display: flex;
@@ -22,6 +24,7 @@ const AssetHeader = styled.div`
 const AssetHeaderColumn = styled.div`
     display: flex;
     justify-content: center;
+    align-items: center;
     flex: ${props => props.flex || '1'};
     margin: ${props => props.margin || '0'};
 `
@@ -92,6 +95,19 @@ export default class AssetList extends Component {
                     </AssetHeaderColumn>
                     <AssetHeaderColumn>
                         <p>APY</p>
+                        <Icon 
+                            icon={info} 
+                            style={{color: '#BEBEBE', margin: '0 0 0 10px' }} 
+                            data-tip={`
+                                 Annual Percentage Yield
+                                 <br />
+                                 <br />
+                                 Rate of return earned on deposit
+                                 <br />
+                                considering compounding effects.
+
+                            `} 
+                        />
                     </AssetHeaderColumn>
                     {!isMobile && (
                         <AssetHeaderColumn flex="1.25">
@@ -100,6 +116,7 @@ export default class AssetList extends Component {
                     )}
                 </AssetHeader>
                 {this.showAvailableAssets(currentOpenExtension)}
+                <ReactTooltip multiline={true} place="right"/>
             </AssetContainer>     
         )
     }

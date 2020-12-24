@@ -10,6 +10,7 @@ import {shareSquareO} from 'react-icons-kit/fa/shareSquareO';
 import Loader from 'react-loader-spinner';
 import moment from 'moment';
 import types from 'contracts/token_types.json';
+import { apy_gDAI } from '../apyCalculator';
 
 const dummy = [
     {x_axis_label: 'SEPT 01', y_value: 0, y_mining_value: 0},
@@ -152,17 +153,20 @@ const LoaderContainer = styled.div`
     margin: 1em 0 1em 0;
 `
 
-const CustomTooltip = ({ active, payload, label, asset, base, g_asset, hasMiningToken }) => {
+const CustomTooltip = ({ active, payload, type, label, asset, base, g_asset, hasMiningToken }) => {
     if (active) {
         return (
             <StyledTooltip
                 asset={asset}
             >
                 <p>{`${label}`}</p>
-                {hasMiningToken && (
-                    <p>Rate (COMP): {`${payload[0].value} ${base}`}</p>
+                {(type === types.TYPE2 || type === types.TYPE_ETH) && (
+                    <p>Rate (COMP + gDAI): {`${payload[0].value} ${base}`}</p>
                 )}
-                <p>Rate: {`${payload[1].value} ${base}`}</p>
+                {hasMiningToken && (
+                    <p>Rate (COMP): {`${payload[1].value} ${base}`}</p>
+                )}
+                <p>Rate: {`${payload[2].value} ${base}`}</p>
             </StyledTooltip>
         );
     }
@@ -192,14 +196,30 @@ export default class AssetExtension extends Component {
         }
     }
 
+    getGDAIPrice = () => {
+        const {relevantPrices} = this.props;
+        if (!relevantPrices) return 0;
+
+        const ethPrice = relevantPrices.pairs && relevantPrices.pairs.find(pair => pair.token0.symbol === 'WETH');
+        const daiPrice = relevantPrices.pairs && relevantPrices.pairs.find(pair => pair.token0.symbol === 'DAI');
+        
+        const price = daiPrice.token0Price * ethPrice.token0Price;
+        return price;
+    }
+
+    getDailyDaiFactor = () => {
+        const {tokens, relevantPrices} = this.props;
+        const apy = apy_gDAI(tokens, relevantPrices) / 365 / 100;
+        return apy;
+    }
+
     formatData = () => {
-        const {tokenData} = this.props;
+        const {tokenData, asset} = this.props;
         if (!tokenData) return [];
         if (tokenData.length < 1) return [];
 
         // Get MiningTokenPrice
         const miningPriceUSD = this.getMiningTokenPrice();
-
 
         // Calculate 31 days before
         const seconds_in_day = 86400;
@@ -207,13 +227,13 @@ export default class AssetExtension extends Component {
         TODAY = new Date(TODAY.getTime() + TODAY.getTimezoneOffset() * 60000);
         TODAY.setHours(0,0,0,0);
         const TODAY_DATE = Math.round(TODAY.getTime() / 1000);
-        const FIRST_DAY = TODAY_DATE - (seconds_in_day * 30);
-
- 
+        const FIRST_DAY = TODAY_DATE - (seconds_in_day * 30); 
 
         // Chart Array
         let chart_data = new Array(30);
         let current_days = 0;
+
+        const dailyDAIFactor = this.getDailyDaiFactor();
 
         for (let day of chart_data) {
             const today_timestamp = FIRST_DAY + (seconds_in_day * current_days);
@@ -224,6 +244,7 @@ export default class AssetExtension extends Component {
             let x_axis_label;
             let y_value;
             let y_mining_value;
+            let y_reserve_value;
 
             if (day_data) {
                 x_axis_label = moment(day_data.date * 1000).utc(0).format('MMM DD');
@@ -236,26 +257,38 @@ export default class AssetExtension extends Component {
                 if (check_activity) {
                     const avgPrice = day_data.reserve / day_data.supply;
 
+                    // If it's a type 2 divide the gDAI factor
+                    let gDAIFactor = 0;
+                    if (asset.type === types.TYPE2 || asset.type === types.TYPE_ETH) {
+                        const gdai_price = this.getGDAIPrice();
+                        const rewardsMultiplier = dailyDAIFactor * (current_days  + 1);
+                        gDAIFactor = gdai_price * (day_data.gDAIReserve / 1e18) / (day_data.supply / 1e8) / day_data.currentPrice * rewardsMultiplier;
+                    }
+
                     const miningFactor = ((day_data.miningTokenBalance / 1e18) * miningPriceUSD) / (day_data.supply / 1e8) / day_data.currentPrice;
 
                     y_value = Math.round(avgPrice * 10000) / 10000;
                     y_mining_value = Math.round((avgPrice + miningFactor) * 10000) / 10000;
+                    y_reserve_value = Math.round((y_mining_value + gDAIFactor) * 10000) / 10000;
                 } else {
                     y_value = chart_data[current_days - 1].y_value;
                     y_mining_value = chart_data[current_days - 1].y_mining_value;
+                    y_reserve_value = chart_data[current_days - 1].y_reserve_value;
                 }
             } else {
                 x_axis_label = moment(tomorrow_timestamp * 1000).utc(0).format('MMM DD');
                 if (current_days > 0) {
                     y_value = chart_data[current_days - 1].y_value;
                     y_mining_value = chart_data[current_days - 1].y_mining_value;
+                    y_reserve_value = chart_data[current_days - 1].y_reserve_value;
                 } else {
                     y_value = 0;
                     y_mining_value = 0;
+                    y_reserve_value = 0;
                 }
             }
 
-            chart_data[current_days] = {x_axis_label, y_value, y_mining_value};
+            chart_data[current_days] = {x_axis_label, y_value, y_mining_value, y_reserve_value};
             current_days++;
         }
 
@@ -266,14 +299,19 @@ export default class AssetExtension extends Component {
     getDomain = (data) => {
         if (!data || data.length < 1) return [0,0];
 
-        const range = 
+        const min_range = 
             data
-                .filter(day => day.y_mining_value > 0)
-                .map(day => day.y_mining_value);
+                .filter(day => day.y_value > 0)
+                .map(day => day.y_value);
+        
+        const max_range = 
+            data
+                .filter(day => day.y_reserve_value > 0)
+                .map(day => day.y_reserve_value);
 
         
-        let min = Math.min(...range);
-        let max = Math.max(...range);
+        let min = Math.min(...min_range);
+        let max = Math.max(...max_range);
 
         if (min === max) min = 0;
         
@@ -370,7 +408,8 @@ export default class AssetExtension extends Component {
 
                                     />
                                     <YAxis allowDataOverflow type="number" domain={domain} hide />
-                                    <Tooltip content={<CustomTooltip asset={asset} base={asset.base_asset} g_asset={asset.g_asset} hasMiningToken={token && token.hasMiningToken}/>}/>
+                                    <Tooltip content={<CustomTooltip asset={asset} type={asset.type} base={asset.base_asset} g_asset={asset.g_asset} hasMiningToken={token && token.hasMiningToken}/>}/>
+                                    <Area type="monotone" dataKey="y_reserve_value" stroke="#ffe391" fill="#ffe391" />
                                     <Area type="monotone" dataKey="y_mining_value" stroke="#00d395" fill="#161d6b" />
                                     <Area 
                                         type="monotone" 

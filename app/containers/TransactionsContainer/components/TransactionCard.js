@@ -4,7 +4,8 @@ import {isMobile} from 'react-device-detect';
 import ActionModal from 'components/ActionModal';
 import ActionDrawer from 'components/ActionDrawer';
 import { Icon } from 'react-icons-kit';
-import {arrowRight} from 'react-icons-kit/fa/arrowRight'
+import {arrowRight} from 'react-icons-kit/fa/arrowRight';
+import ReactTooltip from 'react-tooltip';
 
 // import AssetExtension from './AssetExtension';
 import moment from 'moment';
@@ -140,7 +141,8 @@ export default class TransactionCard extends Component {
     }
 
     parseAmount = (amount, decimals) => {
-        return Math.round(amount / decimals * 100) / 100;
+        let mobileFactor = isMobile ? 100 : 1e6;
+        return Math.round(amount / decimals * mobileFactor) / mobileFactor;
     }
 
     abbreviateNumber = (value) => {
