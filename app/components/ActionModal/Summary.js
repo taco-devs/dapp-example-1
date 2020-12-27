@@ -136,10 +136,13 @@ export default class Summary extends Component {
     isDisabled = () => {
         const {
             asset, 
+            isMintMax, isMintUnderlyingMax, isRedeemMax,
             modal_type, is_native,
             value_base, value_native, value_redeem,
             underlying_balance, asset_balance, g_balance,
         } = this.props;
+
+        if (isMintMax || isMintUnderlyingMax || isRedeemMax) return false;
 
         // Validate when input a mint function
         if (modal_type === 'mint') {

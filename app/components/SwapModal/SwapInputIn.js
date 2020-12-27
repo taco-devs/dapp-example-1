@@ -204,6 +204,8 @@ export default class SwapInputIn extends Component {
         swapFee//
       ).call();
 
+      console.log(_amountOutput)
+
       
       let amountOutput = this.getConversion(assetOut, _amountOutput);  
 

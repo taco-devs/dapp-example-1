@@ -4,6 +4,7 @@ import ActionModal from 'components/ActionModal';
 import ActionDrawer from 'components/ActionDrawer';
 import AssetExtension from './AssetExtension';
 import { Icon } from 'react-icons-kit';
+import {info} from 'react-icons-kit/icomoon/info';
 import {areaChart} from 'react-icons-kit/fa/areaChart'
 import types from 'contracts/token_types.json';
 

@@ -141,6 +141,8 @@ export default class SwapSummary extends Component {
     handleSwapExactIn = async (BPoolInstance, args, address) => {
 
         const {web3, handleMultipleChange} = this.props;
+
+        console.log(args)
         
         // Get Gas info
         const {gas, gasPrice} = await this.getGasInfo(
