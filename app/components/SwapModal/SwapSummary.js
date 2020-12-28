@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import BPool from 'contracts/Interop/Bpool.json';
 import ApproveSwapContainer from 'components/ApproveSwapContainer';
+import { numberToBN, BNtoNumber } from 'utils/utilities';
 
 const PrimaryLabel = styled.b`
   color: #161d6b;
@@ -262,6 +263,8 @@ export default class SwapSummary extends Component {
             const _currentAssetIn = Network.available_assets[assetIn];
     
             if (swapType === 'SEND') { 
+
+                consooe.log(amountOutput);
 
                 // Parse Numbers
                 const tokenAmountIn = this.getWei(amountInput, 1e8);

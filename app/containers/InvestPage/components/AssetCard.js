@@ -9,7 +9,16 @@ import {areaChart} from 'react-icons-kit/fa/areaChart'
 import types from 'contracts/token_types.json';
 
 import { getAVGApy } from '../apyCalculator';
+import Loader from 'react-loader-spinner';
 
+const Loading = (
+    <Loader
+        type="ThreeDots"
+        color={'#00d395'}
+        height={40}
+        width={40}
+    />
+)
 const Card = styled.div`
     display: flex;
     flex-direction: column;
@@ -219,11 +228,25 @@ export default class AssetCard extends Component {
     // Get the weighted APY 
     calculateAvgAPY = () => {
         const {tokens, asset, relevantPrices} = this.props;
-        if (!tokens || !relevantPrices) return '-'
+        if (!tokens || !relevantPrices) return (
+            <Loader
+                type="ThreeDots"
+                color={'#00d395'}
+                height={40}
+                width={40}
+            />
+        )
         
         const token = this.getToken(asset);
 
-        if (!token) return '-';
+        if (!token) return (
+            <Loader
+                type="ThreeDots"
+                color={'#00d395'}
+                height={40}
+                width={40}
+            />
+        );
 
         // Calculate the delta from listing date to today
         const SECONDS_IN_DAY = 86400;
