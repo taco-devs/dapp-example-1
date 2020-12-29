@@ -17,6 +17,7 @@ const assets = {
             abi: GrowToken,
             address: '0x09e64c2b61a5f1690ee6fbed9baf5d6990f8dfd0',
             img_url: 'gro.png',
+            coingecko_id: 'growth-defi'
         },
         available_assets: {
             stkGRO: {
@@ -60,6 +61,7 @@ const assets = {
                 img_url: 'wbtc.png',
                 native_img_url: 'wbtc.png',
                 gtoken_img_url: 'gtoken_wbtc.png',
+                coingecko_id: 'wrapped-bitcoin',
                 portfolio: [
                     {
                         asset: 'gWBTC',
@@ -93,6 +95,7 @@ const assets = {
                 img_url: 'eth.png',
                 native_img_url: 'eth.png',
                 gtoken_img_url: 'gtoken_eth.png',
+                coingecko_id: 'ethereum',
                 portfolio: [
                     {
                         asset: 'gETH',
@@ -124,6 +127,7 @@ const assets = {
                 img_url: 'dai.png',
                 native_img_url: 'dai.png',
                 gtoken_img_url: 'gtoken_dai.png',
+                coingecko_id: 'dai',
                 portfolio: [
                     {
                         asset: 'gDAI',
@@ -155,6 +159,7 @@ const assets = {
                 img_url: 'usdc.png',
                 native_img_url: 'usdc.png',
                 gtoken_img_url: 'gtoken_usdc.png',
+                coingecko_id: 'usd-coin',
                 portfolio: [
                     {
                         asset: 'gUSDC',
@@ -188,6 +193,7 @@ const assets = {
                 img_url: 'cwbtc.png',
                 native_img_url: 'wbtc.png',
                 gtoken_img_url: 'gtoken_cwbtc.png',
+                coingecko_id: 'compound-wrapped-btc'
             },
             gcETH: {
                 contract_name: "growth cETH",
@@ -212,6 +218,7 @@ const assets = {
                 img_url: 'ceth.png',
                 native_img_url: 'eth.png',
                 gtoken_img_url: 'gctoken_eth.png',
+                coingecko_id: 'compound-ether'
             },
             gcDAIv2: {
                 contract_name: "growth cDAI v2",
@@ -236,7 +243,8 @@ const assets = {
                 gtoken_img_url: 'gctoken_dai.png',
                 card_name: 'gcDAIv2 / cDAI',
                 mobile_card_name: 'gcDAIv2',
-                swap_card_name: 'GRO / gcDAIv2'
+                swap_card_name: 'GRO / gcDAIv2',
+                coingecko_id: 'cdai'
             },
             gcUSDCv2: {
                 contract_name: "growth cUSDC v2",
@@ -261,7 +269,8 @@ const assets = {
                 gtoken_img_url: 'gctoken_usdc.png',
                 card_name: 'gcUSDCv2 / cUSDC',
                 mobile_card_name: 'gcUSDCv2',
-                swap_card_name: 'GRO / gcUSDCv2'
+                swap_card_name: 'GRO / gcUSDCv2',
+                coingecko_id: 'compound-usd-coin'
             },
             gcDAI: {
                 contract_name: "growth cDAI",
@@ -285,6 +294,7 @@ const assets = {
                 gtoken_img_url: 'gctoken_dai.png',
                 label: '( OLD )',
                 disabled: true,
+                coingecko_id: 'cdai'
             },
             gcUSDC: {
                 contract_name: "growth cUSDC",
@@ -308,6 +318,7 @@ const assets = {
                 gtoken_img_url: 'gctoken_usdc.png',
                 label: '( OLD )',
                 disabled: true,
+                coingecko_id: 'compound-usd-coin'
             },
         }
     },

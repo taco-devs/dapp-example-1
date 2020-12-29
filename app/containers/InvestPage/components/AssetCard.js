@@ -161,42 +161,19 @@ export default class AssetCard extends Component {
 
         if (!token) return '-';
         
-        if (!prices) return `$${Math.round(token.cumulativeTotalValueLockedUSD).toLocaleString('en-En')}`;
-
-
-        // Check for PMT
-        if (asset.type === types.PMT) {
-            if (!relevantPrices || !ethPrice) return `$${Math.round(token.cumulativeTotalValueLockedUSD).toLocaleString('en-En')}`;
-            const assetPrice = relevantPrices.pairs.find(pair => pair.token0.symbol.toUpperCase() === asset.native.toUpperCase());
-            const price = ethPrice * assetPrice.token1Price;
-            return `$${Math.round((token.totalReserve / token.totalSupply) * (token.totalSupply / asset.base_decimals) * price).toLocaleString('en-En')}`; 
-        }
-
-        if (asset.type === types.GETH) {
-            if (!ethPrice) return `$${Math.round(token.cumulativeTotalValueLockedUSD).toLocaleString('en-En')}`;
-            return `$${Math.round((token.totalReserve / token.totalSupply) * (token.totalSupply / asset.base_decimals) * ethPrice).toLocaleString('en-En')}`;  
-        }
 
         // Check for stkGRO
         if (asset.type === types.STKGRO) {
             if (!relevantPrices || !ethPrice) return `$${Math.round(token.cumulativeTotalValueLockedUSD).toLocaleString('en-En')}`;
-            const GRO = relevantPrices.pairs.find(price => price.token0.symbol === 'GRO');
-            const groPrice = ethPrice * GRO.token1Price;
+
+            const groPrice = relevantPrices['growth-defi'].usd;
             return `$${Math.round((token.totalReserve / token.totalSupply) * (token.totalSupply / asset.base_decimals) * groPrice).toLocaleString('en-En')}`; 
         };
 
-        // Check for type 1
-        if (asset.type === types.TYPE1 || asset.type === types.TYPE_ETH || asset.type === types.TYPE2) {
-            const asset_data = prices.markets && prices.markets.find(market => market.id === asset.compound_id);
-
-            if (!asset_data) return '-';
-            const reservePrice = Number(asset_data.exchangeRate) * Number(asset_data.underlyingPriceUSD);
-            const market_cap = (Number(token.totalReserve) / asset.base_decimals) * reservePrice;
-
-            if (!market_cap || market_cap <= 1) return 'N/A'
-
-            return `$${Math.round(market_cap).toLocaleString('en-En')}`;
-        }
+        if (!relevantPrices || !ethPrice) return `$${Math.round(token.cumulativeTotalValueLockedUSD).toLocaleString('en-En')}`;
+        
+        const price = relevantPrices[asset.coingecko_id].usd;
+        return `$${Math.round((token.totalReserve / token.totalSupply) * (token.totalSupply / asset.base_decimals) * price).toLocaleString('en-En')}`; 
 
         return '-'
     }
@@ -393,8 +370,8 @@ export default class AssetCard extends Component {
                                     direction="column"
                                     flex="1.2"
                                 >
-                                <PrimaryLabel type={asset.type}>{this.calculateAvgAPY()}</PrimaryLabel>
-                                <SecondaryLabel type={asset.type}>{this.calculate1MonthAPY()}</SecondaryLabel>
+                                <PrimaryLabel type={asset.type}>{/* this.calculateAvgAPY() */}</PrimaryLabel>
+                                <SecondaryLabel type={asset.type}>{/* this.calculate1MonthAPY() */}</SecondaryLabel>
                                 </CardColumn>
                             </CardRow>
                             

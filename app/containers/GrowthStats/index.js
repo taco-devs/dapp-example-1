@@ -21,7 +21,7 @@ import messages from './messages';
 import StatsContainer from 'components/StatsContainer';
 import { getUserStats, getBalances, getTVL, getPrices, getGraph, getRelevantPrices } from './actions';
 import { makeSelectHideBalances, makeSelectAddGRO } from '../App/selectors';
-import { makeSelectBalances, makeSelectEthPrice, makeSelectTvl, makeSelectTvlHistory, makeSelectTvlError } from '../GrowthStats/selectors';
+import { makeSelectBalances, makeSelectEthPrice, makeSelectTvl, makeSelectTvlHistory, makeSelectTvlError, makeSelectRelevantPrices } from '../GrowthStats/selectors';
 
 import { makeSelectCurrrentNetwork } from '../App/selectors'
  
@@ -43,9 +43,9 @@ class GrowthStats extends React.Component {
 
 
   render () {
-    const {address, balances, web3, eth_price} = this.props;
+    const {address, balances, web3, eth_price, relevantPrices} = this.props;
 
-    if (web3 && address && (!balances || !eth_price)) {
+    if (web3 && address && relevantPrices && (!balances || !eth_price)) {
       this.fetchBalances();
     }
 
@@ -75,6 +75,7 @@ const mapStateToProps = createStructuredSelector({
   hideBalances: makeSelectHideBalances(),
   addGRO: makeSelectAddGRO(),
   isLoadingTVL: makeSelectIsLoadingTVL(),
+  relevantPrices: makeSelectRelevantPrices(),
   tvl_error: makeSelectTvlError(),
 });
 

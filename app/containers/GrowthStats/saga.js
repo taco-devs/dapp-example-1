@@ -221,6 +221,17 @@ const get_pairs = ( Network ) => {
   return QUERY;
 }
 
+const coingecko_ids = ( Network ) => {
+  const {available_assets} = Network;
+  const assets_keys = Object.keys(available_assets);
+  const ids = 
+    assets_keys
+      .filter((asset_key) => Network.available_assets[asset_key].coingecko_id)
+      .map((asset_key) => Network.available_assets[asset_key].coingecko_id);
+
+  return ['growth-defi', 'compound-governance-token', ...ids];
+} 
+
 const get_markets = ( Network ) => {
   const { available_assets } = Network;
   const assets_keys = Object.keys(available_assets);
@@ -360,18 +371,16 @@ function* getTVLSaga() {
 function* getRelevantPricesSaga (params) {
     // Fetch Pairs price
     try {
-      const PAIRS = get_pairs(NetworkData['eth']); // Default always to mainnet
-      const query_url = 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2';
+      const cg_ids = coingecko_ids(NetworkData['eth']).join(',');  
+
+      const query_url = `https://api.coingecko.com/api/v3/simple/price?ids=${cg_ids}&vs_currencies=usd`;
       const options = {
-        method: 'POST',
-        body: JSON.stringify({ query: PAIRS })
+        method: 'GET',
       };
 
       const response = yield call(request, query_url, options);
-      const { data } = response;
-
-      if (data) {
-        yield put(getRelevantPricesSuccess(data))
+      if (response) {
+        yield put(getRelevantPricesSuccess(response))
       }
     } catch (e) {
       console.log(e);

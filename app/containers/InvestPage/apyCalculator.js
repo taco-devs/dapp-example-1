@@ -9,11 +9,10 @@ const getEthPrice = (relevantPrices) => {
 
 // GET THE PRICE for COMP
 const getMiningTokenPrice = (relevantPrices) => {
-    const ethPrice = relevantPrices.pairs && relevantPrices.pairs.find(pair => pair.token0.symbol === 'WETH');
-    const miningToken = relevantPrices.pairs && relevantPrices.pairs.find(pair => pair.token0.symbol === 'COMP');
+    const miningToken = relevantPrices['compound-governance-token'];
 
-    if (ethPrice && miningToken) {
-        return ethPrice.token1Price * miningToken.token1Price;
+    if ( miningToken) {
+        return miningToken.usd;
     } else {
         return 0;
     }
