@@ -65,7 +65,7 @@ const StatLabel = styled.h3`
 class WalletDashboard extends React.Component {
 
   calculatePortfolio = () => {
-    const { balances, eth_price, addGRO } = this.props;
+    const { balances, addGRO } = this.props;
 
     if (!balances) return '-';
     if (balances.length < 1) return;
@@ -78,12 +78,12 @@ class WalletDashboard extends React.Component {
 
              // If it GRO
              if (addGRO && curr.name === 'GRO') {
-               return acc + Number(curr.balance / 1e18) / Number(curr.price_eth) * eth_price; 
+               return acc + Number(curr.balance / 1e18) * Number(curr.base_price_usd); 
              } 
              if (curr.name === 'stkGRO') {
                const ratio = curr.total_reserve / curr.total_supply;
                const gro = balances.find(balance => balance.name === 'GRO');
-               return acc + (curr.web3_balance / 1e18 ) * ratio / Number(gro.price_eth) * eth_price;
+               return acc + (curr.web3_balance / 1e18 ) * ratio * Number(gro.base_price_usd);
              }
              if (curr.web3_balance > 0 && curr.base_price_usd) {
                 return acc + Number(curr.web3_balance / curr.decimals * curr.base_price_usd);

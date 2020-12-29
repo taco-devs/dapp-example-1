@@ -17,6 +17,7 @@ import {
   getRelevantPricesSuccess, getRelevantPricesError
 } from './actions';
 
+import { makeSelectRelevantPrices } from './selectors';
 import { makeSelectCurrrentNetwork } from '../App/selectors';
 import types from 'contracts/token_types.json';
 
@@ -200,6 +201,7 @@ const fetch_balances = async (available_assets, user_balances, web3, address) =>
         total_supply,
         liquidation_price,
         decimals: asset.base_decimals,
+        coingecko_id: asset.coingecko_id,
       })
 
     } catch (e) {
@@ -243,42 +245,29 @@ const get_markets = ( Network ) => {
   return QUERY;
 }
 
-const get_prices = async (asset_balances, data, pairs_data, web3) => {
+const get_prices = async (asset_balances, relevantPrices, data, web3) => {
   // Iterate through all prices
   try {
-    const { markets } = data;
     const with_prices = 
           asset_balances.map((asset) => {
-            let market;
             let base_price_eth;
             let base_price_usd;
 
             const gTokenPrice = Number(asset.total_reserve) / Number(asset.total_supply);
 
+            const ETH = relevantPrices['ethereum'];
+
             // Needs a router
             if (asset.type === types.STKGRO) {
-              const GRO = pairs_data.pairs.find(pair => pair.token0.symbol === 'GRO');
-              const ETH = pairs_data.pairs.find(pair => pair.token0.symbol === 'WETH');
+              const GRO = relevantPrices['growth-defi'];
 
-              base_price_eth = GRO.token1Price * gTokenPrice;
-              base_price_usd = ETH.token1Price * GRO.token1Price * gTokenPrice;
-            } 
-
-            if (asset.type === types.PMT || asset.type === types.GETH) {
-              market = markets.find(market => market.underlyingSymbol.toUpperCase() === asset.base.toUpperCase());
-              const baseAssetPrice = market ? market.underlyingPriceUSD : 0;
-              base_price_eth = market ? market.underlyingPrice : 0;
-              base_price_usd = gTokenPrice * baseAssetPrice
-            }  
-            
-            if (asset.type === types.TYPE1) {
-              market = markets.find(market => market.symbol === asset.base);
-              const baseAssetPrice = market ? market.exchangeRate * market.underlyingPriceUSD : 0;
-              base_price_eth = market ? market.exchangeRate : 0;
-              base_price_usd = gTokenPrice * baseAssetPrice
+              base_price_eth =  GRO.usd * gTokenPrice / ETH.usd;
+              base_price_usd = GRO.usd * gTokenPrice;
+            } else {
+              const ASSET = relevantPrices[asset.coingecko_id];
+              base_price_eth =  ASSET.usd * gTokenPrice / ETH.usd;
+              base_price_usd = ASSET.usd * gTokenPrice;
             }
-            // Get the redeeming rate
-            
 
             return {
               ...asset,
@@ -398,14 +387,13 @@ function* getBalancesSaga(params) {
   try { 
 
     // Get network
+    const relevantPrices = yield select(makeSelectRelevantPrices());
     const network = yield select(makeSelectCurrrentNetwork());
     const Network = NetworkData[network];
 
     if (Network) {
 
         // Get the correct pairs to fetch price
-        const PAIRS = get_pairs(Network);
-        const markets_query = get_markets(Network);
         const balances_query = BALANCES(address);        
 
         // Get the balances
@@ -415,37 +403,7 @@ function* getBalancesSaga(params) {
         };
 
         const balances_response = yield call(request, process.env.GROWTH_GRAPH_URL, balances_options);
-        const {data: balances_data} = balances_response;
-
-        // Fetch Pairs price
-        const query_url = 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2';
-        const options = {
-          method: 'POST',
-          body: JSON.stringify({ query: PAIRS })
-        };
-
-        const response = yield call(request, query_url, options);
-        const { data } = response;
-      
-        // Fetch Markets price
-        let myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-        let raw = JSON.stringify({"query":markets_query});
-        const compound_options = {
-          method: 'POST',
-          body: raw,
-          headers: myHeaders,
-          redirect: 'follow'
-        };
-
-        const c_response = yield call(request, process.env.COMPOUND_GRAPH_URL, compound_options);
-        const { data: c_data } = c_response;
-
-        yield put(getPricesSuccess(c_data));
-        
-        // Set Eth Price in USDT
-        const eth_market = c_data.markets.find(market => market.symbol === 'cETH');
-        yield put(getEthPrice(eth_market.underlyingPriceUSD));
+        const {data} = balances_response;
 
         // Get GRO data
         const GrowTokenInstance = new web3.eth.Contract(Network.growth_token.abi, Network.growth_token.address);
@@ -453,17 +411,18 @@ function* getBalancesSaga(params) {
         const gro_balance = yield call([GRO_Method, GRO_Method.call]);
 
         // Fetch all balances
-        if (balances_data) {
-          const asset_balances = yield fetch_balances(Network.available_assets, balances_data.userBalances, web3, address);
+        if (data) {
+          const asset_balances = yield fetch_balances(Network.available_assets, data.userBalances, web3, address);
 
           // Calculate the asset price
-          const balances_with_rate = yield get_prices(asset_balances, c_data, data, web3, address);
+          const balances_with_rate = yield get_prices(asset_balances, relevantPrices, data, web3, address);
 
           const balances = [
             {
               name: 'GRO',
               balance: gro_balance,
-              price_eth: data.pairs[1].token0Price,
+              base_price_usd: relevantPrices['growth-defi'].usd,
+              price_eth: relevantPrices['ethereum'].usd / relevantPrices['growth-defi'].usd,
             },
             ...balances_with_rate
           ]
@@ -474,6 +433,7 @@ function* getBalancesSaga(params) {
 
   } catch (error) {
     // const jsonError = yield error.response ? error.response.json() : error;
+    console.log(error)
     yield put(getBalancesError('Could not fetch balances'));
   }
 }

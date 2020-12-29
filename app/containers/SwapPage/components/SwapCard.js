@@ -151,9 +151,9 @@ export default class SwapCard extends Component {
         
         if (!relevantPrices) return 0;
 
-        const GROPair = relevantPrices.pairs.find(pair => pair.token0.symbol === 'GRO');
+        const GROPair = relevantPrices['growth-defi'];
 
-       return ethPrice / GROPair.token0Price * gro.balance;
+       return ethPrice / GROPair.usd * gro.balance;
     }
 
     getGTokenRate = (gtoken_pool) => {

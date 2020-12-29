@@ -104,10 +104,10 @@ export default class BalanceCard extends Component {
     }
 
     getGroPrice = () => {
-        const {balances, eth_price} = this.props;
-        if (!balances || !eth_price) return 0;
+        const {balances} = this.props;
+        if (!balances) return 0;
         const GRO = balances.find((balance) => balance.name === 'GRO');
-        return (Math.round((eth_price/ GRO.price_eth) * 100) / 100).toLocaleString('En-en');
+        return (Math.round(GRO.base_price_usd * 100) / 100).toLocaleString('En-en');
     }
 
     stkGROPrice = () => {
