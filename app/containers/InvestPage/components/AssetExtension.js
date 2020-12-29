@@ -186,11 +186,10 @@ export default class AssetExtension extends Component {
         const {relevantPrices} = this.props;
         if (!relevantPrices) return 0;
 
-        const ethPrice = relevantPrices.pairs && relevantPrices.pairs.find(pair => pair.token0.symbol === 'WETH');
-        const miningToken = relevantPrices.pairs && relevantPrices.pairs.find(pair => pair.token0.symbol === 'COMP');
+        const miningToken = relevantPrices['compound-governance-token'];
 
-        if (ethPrice && miningToken) {
-            return ethPrice.token1Price * miningToken.token1Price;
+        if (miningToken) {
+            return miningToken.usd;
         } else {
             return 0;
         }
@@ -200,11 +199,7 @@ export default class AssetExtension extends Component {
         const {relevantPrices} = this.props;
         if (!relevantPrices) return 0;
 
-        const ethPrice = relevantPrices.pairs && relevantPrices.pairs.find(pair => pair.token0.symbol === 'WETH');
-        const daiPrice = relevantPrices.pairs && relevantPrices.pairs.find(pair => pair.token0.symbol === 'DAI');
-        
-        const price = daiPrice.token0Price * ethPrice.token0Price;
-        return price;
+        return relevantPrices['dai'].usd;
     }
 
     getDailyDaiFactor = () => {
@@ -380,10 +375,10 @@ export default class AssetExtension extends Component {
                     {isLoadingChart && (
                         <LoaderContainer>
                             <Loader
-                            type="TailSpin"
-                            color={asset.type === types.STKGRO ? '#ffe391' : '#00d395'}
-                            height={120}
-                            width={120}
+                                type="TailSpin"
+                                color={asset.type === types.STKGRO ? '#ffe391' : '#00d395'}
+                                height={120}
+                                width={120}
                             />
                         </LoaderContainer>
                     )} 
