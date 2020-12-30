@@ -149,16 +149,16 @@ export default class Summary extends Component {
         // Validate against native balance
         if (is_native) {
             if (!value_native || Number(value_native) <= 0) return true;
-            return  Number(value_native * asset.underlying_decimals) > Number(underlying_balance);
+            return  numberToBN(value_native, asset.underlying_decimals) > Number(underlying_balance);
         } else {
             if (!value_base || Number(value_base) <= 0) return true;
-            return Number(value_base * asset.base_decimals) > Number(asset_balance);
+            return numberToBN(value_base, asset.base_decimals) > Number(asset_balance);
         }
         }
 
         if (modal_type === 'redeem') {
             if (!value_redeem) return true;
-            return Number(value_redeem * asset.base_decimals) > Number(g_balance);
+            return numberToBN(value_redeem, asset.base_decimals) > Number(g_balance);
         }
 
         return true;

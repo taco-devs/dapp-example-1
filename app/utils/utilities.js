@@ -27,41 +27,6 @@ export function getChainData(chainId) {
   }
 
 
-function RoundNum(num, length) { 
-  var number = Math.round(num * Math.pow(10, length)) / Math.pow(10, length);
-  return number;
-}
-
-function numberToString(num)
-{
-  let numStr = String(num);
-
-  if (Math.abs(num) < 1.0)
-  {
-      let e = parseInt(num.toString().split('e-')[1]);
-      if (e)
-      {
-          let negative = num < 0;
-          if (negative) num *= -1
-          num *= Math.pow(10, e - 1);
-          numStr = '0.' + (new Array(e)).join('0') + num.toString().substring(2);
-          if (negative) numStr = "-" + numStr;
-      }
-  }
-  else
-  {
-      let e = parseInt(num.toString().split('+')[1]);
-      if (e > 20)
-      {
-          e -= 20;
-          num /= Math.pow(10, e);
-          numStr = num.toString() + (new Array(e + 1)).join('0');
-      }
-  }
-
-  return numStr;
-}
-
 function valid(amount, decimals) {
   const regex = new RegExp(`^\\d+${decimals > 0 ? `(\\.\\d{1,${decimals}})?` : ''}$`);
   return regex.test(amount);
@@ -85,6 +50,7 @@ function units(coins, decimals) {
 
 export function numberToBN(value_number, decimals) {
   let parsedNumber = value_number.toString();
+  console.log(parsedNumber)
   if (decimals === 1e18) {
     return units(parsedNumber, 18)
   }
