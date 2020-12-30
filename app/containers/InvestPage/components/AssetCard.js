@@ -370,8 +370,8 @@ export default class AssetCard extends Component {
                                     direction="column"
                                     flex="1.2"
                                 >
-                                <PrimaryLabel type={asset.type}>{/* this.calculateAvgAPY() */}</PrimaryLabel>
-                                <SecondaryLabel type={asset.type}>{/* this.calculate1MonthAPY() */}</SecondaryLabel>
+                                <PrimaryLabel type={asset.type}>{this.calculateAvgAPY()}</PrimaryLabel>
+                                <SecondaryLabel type={asset.type}>{this.calculate1MonthAPY()}</SecondaryLabel>
                                 </CardColumn>
                             </CardRow>
                             
