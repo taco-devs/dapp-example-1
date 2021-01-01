@@ -153,7 +153,7 @@ const assets = {
                 underlying_abi: USDC,
                 underlying_decimals: 1e6,
                 base_decimals: 1e6,
-                native: 'USDc',
+                native: 'USDC',
                 base_asset: 'USDC',
                 g_asset: 'gUSDC',
                 img_url: 'usdc.png',

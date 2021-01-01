@@ -697,22 +697,24 @@ export default class ActionDrawer extends Component {
       const {total_supply, total_reserve, total_reserve_underlying} = this.state;
       if (!asset) return '-';
 
+      if (!asset || !total_supply || !total_reserve ) return '-';
+
       if (is_native) {
         if (revert) {
-          let price = Math.round((total_reserve_underlying / asset.underlying_decimals) / (total_supply / asset.base_decimals) * 1000) / 1000;
-          return `${price} ${asset.native} = 1 ${asset.base_asset}`
+            let price = Math.round((total_supply / asset.base_decimals) / (total_reserve_underlying / asset.underlying_decimals) * 10000) / 10000;
+            return `${price} ${asset.g_asset} = 1 ${asset.native}`
         } else {
-          let price = Math.round((total_supply / asset.base_decimals)  / (total_reserve_underlying / asset.underlying_decimals) * 1000) / 1000;
-          return `${price} ${asset.g_asset} = 1 ${asset.native}`
+            let price = Math.round((total_supply / asset.base_decimals)  / (total_reserve_underlying / asset.underlying_decimals) * 10000) / 10000;
+            return `${price} ${asset.g_asset} = 1 ${asset.native}`
         }
       } else {
-        if (revert) {
-          let price = Math.round(total_reserve / total_supply * 1000) / 1000;
-          return `${price} ${asset.native} = 1 ${asset.base_asset}`
-        } else {
-          let price = Math.round(total_supply / total_reserve * 1000) / 1000;
-          return `${price} ${asset.g_asset} = 1 ${asset.base_asset}`
-        }
+          if (revert) {
+              let price = Math.round(total_reserve / total_supply * 10000) / 10000;
+              return `${price} ${asset.base_asset} = 1 ${asset.g_asset}`
+          } else {
+          let price = Math.round(total_supply / total_reserve * 10000) / 10000;
+              return `${price} ${asset.g_asset} = 1 ${asset.base_asset}`
+          }
       }
     }
   
