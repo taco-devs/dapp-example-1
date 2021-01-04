@@ -116,6 +116,7 @@
     "sanitize.css": "8.0.0",
     "styled-components": "^4.2.0",
     "victory": "^35.4.3",
+    "walletlink": "^2.0.2",
     "web3": "^1.2.11",
     "web3-provider-engine": "^15.0.12",
     "web3-redux": "^0.5.2",

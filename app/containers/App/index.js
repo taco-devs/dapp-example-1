@@ -34,6 +34,7 @@ import Announcement from 'components/Announcement';
 import Web3 from "web3";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
+import WalletLink from 'walletlink'
 import { getChainData } from '../../utils/utilities';
 
 import NetworkData from 'contracts';
@@ -69,6 +70,20 @@ const NetworkChainIds = {
   4:'rinkeby',
   42: 'kovan',
 }
+
+// Wallet link 
+const walletLink = new WalletLink({
+  appName: 'Growth DeFi',
+  appLogoUrl: 'https://app.growthdefi.com/d6babb6cfb82515bcba8d336fa5da1c1.png',
+  darkMode: false,
+});
+
+const walletLinkProvider = walletLink.makeWeb3Provider(
+  `https://mainnet.infura.io/v3/9619f128da304b1c99b821758dc58bb5`,
+  `1`,
+)
+
+
 
 // Initial State
 const INITIAL_STATE = {
@@ -223,6 +238,20 @@ class App extends React.Component {
           infuraId: '9619f128da304b1c99b821758dc58bb5' // process.env.REACT_APP_INFURA_ID
         }
       },
+      'custom-walletlink': {
+        display: {
+          logo: `https://pbs.twimg.com/profile_images/1029780896063184896/jQVcdbAL.jpg`,
+          name: 'Coinbase Wallet',
+          description: 'Scan with WalletLink to connect',
+        },
+        package: walletLinkProvider,
+        connector: async (provider, options) => {
+          await provider.enable()
+
+          return provider
+        },
+      },
+
     };
     return providerOptions;
   };
