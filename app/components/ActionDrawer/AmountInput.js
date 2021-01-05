@@ -227,14 +227,14 @@ export default class AmountInputContainer extends Component {
     }
 
     setMax = () => {
-        const { asset, modal_type, is_native, underlying_balance, asset_balance, g_balance, handleChange } = this.props;
+        const { asset, modal_type, is_native, underlying_balance, asset_balance, g_balance, handleChange, } = this.props;
         
         if (modal_type === 'mint') {
           if (is_native) {
             let balance = asset.type === types.TYPE_ETH ? underlying_balance - (0.05 * 1e18) : underlying_balance;
             if ((Number(balance) / asset.underlying_decimals) < 0.01) return;
             const value_native = BNtoNumber(balance, asset.underlying_decimals);
-            handleChange({value_native});
+            handleChange({value_native, isMintUnderlyingMax: true});
             this.handleInputChange(value_native)
           } else {
 
@@ -245,7 +245,7 @@ export default class AmountInputContainer extends Component {
             if (has_low_amount) return;
             const value_base = BNtoNumber(balance, asset.base_decimals);
 
-            handleChange({value_base});
+            handleChange({value_base, isMintMax: true});
             this.handleInputChange(value_base)
 
           }
@@ -254,7 +254,7 @@ export default class AmountInputContainer extends Component {
         if (modal_type === 'redeem') {
           if ((Number(g_balance) / asset.base_decimals) < 0.01) return;
           const value_redeem = BNtoNumber(g_balance, asset.base_decimals);
-          handleChange({value_redeem});
+          handleChange({value_redeem, isRedeemMax: true});
           this.calculateBurningTotal(value_redeem);
           
         }
@@ -262,7 +262,7 @@ export default class AmountInputContainer extends Component {
 
 
     render() {
-        const {asset, modal_type, is_native, isLoading, value_native, value_base, value_redeem} = this.props;
+        const {asset, modal_type, is_native, isLoading, value_native, value_base, value_redeem, handleChange} = this.props;
         return (
             <InputContainer>
                 <InputSection>
@@ -284,6 +284,7 @@ export default class AmountInputContainer extends Component {
                             type="number"
                             onClick={e => e.stopPropagation()}
                             onChange={e => {
+                                handleChange({isMintUnderlyingMax: false});
                                 this.handleInputChange(e.target.value)
                             }}
                         />
@@ -296,6 +297,7 @@ export default class AmountInputContainer extends Component {
                             type="number"
                             onClick={e => e.stopPropagation()}
                             onChange={e => {
+                                handleChange({isMintMax: false});
                                 this.handleInputChange(e.target.value)
                             }}
                         />
@@ -308,6 +310,7 @@ export default class AmountInputContainer extends Component {
                             type="number"
                             onClick={e => e.stopPropagation()}
                             onChange={e => {
+                                handleChange({isRedeemMax: false});
                                 this.handleInputChange(e.target.value)
                             }}
                         />

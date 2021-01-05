@@ -203,6 +203,10 @@ export default class ActionDrawer extends Component {
   state = {
     show: false,
     isLoading: false,
+    // Avoid dust
+    isMintMax: false,
+    isMintUnderlyingMax: false,
+    isRedeemMax: false,
     modal_type: 'mint',
     value_base: '',
     value_native: '',
@@ -210,6 +214,7 @@ export default class ActionDrawer extends Component {
     is_native: false,
     underlying_balance: null,
     asset_balance: null,
+    g_balance: null,
     total_supply: null,
     deposit_fee: null,
     withdrawal_fee: null,
@@ -400,18 +405,18 @@ export default class ActionDrawer extends Component {
         mintGTokenFromUnderlyingBridge
       } = this.props;
   
-      const { is_native, value_base, value_native, total_native, total_base } = this.state;
+      const { is_native, value_base, value_native, total_native, total_base, isMintMax, isMintUnderlyingMax, underlying_balance, asset_balance } = this.state;
   
       // Avoid clicks when the user is not allowed to make an action
-      if (this.isDisabled()) return;
+      if (this.isDisabled()) return alert('Insufficient Balance');
       
       // Handle depending the asset
       if (is_native) {
   
         let GContractInstance;
-        const _cost = numberToBN(value_native, asset.underlying_decimals);
 
           if (asset.type === types.TYPE_ETH) {
+              const _cost = numberToBN(value_native, asset.underlying_decimals);
               GContractInstance = await new web3.eth.Contract(asset.bridge_abi, asset.bridge_address);
               mintGTokenFromUnderlyingBridge({
                   GContractInstance, 
@@ -432,6 +437,7 @@ export default class ActionDrawer extends Component {
                   toggle: this.toggleModal
               })
           } else {
+              const _cost = isMintUnderlyingMax ? underlying_balance : numberToBN(value_native, asset.underlying_decimals);
               GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
               mintGTokenFromUnderlying({
                   GContractInstance, 
@@ -454,9 +460,9 @@ export default class ActionDrawer extends Component {
 
       } else {
         let GContractInstance;
-        const _cost = numberToBN(value_base, asset.base_decimals);
 
         if (asset.type === types.GETH) {
+            const _cost = numberToBN(value_base, asset.base_decimals);
             GContractInstance = await new web3.eth.Contract(asset.bridge_abi, asset.bridge_address);
             mintGTokenFromBridge({
                 GContractInstance, 
@@ -478,6 +484,7 @@ export default class ActionDrawer extends Component {
             }) 
         } else {
             GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
+            const _cost = isMintMax ? asset_balance : numberToBN(value_base, asset.base_decimals);
             mintGTokenFromCToken({
                 GContractInstance, 
                 _cost, 
@@ -509,10 +516,12 @@ export default class ActionDrawer extends Component {
         redeemGTokenToUnderlyingBridge
       } = this.props;
   
-      const { is_native, value_redeem, total_native_cost_redeem, total_base_cost_redeem, total_native_redeem, total_base_redeem } = this.state;
+      const { is_native, value_redeem, total_native_cost_redeem, total_base_cost_redeem, total_native_redeem, total_base_redeem, isRedeemMax , g_balance} = this.state;
       
       // Validate Balance
-      if (this.isDisabled()) return;
+      if (this.isDisabled()) return alert('Insufficient Balance');;
+
+      const _grossShares = isRedeemMax ? g_balance : numberToBN(value_redeem, asset.base_decimals);
   
       // Handle depending the asset
       if (is_native) {
@@ -522,7 +531,7 @@ export default class ActionDrawer extends Component {
             GContractInstance = await new web3.eth.Contract(asset.bridge_abi, asset.bridge_address);
             redeemGTokenToUnderlyingBridge({
                 GContractInstance, 
-                _grossShares: numberToBN(value_redeem, asset.base_decimals),
+                _grossShares,
                 growthToken: asset.gtoken_address,
                 address,
                 web3,
@@ -543,7 +552,7 @@ export default class ActionDrawer extends Component {
             GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
             redeemGTokenToUnderlying({
                 GContractInstance, 
-                _grossShares: numberToBN(value_redeem, asset.base_decimals),
+                _grossShares,
                 address,
                 web3,
                 asset: {
@@ -570,7 +579,7 @@ export default class ActionDrawer extends Component {
             GContractInstance = await new web3.eth.Contract(asset.bridge_abi, asset.bridge_address);
             redeemGTokenToBridge({
                 GContractInstance, 
-                _grossShares: numberToBN(value_redeem, asset.base_decimals),
+                _grossShares,
                 growthToken: asset.gtoken_address,
                 address,
                 web3,
@@ -590,7 +599,7 @@ export default class ActionDrawer extends Component {
             GContractInstance = await new web3.eth.Contract(asset.gtoken_abi, asset.gtoken_address);
             redeemGTokenToCToken({
                 GContractInstance, 
-                _grossShares: numberToBN(value_redeem, asset.base_decimals),
+                _grossShares,
                 address,
                 web3,
                 asset: {
