@@ -23,7 +23,13 @@ const Container = styled.div`
   flex-direction: column;
   height: 100vh;
   width: 100vw;
-  background-color: white;
+ ${props => {
+   if (props.drawer_type === 'interaction') return 'background: white;';
+   if (props.drawer_type === 'stats') return `
+    background: rgb(255,255,255);
+    background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(0,0,0,1) 100%);
+   `
+ }}
   z-index: 120;
 `
 
@@ -766,7 +772,9 @@ export default class ActionDrawer extends Component {
                         placement="right"
                         preventScroll={true}
                     >
-                        <Container>
+                        <Container
+                          drawer_type={drawer_type}
+                        >
                           <ActionRow justify="space-between">
                             <ActionCol onClick={() => toggleMobileDrawer()}>
                               <Icon icon={chevronCircleLeft} style={{margin: '-2.5px 5px 0 5px', color: '#161d6b'}} /> 
