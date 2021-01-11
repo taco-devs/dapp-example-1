@@ -98,6 +98,8 @@ const GrowthDashboardStats = styled.div`
   -webkit-box-shadow: inset 0px 0px 2px 2px rgba(0,0,0,0.75);
   -moz-box-shadow: inset 0px 0px 2px 2px rgba(0,0,0,0.75);
   box-shadow: inset 0px 0px 2px 2px rgba(0,0,0,0.75);
+  padding: ${props => props.isLoadingTVL ? '5px' : '0'};
+
 `
 
 const StyledTooltip = styled.div`
@@ -303,7 +305,9 @@ parseTVLData = (tvl_history) => {
           /> */}
           <span>{growth} ( <span style={{letterSpacing: '2.5px'}}>$ {value} USD</span> )</span>
         </GrowthDashboardHeader>
-        <GrowthDashboardStats>
+        <GrowthDashboardStats
+          isLoadingTVL={isLoadingTVL}
+        >
           {isLoadingTVL && (
             <Loader
               type="TailSpin"

@@ -15,7 +15,7 @@ export default defineMessages({
   copyright: {
     id: `${scope}.copyright`,
     defaultMessage: `
-      © Growth Foundation 2020
+      © Growth Foundation 2021
     `,
   },
 });

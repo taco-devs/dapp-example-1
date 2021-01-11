@@ -120,11 +120,26 @@ export default class AssetCard extends Component {
 
     state = {
         isMobileDrawerOpen: false,
+        drawer_type: 'interaction',
     }
 
     // Open / Close mobile drawer on mobile
-    toggleMobileDrawer = () => {
-        this.setState({isMobileDrawerOpen: !this.state.isMobileDrawerOpen});
+    toggleMobileDrawer = (drawer_type) => {
+        this.setState({isMobileDrawerOpen: !this.state.isMobileDrawerOpen, drawer_type});
+    }
+
+    // Toggle Drawer type
+    toggleDrawerType = () => {
+        const {web3} = this.props;
+        const {drawer_type} = this.state;
+        if (!web3) return alert('Please connect your wallet to interact with this asset');
+
+        if (drawer_type === 'stats') {
+            this.setState({drawer_type: 'interaction'});
+        } 
+        if (drawer_type === 'interaction') {
+            this.setState({drawer_type: 'stats'});
+        } 
     }
 
     // Open / Close asset stats page
@@ -321,19 +336,24 @@ export default class AssetCard extends Component {
             <React.Fragment>
                 {isMobile ? (
                     <ActionDrawer
+                        {...this.state}
                         {...this.props}
                         type="mint"
                         text="MINT"
                         data={data}
                         asset={asset}
                         toggleMobileDrawer={this.toggleMobileDrawer}
+                        toggleDrawerType={this.toggleDrawerType}
                         isMobileDrawerOpen={isMobileDrawerOpen}
                     >
                         <Card 
                             isMobile={isMobile}
                             onClick={() => {
-                                if (!web3) return alert('Please connect your wallet to interact with this asset');
-                                this.toggleMobileDrawer();
+                                if (!web3) {
+                                    this.toggleMobileDrawer('stats');
+                                } else {
+                                    this.toggleMobileDrawer('interaction');
+                                }
                             }}
                             type={asset.type}
                         >

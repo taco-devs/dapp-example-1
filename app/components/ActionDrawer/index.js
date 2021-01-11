@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { Icon } from 'react-icons-kit';
 import {exchange} from 'react-icons-kit/fa/exchange';
 import {chevronCircleLeft} from 'react-icons-kit/fa/chevronCircleLeft';
+import {areaChart} from 'react-icons-kit/fa/areaChart'
 import debounce from 'lodash.debounce';
 import Loader from 'react-loader-spinner';
 import ApproveContainer from 'components/ApproveContainer';
@@ -14,6 +15,7 @@ import types from 'contracts/token_types.json';
 import AssetTypeToggle from './AssetTypeToggle';
 import MobileTabs from './MobileTabs';
 import AmountInput from './AmountInput';
+import StatsSection from './StatsSection';
 import { numberToBN, BNtoNumber } from 'utils/utilities';
 
 const Container = styled.div`
@@ -29,6 +31,7 @@ const ActionRow = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: ${props => props.justify || 'flex-start'};
   padding: 1em 1em 0.5em 1em;
 `
 
@@ -246,6 +249,7 @@ export default class ActionDrawer extends Component {
     handleChange = (values) => {
       this.setState({...values}); 
     }
+
 
   
     fetchBalance = async () => {
@@ -745,7 +749,7 @@ export default class ActionDrawer extends Component {
     }
 
     render() {
-        const {type, asset, isMobileDrawerOpen, toggleMobileDrawer, currentSwap, web3} = this.props;
+        const {type, asset, isMobileDrawerOpen, toggleMobileDrawer, currentSwap, web3, drawer_type, toggleDrawerType} = this.props;
         const {modal_type, is_native, value_base, value_native, value_redeem, total_supply, total_reserve, isLoading, deposit_fee, withdrawal_fee, total_native, total_base, total_base_redeem, total_native_redeem} = this.state;
         if (web3 && !total_supply) {
           this.fetchBalance();
@@ -762,161 +766,185 @@ export default class ActionDrawer extends Component {
                         placement="right"
                         preventScroll={true}
                     >
-                      <Container>
-                        <ActionRow>
-                          <ActionCol onClick={() => toggleMobileDrawer()}>
-                            <Icon icon={chevronCircleLeft} style={{margin: '-2.5px 5px 0 5px', color: '#161d6b'}} /> 
-                            <PrimaryLabel>RETURN</PrimaryLabel>
-                          </ActionCol>
-                        </ActionRow>
-                        <AmountInput 
-                          {...this.props}
-                          {...this.state}
-                          handleChange={this.handleChange}
-                          getWei={this.getWei}
-                        />
-                        {(asset.type === types.TYPE1 || asset.type === types.TYPE_ETH) && (
-                          <AssetTypeToggle 
-                            {...this.props}
-                            {...this.state}
-                            toggleNativeSelector={this.toggleNativeSelector}
-                          />
-                        )} 
-                        {currentSwap ? (
-                          <SwapView
-                            type={modal_type}
-                          >
-                            <SwapContainer> 
-                              <SwapSection>
-                                <SwapColumn>
-                                  <SwapLogo src={require(`images/tokens/${currentSwap.fromImage}`)}/>
-                                </SwapColumn>
-                                <SwapColumn flex="3">
-                                  <StyledText size="1em">{this.parseNumber(currentSwap.sending, currentSwap.fromDecimals)}</StyledText>
-                                  <StyledText>{currentSwap.from}</StyledText>
-                                </SwapColumn>
-                              </SwapSection>
-                              <div style={{display: 'flex', justifyItems: 'center', height: '50px', alignItems: 'center', color: 'white'}} color="white">
-                                <Icon icon={exchange} size="1.5em" />
-                              </div>
-                              <SwapSection>
-                                <SwapColumn>
-                                  <SwapLogo src={require(`images/tokens/${currentSwap.toImage}`)}/>
-                                </SwapColumn>
-                                <SwapColumn flex="3">
-                                  <StyledText size="1em">{this.parseNumber(currentSwap.receiving, currentSwap.toDecimals)}</StyledText>
-                                  <StyledText>{currentSwap.to}</StyledText>
-                                </SwapColumn>
-                              </SwapSection>
-                            </SwapContainer>
-                            {currentSwap.status === 'loading' && (
-                              <StyledText modal_type={currentSwap.modal_type} size="0.9em" margin="1em 0 0 0" style={{width: '250px'}}>Waiting for Confirmation</StyledText>
+                        <Container>
+                          <ActionRow justify="space-between">
+                            <ActionCol onClick={() => toggleMobileDrawer()}>
+                              <Icon icon={chevronCircleLeft} style={{margin: '-2.5px 5px 0 5px', color: '#161d6b'}} /> 
+                              <PrimaryLabel>RETURN</PrimaryLabel>
+                            </ActionCol>
+                            {drawer_type === 'interaction' && (
+                              <ActionCol onClick={() => toggleDrawerType()}>
+                                <PrimaryLabel>STATS</PrimaryLabel>
+                                <Icon icon={areaChart} style={{margin: '-2.5px 5px 0 10px', color: '#161d6b'}} /> 
+                              </ActionCol>
                             )}
-                            {currentSwap.status === 'confirmed' && (
-                              <StyledText modal_type={currentSwap.modal_type} size="0.9em" margin="1em 0 0 0" style={{width: '250px'}}>Transaction Confirmed</StyledText>
+                            {drawer_type === 'stats' && (
+                              <ActionCol onClick={() => toggleDrawerType()}>
+                                <PrimaryLabel>DEPOSIT</PrimaryLabel>
+                                <Icon icon={exchange} style={{margin: '-2.5px 5px 0 10px', color: '#161d6b'}} /> 
+                              </ActionCol>
                             )}
-                            {currentSwap.status === 'receipt'  && (
-                              <StyledText modal_type={currentSwap.modal_type} size="0.9em" margin="1em 0 0 0" style={{width: '250px'}}>Transaction ID</StyledText>
-                            )}
-                            {(currentSwap.status === 'receipt' || currentSwap.status === 'confirmed')  && (
-                              <StyledLink href={`https://etherscan.io/tx/${currentSwap.hash}`} target="_blank" modal_type={currentSwap.modal_type} size="0.9em" margin="1em 0 0 0" style={{width: '250px'}}>{currentSwap.hash}</StyledLink>
-                            )}
-                          </SwapView>
-                        ) : (
-                          <Summary>
-                            <SummaryRow>
-                              <SummaryColumn flex="1">
-                                <PrimaryLabel>PRICE</PrimaryLabel>
-                              </SummaryColumn>
-                              <SummaryColumn align="flex-end" flex="2.5">
-                                <SummaryRow>
-                                  <PrimaryLabel margin="0 5px 0 5px">{this.getPrice(is_native, true)}</PrimaryLabel>
-                                </SummaryRow>
-                              </SummaryColumn>
-                            </SummaryRow>
-                            <SummaryRow>
-                              <SummaryColumn>
-                                <PrimaryLabel>{asset.base_asset} RESERVE</PrimaryLabel>
-                              </SummaryColumn>
-                              <SummaryColumn align="flex-end">
-                                <PrimaryLabel>{total_reserve && Math.round(total_reserve / asset.base_decimals).toLocaleString('En-en')} {asset.base_asset}</PrimaryLabel>
-                              </SummaryColumn>
-                            </SummaryRow>
-                            <SummaryRow>
-                              <SummaryColumn>
-                                <PrimaryLabel>{asset.g_asset} SUPPLY</PrimaryLabel>
-                              </SummaryColumn>
-                              <SummaryColumn align="flex-end">
-                                <PrimaryLabel>
-                                  {total_supply && Math.round(total_supply / asset.base_decimals).toLocaleString('En-en')} {asset.g_asset}
-                                </PrimaryLabel>
-                              </SummaryColumn>
-                            </SummaryRow>
-                            <SummaryRow>
-                              <SummaryColumn flex="1">
-                                <SummaryRow>
-                                  <PrimaryLabel margin="0 5px 0 0">FEE</PrimaryLabel>
-                                </SummaryRow>
-                              </SummaryColumn>
-                              <SummaryColumn align="flex-end" flex="3">
-                                  {modal_type === 'mint' && <PrimaryLabel spacing="1px">{this.parseNumber(this.calculateFee(), is_native ? asset.underlying_decimals : asset.base_decimals).toLocaleString('en-En')} {is_native ? asset.native : asset.base_asset}  ({this.parseNumber(deposit_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}
-                                  {modal_type === 'redeem' && <PrimaryLabel spacing="1px">{this.parseNumber(this.calculateFee(), 1e18).toLocaleString('en-En')} {asset.g_asset}  ({this.parseNumber(withdrawal_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}   
-                              </SummaryColumn>
-                            </SummaryRow>
-                            <SummaryRow>
-                              <SummaryColumn flex="1">
-                                <SummaryRow>
-                                  <PrimaryLabel margin="0 5px 0 0">TOTAL</PrimaryLabel>
-                                  {/* <BsInfoCircleFill style={{color: '#BEBEBE' }} /> */}
-                                </SummaryRow>
-                              </SummaryColumn>
-                              <SummaryColumn align="flex-end" flex="3">
-                                {modal_type === 'mint'&& is_native && <PrimaryLabel spacing="1px">{total_native ? this.parseNumber(total_native, asset.base_decimals) : '-'} {asset.g_asset}</PrimaryLabel>}
-                                {modal_type === 'mint'&& !is_native && <PrimaryLabel spacing="1px">{total_base ? this.parseNumber(total_base, asset.base_decimals) : '-'} {asset.g_asset}</PrimaryLabel>}
-                                {modal_type === 'redeem'&& is_native && <PrimaryLabel spacing="1px">{total_native_redeem ? this.parseNumber(total_native_redeem, asset.underlying_decimals) : '-'} {asset.native}</PrimaryLabel>}
-                                {modal_type === 'redeem'&& !is_native && <PrimaryLabel spacing="1px">{total_base_redeem ? this.parseNumber(total_base_redeem, asset.base_decimals) : '-'} {asset.base_asset}</PrimaryLabel>}
-                              </SummaryColumn>
-                            </SummaryRow>
-                            <SummaryRow justify="center" flex="2">
-                            {modal_type === 'mint' &&  (
-                              <React.Fragment>
-                                {this.hasEnoughAllowance() ? (
-                                  <ActionConfirmButton
-                                    asset={asset}
-                                    modal_type={modal_type}
-                                    onClick={() => this.handleDeposit()}
-                                    disabled={this.isDisabled()}
-                                  >
-                                    {this.isDisabled() ? 'NOT ENOUGH BALANCE' : asset.type === types.STKGRO ? 'CONFIRM STAKE' : 'CONFIRM MINT'}
-                                  </ActionConfirmButton>
-                                ) : (
-                                  <ApproveContainer 
-                                    {...this.props}
-                                    {...this.state}
-                                    updateApprovalBalance={this.updateApprovalBalance}
-                                  />
-                                )}
+                            
+                          </ActionRow>
+                          {drawer_type === 'interaction' && (
+                            <React.Fragment>
+                              <AmountInput 
+                                {...this.props}
+                                {...this.state}
+                                handleChange={this.handleChange}
+                                getWei={this.getWei}
+                              />
+                              {(asset.type === types.TYPE1 || asset.type === types.TYPE_ETH) && (
+                                <AssetTypeToggle 
+                                  {...this.props}
+                                  {...this.state}
+                                  toggleNativeSelector={this.toggleNativeSelector}
+                                />
+                              )} 
+                              {currentSwap ? (
+                                <SwapView
+                                  type={modal_type}
+                                >
+                                  <SwapContainer> 
+                                    <SwapSection>
+                                      <SwapColumn>
+                                        <SwapLogo src={require(`images/tokens/${currentSwap.fromImage}`)}/>
+                                      </SwapColumn>
+                                      <SwapColumn flex="3">
+                                        <StyledText size="1em">{this.parseNumber(currentSwap.sending, currentSwap.fromDecimals)}</StyledText>
+                                        <StyledText>{currentSwap.from}</StyledText>
+                                      </SwapColumn>
+                                    </SwapSection>
+                                    <div style={{display: 'flex', justifyItems: 'center', height: '50px', alignItems: 'center', color: 'white'}} color="white">
+                                      <Icon icon={exchange} size="1.5em" />
+                                    </div>
+                                    <SwapSection>
+                                      <SwapColumn>
+                                        <SwapLogo src={require(`images/tokens/${currentSwap.toImage}`)}/>
+                                      </SwapColumn>
+                                      <SwapColumn flex="3">
+                                        <StyledText size="1em">{this.parseNumber(currentSwap.receiving, currentSwap.toDecimals)}</StyledText>
+                                        <StyledText>{currentSwap.to}</StyledText>
+                                      </SwapColumn>
+                                    </SwapSection>
+                                  </SwapContainer>
+                                  {currentSwap.status === 'loading' && (
+                                    <StyledText modal_type={currentSwap.modal_type} size="0.9em" margin="1em 0 0 0" style={{width: '250px'}}>Waiting for Confirmation</StyledText>
+                                  )}
+                                  {currentSwap.status === 'confirmed' && (
+                                    <StyledText modal_type={currentSwap.modal_type} size="0.9em" margin="1em 0 0 0" style={{width: '250px'}}>Transaction Confirmed</StyledText>
+                                  )}
+                                  {currentSwap.status === 'receipt'  && (
+                                    <StyledText modal_type={currentSwap.modal_type} size="0.9em" margin="1em 0 0 0" style={{width: '250px'}}>Transaction ID</StyledText>
+                                  )}
+                                  {(currentSwap.status === 'receipt' || currentSwap.status === 'confirmed')  && (
+                                    <StyledLink href={`https://etherscan.io/tx/${currentSwap.hash}`} target="_blank" modal_type={currentSwap.modal_type} size="0.9em" margin="1em 0 0 0" style={{width: '250px'}}>{currentSwap.hash}</StyledLink>
+                                  )}
+                                </SwapView>
+                              ) : (
+                                <Summary>
+                                  <SummaryRow>
+                                    <SummaryColumn flex="1">
+                                      <PrimaryLabel>PRICE</PrimaryLabel>
+                                    </SummaryColumn>
+                                    <SummaryColumn align="flex-end" flex="2.5">
+                                      <SummaryRow>
+                                        <PrimaryLabel margin="0 5px 0 5px">{this.getPrice(is_native, true)}</PrimaryLabel>
+                                      </SummaryRow>
+                                    </SummaryColumn>
+                                  </SummaryRow>
+                                  <SummaryRow>
+                                    <SummaryColumn>
+                                      <PrimaryLabel>{asset.base_asset} RESERVE</PrimaryLabel>
+                                    </SummaryColumn>
+                                    <SummaryColumn align="flex-end">
+                                      <PrimaryLabel>{total_reserve && Math.round(total_reserve / asset.base_decimals).toLocaleString('En-en')} {asset.base_asset}</PrimaryLabel>
+                                    </SummaryColumn>
+                                  </SummaryRow>
+                                  <SummaryRow>
+                                    <SummaryColumn>
+                                      <PrimaryLabel>{asset.g_asset} SUPPLY</PrimaryLabel>
+                                    </SummaryColumn>
+                                    <SummaryColumn align="flex-end">
+                                      <PrimaryLabel>
+                                        {total_supply && Math.round(total_supply / asset.base_decimals).toLocaleString('En-en')} {asset.g_asset}
+                                      </PrimaryLabel>
+                                    </SummaryColumn>
+                                  </SummaryRow>
+                                  <SummaryRow>
+                                    <SummaryColumn flex="1">
+                                      <SummaryRow>
+                                        <PrimaryLabel margin="0 5px 0 0">FEE</PrimaryLabel>
+                                      </SummaryRow>
+                                    </SummaryColumn>
+                                    <SummaryColumn align="flex-end" flex="3">
+                                        {modal_type === 'mint' && <PrimaryLabel spacing="1px">{this.parseNumber(this.calculateFee(), is_native ? asset.underlying_decimals : asset.base_decimals).toLocaleString('en-En')} {is_native ? asset.native : asset.base_asset}  ({this.parseNumber(deposit_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}
+                                        {modal_type === 'redeem' && <PrimaryLabel spacing="1px">{this.parseNumber(this.calculateFee(), 1e18).toLocaleString('en-En')} {asset.g_asset}  ({this.parseNumber(withdrawal_fee, 1e16).toFixed(2)}%)</PrimaryLabel>}   
+                                    </SummaryColumn>
+                                  </SummaryRow>
+                                  <SummaryRow>
+                                    <SummaryColumn flex="1">
+                                      <SummaryRow>
+                                        <PrimaryLabel margin="0 5px 0 0">TOTAL</PrimaryLabel>
+                                        {/* <BsInfoCircleFill style={{color: '#BEBEBE' }} /> */}
+                                      </SummaryRow>
+                                    </SummaryColumn>
+                                    <SummaryColumn align="flex-end" flex="3">
+                                      {modal_type === 'mint'&& is_native && <PrimaryLabel spacing="1px">{total_native ? this.parseNumber(total_native, asset.base_decimals) : '-'} {asset.g_asset}</PrimaryLabel>}
+                                      {modal_type === 'mint'&& !is_native && <PrimaryLabel spacing="1px">{total_base ? this.parseNumber(total_base, asset.base_decimals) : '-'} {asset.g_asset}</PrimaryLabel>}
+                                      {modal_type === 'redeem'&& is_native && <PrimaryLabel spacing="1px">{total_native_redeem ? this.parseNumber(total_native_redeem, asset.underlying_decimals) : '-'} {asset.native}</PrimaryLabel>}
+                                      {modal_type === 'redeem'&& !is_native && <PrimaryLabel spacing="1px">{total_base_redeem ? this.parseNumber(total_base_redeem, asset.base_decimals) : '-'} {asset.base_asset}</PrimaryLabel>}
+                                    </SummaryColumn>
+                                  </SummaryRow>
+                                  <SummaryRow justify="center" flex="2">
+                                  {modal_type === 'mint' &&  (
+                                    <React.Fragment>
+                                      {this.hasEnoughAllowance() ? (
+                                        <ActionConfirmButton
+                                          asset={asset}
+                                          modal_type={modal_type}
+                                          onClick={() => this.handleDeposit()}
+                                          disabled={this.isDisabled()}
+                                        >
+                                          {this.isDisabled() ? 'NOT ENOUGH BALANCE' : asset.type === types.STKGRO ? 'CONFIRM STAKE' : 'CONFIRM MINT'}
+                                        </ActionConfirmButton>
+                                      ) : (
+                                        <ApproveContainer 
+                                          {...this.props}
+                                          {...this.state}
+                                          updateApprovalBalance={this.updateApprovalBalance}
+                                        />
+                                      )}
+                                    </React.Fragment>
+                                  )}
+                                  {modal_type === 'redeem' &&  (
+                                    <ActionConfirmButton 
+                                      asset={asset}
+                                      modal_type={modal_type}
+                                      onClick={() => this.handleRedeem()}
+                                      disabled={this.isDisabled()}
+                                    >
+                                      {this.isDisabled() ? 'NOT ENOUGH BALANCE' :  asset.type === types.STKGRO ? 'CONFIRM UNSTAKE' : 'CONFIRM REDEEM'}
+                                    </ActionConfirmButton>
+                                  )}
+                                  </SummaryRow>
+                                </Summary>
+                              )}
+                              <MobileTabs 
+                                {...this.props}
+                                {...this.state}
+                                handleChange={this.handleChange}
+                              />
                               </React.Fragment>
                             )}
-                            {modal_type === 'redeem' &&  (
-                              <ActionConfirmButton 
-                                asset={asset}
-                                modal_type={modal_type}
-                                onClick={() => this.handleRedeem()}
-                                disabled={this.isDisabled()}
-                              >
-                                {this.isDisabled() ? 'NOT ENOUGH BALANCE' :  asset.type === types.STKGRO ? 'CONFIRM UNSTAKE' : 'CONFIRM REDEEM'}
-                              </ActionConfirmButton>
+                            {drawer_type === 'stats' && (
+                              <StatsSection 
+                                {...this.props}
+                                {...this.state}
+                                toggleDrawerType={this.toggleDrawerType}
+                              />
                             )}
-                            </SummaryRow>
-                          </Summary>
-                        )}
-                        <MobileTabs 
-                          {...this.props}
-                          {...this.state}
-                          handleChange={this.handleChange}
-                        />
-                      </Container>
+                        </Container>
                     </Drawer.Target>
                 </Drawer.Drawer>
             </div>
