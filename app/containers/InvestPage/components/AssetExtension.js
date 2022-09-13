@@ -453,7 +453,6 @@ export default class AssetExtension extends Component {
                                 <Icon icon={shareSquareO} size="1.25em" style={{ margin: '0 5px 0 10px'}}/>
                             </IconContainer>
                         </ExtensionRow>
-                        
                     </ExtensionColumn>
                 </ExtensionRow>
             </ExtensionContainer>
